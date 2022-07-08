@@ -33,4 +33,5 @@ python3 main_continual.py \
     --method simclr \
     --temperature 0.2 \
     --proj_hidden_dim 2048 \
-    --output_dim 256
+    --output_dim 256 \
+    --disable_knn_eval

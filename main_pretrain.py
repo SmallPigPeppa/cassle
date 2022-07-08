@@ -218,7 +218,7 @@ def main():
         trainer.fit(model, val_dataloaders=val_loader)
     else:
         print('*************************************debug********************************')
-        print(next(train_dataset))
+        print(next(iter(train_dataset)))
         print('*************************************debug********************************')
         trainer.fit(model, train_loaders, val_loader)
 

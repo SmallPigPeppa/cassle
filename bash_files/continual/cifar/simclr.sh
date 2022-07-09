@@ -5,7 +5,7 @@ python3 main_continual.py \
     --split_strategy class \
     --task_idx 0 \
     --max_epochs 500 \
-    --num_tasks 5 \
+    --num_tasks 1 \
     --max_epochs 500 \
     --gpus 0 \
     --precision 16 \
@@ -25,7 +25,7 @@ python3 main_continual.py \
     --saturation 0.8 \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
-    --name simclr-cifar100 \
+    --name simclr-cifar100-modified \
     --project cassle-fintuing \
     --entity pigpeppa \
     --wandb \

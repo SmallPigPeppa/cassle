@@ -174,6 +174,7 @@ class BaseModel(pl.LightningModule):
             from models.conv_modified import Conv3x3_mofied
             conv_m = Conv3x3_mofied(in_planes=3, out_planes=64, stride=1)
             conv_m.conv2d_3x3 = nn.Conv2d(3, 64, kernel_size=3, stride=1,padding=2,bias=False)
+            conv_m.expansion_1x1=nn.Conv2d(3, 64, kernel_size=1, stride=1,padding=1,bias=False)
             self.encoder.conv1=conv_m
             self.encoder.maxpool = nn.Identity()
 

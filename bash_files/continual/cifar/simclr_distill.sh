@@ -7,7 +7,7 @@ python3 main_continual.py \
     --max_epochs 500 \
     --num_tasks 5 \
     --max_epochs 500 \
-    --gpus 1 \
+    --gpus 0 \
     --precision 16 \
     --optimizer sgd \
     --lars \
@@ -35,5 +35,4 @@ python3 main_continual.py \
     --proj_hidden_dim 2048 \
     --output_dim 256 \
     --distiller contrastive \
-    --pretrained_model $PRETRAINED_PATH \
     --disable_knn_eval

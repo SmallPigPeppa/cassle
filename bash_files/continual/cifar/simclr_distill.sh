@@ -7,7 +7,7 @@ python3 main_continual.py \
     --max_epochs 500 \
     --num_tasks 2 \
     --max_epochs 500 \
-    --gpus 0 \
+    --gpus 1 \
     --precision 16 \
     --optimizer sgd \
     --lars \
@@ -26,8 +26,8 @@ python3 main_continual.py \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
     --name simclr-cifar100-contrastive \
-    --project ever-learn \
-    --entity unitn-mhug \
+    --project cassle-modified \
+    --entity pigpeppa \
     --wandb \
     --save_checkpoint \
     --method simclr \
@@ -35,4 +35,4 @@ python3 main_continual.py \
     --proj_hidden_dim 2048 \
     --output_dim 256 \
     --distiller contrastive \
-    --pretrained_model $PRETRAINED_PATH
+#    --pretrained_model $PRETRAINED_PATH

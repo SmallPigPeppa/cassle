@@ -1,11 +1,11 @@
-import os
-os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+# import os
+# os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 import torch
 import torch.nn as nn
 # from torchvision.models.utils import load_state_dict_from_url
 from torch.hub import load_state_dict_from_url
-from conv_modified import Conv3x3_mofied
+from .conv_modified import Conv3x3_mofied
 
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',

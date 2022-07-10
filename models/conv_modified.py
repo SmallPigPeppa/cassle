@@ -8,7 +8,7 @@ class Conv3x3_mofied(nn.Module):
         super(Conv3x3_mofied, self).__init__()
         # nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=2, bias=False)
         self.conv2d_3x3 = conv3x3(in_planes, out_planes, stride=stride, groups=groups, dilation=dilation)
-        self.expansion_1x1 = nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, padding=-1,bias=False)
+        self.expansion_1x1 = nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride,bias=False)
         self.use_expansion = use_expansion
 
     def forward(self, x):

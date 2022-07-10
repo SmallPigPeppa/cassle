@@ -165,6 +165,18 @@ def main():
         state_dict = torch.load(args.pretrained_model, map_location="cpu")["state_dict"]
         model.load_state_dict(state_dict, strict=False)
 
+    # paramaterize after load weight
+    if args.use_expansion:
+        pass
+        model.encoder.active_expansion()
+
+    if args.re_paramaterize:
+        pass
+        model.encoder.reparameterize()
+
+
+
+
     callbacks = []
 
     # wandb logging

@@ -1,8 +1,12 @@
+import os
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+
 import torch
 import torch.nn as nn
 # from torchvision.models.utils import load_state_dict_from_url
 from torch.hub import load_state_dict_from_url
-from .conv_modified import Conv3x3_mofied
+from conv_modified import Conv3x3_mofied
+
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
            'resnet152', 'resnext50_32x4d', 'resnext101_32x8d',
@@ -24,8 +28,9 @@ model_urls = {
 
 def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1):
     """3x3 convolution with padding"""
-    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
-                     padding=dilation, groups=groups, bias=False, dilation=dilation)
+    # return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
+    #                  padding=dilation, groups=groups, bias=False, dilation=dilation)
+    return Conv3x3_mofied(in_planes, out_planes, stride=stride, groups=groups, dilation=dilation)
 
 
 
@@ -221,6 +226,17 @@ class ResNet(nn.Module):
     def forward(self, x):
         return self._forward_impl(x)
 
+    def active_expansion(self):
+        for module in self.modules():
+            if hasattr(module, 'set_expansion'):
+                # print(module)
+                module.set_expansion(use_expansion=True)
+
+    def reparameterize(self):
+        for module in self.modules():
+            if hasattr(module, 're_parameterize'):
+                # print(module)
+                module.re_parameterize()
 
 def _resnet(arch, block, layers, pretrained, progress, **kwargs):
     model = ResNet(block, layers, **kwargs)
@@ -353,3 +369,8 @@ def wide_resnet101_2(pretrained=False, progress=True, **kwargs):
     kwargs['width_per_group'] = 64 * 2
     return _resnet('wide_resnet101_2', Bottleneck, [3, 4, 23, 3],
                    pretrained, progress, **kwargs)
+
+if __name__=='__main__':
+    resnet_m=resnet50()
+    resnet_m.active_expansion()
+    resnet_m.reparameterize()

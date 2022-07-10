@@ -82,6 +82,16 @@ if __name__ == "__main__":
         if task_idx != 0 and distill_args:
             task_args.update(distill_args)
 
+        # add use_expansion and re_reparameterize
+        task_args['--use_expansion'] = False
+        task_args['--re_paramaterize'] = False
+
+        if task_idx != 0 and task_idx != start_task_idx:
+            task_args['--use_expansion'] = True
+        # use re_paramaterize after task1
+        if task_idx > 1 and task_idx - start_task_idx > 1:
+            task_args['--re_paramaterize'] = True
+
         task_args["--task_idx"] = str(task_idx)
         task_args = dict_to_list(task_args)
 

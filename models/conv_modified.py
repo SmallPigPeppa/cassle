@@ -40,6 +40,9 @@ class Conv3x3_mofied(nn.Module):
     def _fuse_bn_tensor(self, branch):
         if branch is None:
             return 0, 0
+        if isinstance(branch, nn.Module):
+            kernel = branch.weight
+            return kernel,kernel
         if isinstance(branch, nn.Sequential):
             kernel = branch.conv.weight
             running_mean = branch.bn.running_mean

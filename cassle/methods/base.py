@@ -158,8 +158,8 @@ class BaseModel(pl.LightningModule):
             self.warmup_start_lr = self.warmup_start_lr * self.accumulate_grad_batches
 
         assert encoder in ["resnet18", "resnet50"]
-        from torchvision.models import resnet18, resnet50
-        # from models.resnet_modified import resnet18, resnet50
+        # from torchvision.models import resnet18, resnet50
+        from models.resnet_modified import resnet18, resnet50
 
         self.base_model = {"resnet18": resnet18, "resnet50": resnet50}[encoder]
 
@@ -169,15 +169,15 @@ class BaseModel(pl.LightningModule):
         # remove fc layer
         self.encoder.fc = nn.Identity()
         if cifar:
-            self.encoder.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=2, bias=False)
-            self.encoder.maxpool = nn.Identity()
-
-            # from models.conv_modified import Conv3x3_mofied
-            # conv_m = Conv3x3_mofied(in_planes=3, out_planes=64, stride=1)
-            # conv_m.conv2d_3x3 = nn.Conv2d(3, 64, kernel_size=3, stride=1,padding=2,bias=False)
-            # conv_m.expansion_1x1=nn.Conv2d(3, 64, kernel_size=1, stride=1,padding=1,bias=False)
-            # self.encoder.conv1=conv_m
+            # self.encoder.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=2, bias=False)
             # self.encoder.maxpool = nn.Identity()
+
+            from models.conv_modified import Conv3x3_mofied
+            conv_m = Conv3x3_mofied(in_planes=3, out_planes=64, stride=1)
+            conv_m.conv2d_3x3 = nn.Conv2d(3, 64, kernel_size=3, stride=1,padding=2,bias=False)
+            conv_m.expansion_1x1=nn.Conv2d(3, 64, kernel_size=1, stride=1,padding=1,bias=False)
+            self.encoder.conv1=conv_m
+            self.encoder.maxpool = nn.Identity()
 
         self.classifier = nn.Linear(self.features_dim, num_classes)
 

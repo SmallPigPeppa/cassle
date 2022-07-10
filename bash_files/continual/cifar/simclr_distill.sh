@@ -5,7 +5,7 @@ python3 main_continual.py \
     --split_strategy class \
     --task_idx 0 \
     --max_epochs 500 \
-    --num_tasks 2 \
+    --num_tasks 5 \
     --max_epochs 500 \
     --gpus 1 \
     --precision 16 \
@@ -35,4 +35,5 @@ python3 main_continual.py \
     --proj_hidden_dim 2048 \
     --output_dim 256 \
     --distiller contrastive \
-#    --pretrained_model $PRETRAINED_PATH
+    --pretrained_model $PRETRAINED_PATH \
+    --disable_knn_eval

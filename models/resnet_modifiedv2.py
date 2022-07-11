@@ -240,7 +240,7 @@ class ResNet(nn.Module):
     def resnet_set_expansion(self,expansion_level):
         for module in self.modules():
             if hasattr(module, 'set_expansion'):
-                print(module)
+                # print(module)
                 module.set_expansion(expansion_level)
 
 def _resnet(arch, block, layers, pretrained, progress, **kwargs):

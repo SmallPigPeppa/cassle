@@ -86,10 +86,10 @@ if __name__ == "__main__":
 
         if task_idx != 0 and task_idx != start_task_idx:
             task_args['--use_expansion'] = '   '
-        # use re_paramaterize after task1
 
-        # if task_idx > 1 and task_idx - start_task_idx > 1:
-        #     task_args['--re_paramaterize'] = '   '
+        # use re_paramaterize after task1
+        if task_idx > 1 and task_idx - start_task_idx > 1:
+            task_args['--re_paramaterize'] = '   '
 
         # if task_idx == 1 :
         #     task_args['--use_expansion'] = '   '

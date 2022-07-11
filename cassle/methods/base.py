@@ -272,6 +272,26 @@ class BaseModel(pl.LightningModule):
             List[Dict[str, Any]]:
                 list of dicts containing learnable parameters and possible settings.
         """
+        # all_params = tuple(model.parameters())
+        # wd_params = list()
+        # for m in model.modules():
+        #     if isinstance(
+        #             m,
+        #             (
+        #                     nn.Linear,
+        #                     nn.Conv1d,
+        #                     nn.Conv2d,
+        #                     nn.Conv3d,
+        #                     nn.ConvTranspose1d,
+        #                     nn.ConvTranspose2d,
+        #                     nn.ConvTranspose3d,
+        #             ),
+        #     ):
+        #         wd_params.append(m.weight)
+        # # Only weights of specific layers should undergo weight decay.
+        # no_wd_params = [p for p in all_params if p not in wd_params]
+        # assert len(wd_params) + len(no_wd_params) == len(all_params), "Sanity check failed."
+        # return wd_params, no_wd_params
 
         return [
             {"name": "encoder", "params": self.encoder.parameters()},

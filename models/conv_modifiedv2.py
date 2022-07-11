@@ -29,8 +29,8 @@ class Conv3x3_mofied(nn.Module):
         elif self.expansion_level == 3:
             with torch.no_grad():
                 out1 = self.conv2d_3x3(x)
-                out2 = self.expansion1(out1)
-                out3 = self.expansion2(out1)
+                out2 = self.expansion1(x)
+                out3 = self.expansion2(x)
             return self.expansion3(x) + out1 + out2 + out3
         elif self.expansion_level == 4:
             with torch.no_grad():

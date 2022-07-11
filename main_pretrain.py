@@ -167,11 +167,9 @@ def main():
 
     # paramaterize after load weight
     if args.use_expansion:
-        pass
         model.encoder.active_expansion()
 
     if args.re_paramaterize:
-        pass
         model.encoder.reparameterize()
 
 

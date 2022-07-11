@@ -25,6 +25,7 @@ class Conv3x3_mofied(nn.Module):
     def re_parameterize(self):
         kernel = self.get_equivalent_kernel_bias()
         self.conv2d_3x3.weight.data = kernel
+        self.expansion_1x1.weight.data.zero_()
 
     def get_equivalent_kernel_bias(self):
         # bias no use

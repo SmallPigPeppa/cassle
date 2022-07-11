@@ -58,7 +58,7 @@ def parse_args_pretrain() -> argparse.Namespace:
     # add re_parameterize and use_expansion
     parser.add_argument("--use_expansion", action="store_true")
     parser.add_argument("--re_paramaterize", action="store_true")
-
+    parser.add_argument("--expansion_level",type=int, default=0)
     temp_args, _ = parser.parse_known_args()
 
 

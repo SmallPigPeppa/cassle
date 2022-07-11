@@ -149,7 +149,9 @@ class BaseModel(pl.LightningModule):
 
         # all the other parameters
         self.extra_args = kwargs
-
+        print('##################################extra_args###########################')
+        print(self.extra_args)
+        print('##################################extra_args###########################')
         # if accumulating gradient then scale lr
         if self.accumulate_grad_batches:
             self.lr = self.lr * self.accumulate_grad_batches
@@ -292,7 +294,12 @@ class BaseModel(pl.LightningModule):
         # no_wd_params = [p for p in all_params if p not in wd_params]
         # assert len(wd_params) + len(no_wd_params) == len(all_params), "Sanity check failed."
         # return wd_params, no_wd_params
-
+        x=[]
+        for i in self.encoder.parameters():
+            x.append(i)
+        print('#########################################')
+        print('num_param:',len(x))
+        print('#########################################')
         return [
             {"name": "encoder", "params": self.encoder.parameters()},
             {

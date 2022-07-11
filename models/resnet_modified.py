@@ -1,11 +1,11 @@
-# import os
-# os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+import os
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 import torch
 import torch.nn as nn
 # from torchvision.models.utils import load_state_dict_from_url
 from torch.hub import load_state_dict_from_url
-from .conv_modified import Conv3x3_mofied
+from conv_modified import Conv3x3_mofied
 
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
@@ -372,6 +372,38 @@ def wide_resnet101_2(pretrained=False, progress=True, **kwargs):
 
 if __name__=='__main__':
     resnet_m=resnet50()
-    resnet_m.active_expansion()
-    resnet_m.reparameterize()
+    # resnet_m.active_expansion()
+    # resnet_m.reparameterize()
+    all_params = tuple(resnet_m.parameters())
+    wd_params = list()
+    no_wd_params=list()
 
+    for name,param in resnet_m.named_parameters():
+        if 'expansion' in name:
+            print(name)
+            no_wd_params.append(param)
+        else:
+            print('********',name,'********')
+            wd_params.append(param)
+    # print(no_wd_params)
+    # print(all_params)
+    # wd_params = [p for p in all_params if p not in no_wd_params]
+    print(len(wd_params),len(no_wd_params),len(all_params))
+    assert len(wd_params) + len(no_wd_params) == len(all_params), "Sanity check failed."
+    #         wd_params.append(m.weight)
+    # # Only weights of specific layers should undergo weight decay.
+    # no_wd_params = [p for p in all_params if p not in wd_params]
+    # assert len(wd_params) + len(no_wd_params) == len(all_params), "Sanity check failed."
+    # return wd_params, no_wd_params
+
+    # all_params = tuple(resnet_m.parameters())
+    # wd_params = list()
+    # for m in resnet_m.modules():
+    #     print(m.__dict__)
+    #     print(m.name)
+    #     if m.name
+    #         wd_params.append(m.weight)
+    # # Only weights of specific layers should undergo weight decay.
+    # no_wd_params = [p for p in all_params if p not in wd_params]
+    # assert len(wd_params) + len(no_wd_params) == len(all_params), "Sanity check failed."
+    # return wd_params, no_wd_params

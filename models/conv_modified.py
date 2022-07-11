@@ -17,8 +17,8 @@ class Conv3x3_mofied(nn.Module):
             return self.conv2d_3x3(x)
         else:
             # with torch.no_grad():
-            out1 = self.conv2d_3x3(x)
-            return self.expansion_1x1(x) + out1
+            # out1 = self.conv2d_3x3(x)
+            return self.expansion_1x1(x) + self.conv2d_3x3(x)
 
     def set_expansion(self, use_expansion=True):
         self.use_expansion = use_expansion

@@ -25,8 +25,8 @@ python3 main_continual.py \
     --saturation 0.8 \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
-    --name simclr-cifar100-modifiedv2 \
-    --project cassle-debug \
+    --name simclr-cifar100 \
+    --project casslev4 \
     --entity pigpeppa \
     --wandb \
     --save_checkpoint \

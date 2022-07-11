@@ -4,14 +4,14 @@ import numpy as np
 
 
 class Conv3x3_mofied(nn.Module):
-    def __init__(self, in_planes, out_planes, stride=1, groups=1, dilation=1,expansion_level=0):
+    def __init__(self, in_planes, out_planes, stride=1, groups=1, dilation=1, expansion_level=0):
         super(Conv3x3_mofied, self).__init__()
         # nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=2, bias=False)
         self.conv2d_3x3 = conv3x3(in_planes, out_planes, stride=stride, groups=groups, dilation=dilation)
         self.expansion_level = expansion_level
-        self.expansion1=nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
+        self.expansion1 = nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
         self.expansion2 = nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
-        self.expansion3=nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
+        self.expansion3 = nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
         self.expansion4 = nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
 
     def forward(self, x):
@@ -24,21 +24,21 @@ class Conv3x3_mofied(nn.Module):
         elif self.expansion_level == 2:
             with torch.no_grad():
                 out1 = self.conv2d_3x3(x)
-                out1=self.expansion1(out1)
-            return self.expansion2(x) + out1
+                out2 = self.expansion1(x)
+            return self.expansion2(x) + out1 + out2
         elif self.expansion_level == 3:
             with torch.no_grad():
                 out1 = self.conv2d_3x3(x)
-                out1=self.expansion1(out1)
-                out1=self.expansion2(out1)
-            return self.expansion3(x) + out1
+                out2 = self.expansion1(out1)
+                out3 = self.expansion2(out1)
+            return self.expansion3(x) + out1 + out2 + out3
         elif self.expansion_level == 4:
             with torch.no_grad():
                 out1 = self.conv2d_3x3(x)
-                out1=self.expansion1(out1)
-                out1=self.expansion2(out1)
-                out1 = self.expansion3(out1)
-            return self.expansion4(x) + out1
+                out2 = self.expansion1(x)
+                out3 = self.expansion2(x)
+                out4 = self.expansion3(x)
+            return self.expansion4(x) + out1 + out2 + out3 + out4
 
     def set_expansion(self, expansion_level=1):
         self.expansion_level = expansion_level
@@ -104,14 +104,16 @@ def conv1x1(in_planes, out_planes, stride=1):
 
 def conv3x3_modified(in_planes, out_planes, stride=1, groups=1, dilation=1):
     return Conv3x3_mofied(in_planes, out_planes, stride=stride,
-                           groups=groups,dilation=dilation)
+                          groups=groups, dilation=dilation)
 
-def conv3x3_modified_padding(in_planes, out_planes, stride=1, groups=1, dilation=1,padding=1):
-    conv_m=Conv3x3_mofied(in_planes, out_planes, stride=stride,
-                           groups=groups,dilation=dilation)
-    conv_m.conv2d_3x3=nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
-                     padding=padding, groups=groups, bias=False, dilation=dilation)
+
+def conv3x3_modified_padding(in_planes, out_planes, stride=1, groups=1, dilation=1, padding=1):
+    conv_m = Conv3x3_mofied(in_planes, out_planes, stride=stride,
+                            groups=groups, dilation=dilation)
+    conv_m.conv2d_3x3 = nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
+                                  padding=padding, groups=groups, bias=False, dilation=dilation)
     return conv_m
+
 
 class BasicBlock_Modified(nn.Module):
     expansion = 1

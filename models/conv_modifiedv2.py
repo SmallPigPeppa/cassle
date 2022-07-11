@@ -9,10 +9,10 @@ class Conv3x3_mofied(nn.Module):
         # nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=2, bias=False)
         self.conv2d_3x3 = conv3x3(in_planes, out_planes, stride=stride, groups=groups, dilation=dilation)
         self.expansion_level = expansion_level
-        self.expansion1 = nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
-        self.expansion2 = nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
-        self.expansion3 = nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
-        self.expansion4 = nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
+        self.expansion1 = conv3x3(in_planes, out_planes, stride=stride, groups=groups, dilation=dilation)
+        self.expansion2 = conv3x3(in_planes, out_planes, stride=stride, groups=groups, dilation=dilation)
+        self.expansion3 = conv3x3(in_planes, out_planes, stride=stride, groups=groups, dilation=dilation)
+        self.expansion4 = conv3x3(in_planes, out_planes, stride=stride, groups=groups, dilation=dilation)
 
     def forward(self, x):
         if self.expansion_level == 0:

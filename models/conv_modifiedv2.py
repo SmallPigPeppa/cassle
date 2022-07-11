@@ -15,24 +15,24 @@ class Conv3x3_mofied(nn.Module):
         self.expansion4 = nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
 
     def forward(self, x):
-        if self.use_expansion == 0:
+        if self.expansion_level == 0:
             return self.conv2d_3x3(x)
-        elif self.use_expansion == 1:
+        elif self.expansion_level == 1:
             with torch.no_grad():
                 out1 = self.conv2d_3x3(x)
             return self.expansion1(x) + out1
-        elif self.use_expansion == 2:
+        elif self.expansion_level == 2:
             with torch.no_grad():
                 out1 = self.conv2d_3x3(x)
                 out1=self.expansion1(out1)
             return self.expansion2(x) + out1
-        elif self.use_expansion == 3:
+        elif self.expansion_level == 3:
             with torch.no_grad():
                 out1 = self.conv2d_3x3(x)
                 out1=self.expansion1(out1)
                 out1=self.expansion2(out1)
             return self.expansion3(x) + out1
-        elif self.use_expansion == 4:
+        elif self.expansion_level == 4:
             with torch.no_grad():
                 out1 = self.conv2d_3x3(x)
                 out1=self.expansion1(out1)

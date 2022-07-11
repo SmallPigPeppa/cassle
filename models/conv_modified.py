@@ -9,7 +9,7 @@ class Conv3x3_mofied(nn.Module):
         # nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=2, bias=False)
         self.conv2d_3x3 = conv3x3(in_planes, out_planes, stride=stride, groups=groups, dilation=dilation)
         self.expansion_1x1 = nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
-        self.expansion_1x1.weight.data._zero()
+        self.expansion_1x1.weight.data.zero_()
         self.use_expansion = use_expansion
 
     def forward(self, x):
@@ -26,7 +26,7 @@ class Conv3x3_mofied(nn.Module):
     def re_parameterize(self):
         kernel = self.get_equivalent_kernel_bias()
         self.conv2d_3x3.weight.data = kernel
-        self.expansion_1x1.weight.data._zero()
+        self.expansion_1x1.weight.data.zero_()
 
     def get_equivalent_kernel_bias(self):
         # bias no use

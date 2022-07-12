@@ -12,6 +12,7 @@ def base_distill_wrapper(Method=object):
 
             self.frozen_encoder = deepcopy(self.encoder)
             self.frozen_projector = deepcopy(self.projector)
+            self.frozen_encoder.active_expansion(use_expansion=False)
 
         def on_train_start(self):
             super().on_train_start()
@@ -20,6 +21,7 @@ def base_distill_wrapper(Method=object):
 
                 self.frozen_encoder = deepcopy(self.encoder)
                 self.frozen_projector = deepcopy(self.projector)
+                self.frozen_encoder.active_expansion(use_expansion=False)
 
                 for pg in self.frozen_encoder.parameters():
                     pg.requires_grad = False

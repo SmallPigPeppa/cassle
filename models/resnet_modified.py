@@ -226,11 +226,11 @@ class ResNet(nn.Module):
     def forward(self, x):
         return self._forward_impl(x)
 
-    def active_expansion(self):
+    def active_expansion(self,use_expansion=True):
         for module in self.modules():
             if hasattr(module, 'set_expansion'):
                 # print(module)
-                module.set_expansion(use_expansion=True)
+                module.set_expansion(use_expansion=use_expansion)
 
     def reparameterize(self):
         for module in self.modules():

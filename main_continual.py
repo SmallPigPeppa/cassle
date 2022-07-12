@@ -84,18 +84,18 @@ if __name__ == "__main__":
 
         # add use_expansion and re_reparameterize
 
-        if task_idx != 0 and task_idx != start_task_idx:
-            task_args['--use_expansion'] = '   '
-
-        # use re_paramaterize after task1
-        if task_idx > 1 and task_idx - start_task_idx > 1:
-            task_args['--re_paramaterize'] = '   '
-
-        # if task_idx == 1 :
+        # if task_idx != 0 and task_idx != start_task_idx:
         #     task_args['--use_expansion'] = '   '
+        #
         # # use re_paramaterize after task1
-        # if task_idx ==2:
+        # if task_idx > 1 and task_idx - start_task_idx > 1:
         #     task_args['--re_paramaterize'] = '   '
+
+        if task_idx == 1 :
+            task_args['--use_expansion'] = '   '
+        # use re_paramaterize after task1
+        if task_idx ==2:
+            task_args['--re_paramaterize'] = '   '
 
         task_args["--task_idx"] = str(task_idx)
         task_args = dict_to_list(task_args)

@@ -11,6 +11,12 @@ class Conv3x3_mofied(nn.Module):
         # self.expansion_1x1 = nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
         self.expansion_3x3 = conv3x3(in_planes, out_planes, stride=stride, groups=groups, dilation=dilation)
         self.expansion_3x3.weight.data.zero_()
+        self.expansion_downsample = nn.Sequential()
+        if  stride != 1 or in_planes != out_planes:
+            self.expansion_downsample=nn.Sequential(
+                    conv1x1(in_planes, out_planes, stride),
+                    nn.BatchNorm2d(out_planes),
+                )
         self.use_expansion = use_expansion
 
     def forward(self, x):
@@ -19,7 +25,7 @@ class Conv3x3_mofied(nn.Module):
         else:
             with torch.no_grad():
                 out1 = self.conv2d_3x3(x)
-            return self.expansion_3x3(x) + out1
+            return self.expansion_3x3(x) + out1 +self.expansion_downsample(x)
 
     def set_expansion(self, use_expansion=True):
         self.use_expansion = use_expansion

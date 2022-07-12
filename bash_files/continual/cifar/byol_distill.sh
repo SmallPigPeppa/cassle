@@ -26,8 +26,8 @@ python3 main_continual.py \
     --gaussian_prob 0.0 0.0 \
     --solarization_prob 0.0 0.2 \
     --name byol-cifar100-predictive \
-    --project ever-learn \
-    --entity unitn-mhug \
+    --project casslev1 \
+    --entity pigpeppa \
     --wandb \
     --save_checkpoint \
     --method byol \
@@ -37,5 +37,4 @@ python3 main_continual.py \
     --base_tau_momentum 0.99 \
     --final_tau_momentum 1.0 \
     --momentum_classifier \
-    --distiller predictive \
-    --pretrained_model $PRETRAINED_PATH
+    --distiller predictive

@@ -10,7 +10,6 @@ python3 main_continual.py \
     --gpus 0 \
     --precision 16 \
     --optimizer sgd \
-    --lars \
     --grad_clip_lars \
     --eta_lars 0.02 \
     --exclude_bias_n_norm \
@@ -26,7 +25,7 @@ python3 main_continual.py \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
     --name simclr-cifar100 \
-    --project casslev5 \
+    --project casslev9 \
     --entity pigpeppa \
     --wandb \
     --save_checkpoint \

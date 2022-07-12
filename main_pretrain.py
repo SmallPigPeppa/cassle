@@ -38,7 +38,7 @@ from cassle.utils.pretrain_dataloader import (
 
 
 def main():
-    seed_everything(0)
+    seed_everything(5)
 
     args = parse_args_pretrain()
 

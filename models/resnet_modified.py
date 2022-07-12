@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 # from torchvision.models.utils import load_state_dict_from_url
 from torch.hub import load_state_dict_from_url
-from .conv_modified import Conv3x3_mofied
+from conv_modified import Conv3x3_mofied
 
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
@@ -371,7 +371,9 @@ def wide_resnet101_2(pretrained=False, progress=True, **kwargs):
                    pretrained, progress, **kwargs)
 
 if __name__=='__main__':
-    resnet_m=resnet50()
+    resnet_m=resnet18()
+    resnet_m.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=2, bias=False)
+    resnet_m.maxpool = nn.Identity()
     # resnet_m.active_expansion()
     # resnet_m.reparameterize()
     all_params = tuple(resnet_m.parameters())

@@ -26,8 +26,8 @@ python3 main_continual.py \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
     --name simclr-cifar100-contrastive \
-    --project ever-learn \
-    --entity unitn-mhug \
+    --project cassle-official \
+    --entity pigpeppa \
     --wandb \
     --save_checkpoint \
     --method simclr \
@@ -35,4 +35,4 @@ python3 main_continual.py \
     --proj_hidden_dim 2048 \
     --output_dim 256 \
     --distiller contrastive \
-    --pretrained_model $PRETRAINED_PATH
+    --disable_knn_eval

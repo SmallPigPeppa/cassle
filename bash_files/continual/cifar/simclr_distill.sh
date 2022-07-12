@@ -10,7 +10,6 @@ python3 main_continual.py \
     --gpus 0 \
     --precision 16 \
     --optimizer sgd \
-    --lars \
     --grad_clip_lars \
     --eta_lars 0.02 \
     --exclude_bias_n_norm \

@@ -10,16 +10,27 @@ class Conv3x3_mofied(nn.Module):
         self.conv2d_3x3 = conv3x3(in_planes, out_planes, stride=stride, groups=groups, dilation=dilation)
         # self.expansion_1x1 = nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
         self.expansion_3x3 = conv3x3(in_planes, out_planes, stride=stride, groups=groups, dilation=dilation)
-        self.expansion_3x3.weight.data.zero_()
+        self.conv2d_3x3_bn=nn.BatchNorm2d(out_planes)
+        self.expansion_3x3_bn=nn.BatchNorm2d(out_planes)
         self.use_expansion = use_expansion
+        self._expansion_initial()
+
+    def _expansion_initial(self):
+        self.expansion_3x3.weight.data.zero_()
+        nn.init.constant_(self.expansion_3x3_bn.weight, 1)
+        nn.init.constant_(self.expansion_3x3_bn.bias, 0)
 
     def forward(self, x):
         if not self.use_expansion:
-            return self.conv2d_3x3(x)
+            out=self.conv2d_3x3(x)
+            out=self.conv2d_3x3_bn(out)
+            return out
         else:
             with torch.no_grad():
                 out1 = self.conv2d_3x3(x)
-            return self.expansion_3x3(x) + out1
+            out2=self.expansion_3x3(x)
+            out2=self.expansion_3x3_bn(out2)
+            return out1+out2
 
     def set_expansion(self, use_expansion=True):
         self.use_expansion = use_expansion
@@ -30,48 +41,28 @@ class Conv3x3_mofied(nn.Module):
             self.conv2d_3x3.weight.data = self.conv2d_3x3.weight.data+self.expansion_3x3.weight.data
         self.expansion_3x3.weight.data.zero_()
 
-    # def get_equivalent_kernel_bias(self):
-    #     # bias no use
-    #     kernel3x3, _ = self._fuse_bn_tensor(self.conv2d_3x3)
-    #     kernel1x1, _ = self._fuse_bn_tensor(self.expansion_3x3)
-    #     return kernel3x3 + self._pad_1x1_to_3x3_tensor(kernel1x1)
-    #
-    # def _pad_1x1_to_3x3_tensor(self, kernel1x1):
-    #     if kernel1x1 is None:
-    #         return 0
-    #     else:
-    #         return torch.nn.functional.pad(kernel1x1, [1, 1, 1, 1])
-    #
-    # def _fuse_bn_tensor(self, branch):
-    #     if branch is None:
-    #         return 0, 0
-    #     if isinstance(branch, nn.Module):
-    #         kernel = branch.weight
-    #         return kernel, kernel
-    #     if isinstance(branch, nn.Sequential):
-    #         kernel = branch.conv.weight
-    #         running_mean = branch.bn.running_mean
-    #         running_var = branch.bn.running_var
-    #         gamma = branch.bn.weight
-    #         beta = branch.bn.bias
-    #         eps = branch.bn.eps
-    #     else:
-    #         assert isinstance(branch, nn.BatchNorm2d)
-    #         if not hasattr(self, 'id_tensor'):
-    #             input_dim = self.in_channels // self.groups
-    #             kernel_value = np.zeros((self.in_channels, input_dim, 3, 3), dtype=np.float32)
-    #             for i in range(self.in_channels):
-    #                 kernel_value[i, i % input_dim, 1, 1] = 1
-    #             self.id_tensor = torch.from_numpy(kernel_value).to(branch.weight.device)
-    #         kernel = self.id_tensor
-    #         running_mean = branch.running_mean
-    #         running_var = branch.running_var
-    #         gamma = branch.weight
-    #         beta = branch.bias
-    #         eps = branch.eps
-    #     std = (running_var + eps).sqrt()
-    #     t = (gamma / std).reshape(-1, 1, 1, 1)
-    #     return kernel * t, beta - running_mean * gamma / std
+    def get_equivalent_kernel_bias(self):
+        # bias no use
+        kernel3x3, _ = self._fuse_bn_tensor(self.conv2d_3x3)
+        kernel1x1, _ = self._fuse_bn_tensor(self.expansion_3x3)
+        return kernel3x3 + self._pad_1x1_to_3x3_tensor(kernel1x1)
+
+    def _pad_1x1_to_3x3_tensor(self, kernel1x1):
+        if kernel1x1 is None:
+            return 0
+        else:
+            return torch.nn.functional.pad(kernel1x1, [1, 1, 1, 1])
+
+    def _fuse_bn_tensor(self):
+        kernel = self.expansion_3x3.weight
+        running_mean = self.expansion_3x3_bn.running_mean
+        running_var =self.expansion_3x3_bn.running_var
+        gamma = self.expansion_3x3_bn.weight
+        beta = self.expansion_3x3_bn.bias
+        eps = self.expansion_3x3_bn.eps
+        std = (running_var + eps).sqrt()
+        t = (gamma / std).reshape(-1, 1, 1, 1)
+        return kernel * t, beta - running_mean * gamma / std
 
 
 def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1):

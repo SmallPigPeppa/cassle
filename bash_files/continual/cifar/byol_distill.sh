@@ -37,4 +37,5 @@ python3 main_continual.py \
     --base_tau_momentum 0.99 \
     --final_tau_momentum 1.0 \
     --momentum_classifier \
-    --distiller predictive
+    --distiller predictive \
+    --disable_knn_eval

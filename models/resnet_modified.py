@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 # from torchvision.models.utils import load_state_dict_from_url
 from torch.hub import load_state_dict_from_url
-# from .conv_modified import Conv3x3_modified
+from conv_modified import Conv3x3_modified
 
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
@@ -28,11 +28,11 @@ model_urls = {
 
 def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1):
     """3x3 convolution with padding"""
-    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
-                     padding=dilation, groups=groups, bias=True, dilation=dilation)
+    # return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
+    #                  padding=dilation, groups=groups, bias=True, dilation=dilation)
     # return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
     #                  padding=dilation, groups=groups, bias=False, dilation=dilation)
-    # return Conv3x3_mofied(in_planes, out_planes, stride=stride, groups=groups, dilation=dilation)
+    return Conv3x3_modified(in_planes, out_planes, stride=stride, groups=groups, dilation=dilation)
 
 
 
@@ -56,10 +56,10 @@ class BasicBlock(nn.Module):
             raise NotImplementedError("Dilation > 1 not supported in BasicBlock")
         # Both self.conv1 and self.downsample layers downsample the input when stride != 1
         self.conv1 = conv3x3(inplanes, planes, stride)
-        self.bn1 = norm_layer(planes)
+        # self.bn1 = norm_layer(planes)
         self.relu = nn.ReLU(inplace=True)
         self.conv2 = conv3x3(planes, planes)
-        self.bn2 = norm_layer(planes)
+        # self.bn2 = norm_layer(planes)
         self.downsample = downsample
         self.stride = stride
 
@@ -67,11 +67,11 @@ class BasicBlock(nn.Module):
         identity = x
 
         out = self.conv1(x)
-        out = self.bn1(out)
+        # out = self.bn1(out)
         out = self.relu(out)
 
         out = self.conv2(out)
-        out = self.bn2(out)
+        # out = self.bn2(out)
 
         if self.downsample is not None:
             identity = self.downsample(x)
@@ -229,17 +229,21 @@ class ResNet(nn.Module):
     def forward(self, x):
         return self._forward_impl(x)
 
-    def active_expansion(self):
+    def set_expansions(self,use_expansion=False):
         for module in self.modules():
             if hasattr(module, 'set_expansion'):
                 # print(module)
-                module.set_expansion(use_expansion=True)
-
-    def reparameterize(self):
+                module.set_expansion(use_expansion=use_expansion)
+    def re_parameterizes(self):
         for module in self.modules():
             if hasattr(module, 're_parameterize'):
                 # print(module)
                 module.re_parameterize()
+    def clean_expansions(self):
+        for module in self.modules():
+            if hasattr(module, 'clean_expansion'):
+                # print(module)
+                module.clean_expansion()
 
 def _resnet(arch, block, layers, pretrained, progress, **kwargs):
     model = ResNet(block, layers, **kwargs)
@@ -373,20 +377,64 @@ def wide_resnet101_2(pretrained=False, progress=True, **kwargs):
     return _resnet('wide_resnet101_2', Bottleneck, [3, 4, 23, 3],
                    pretrained, progress, **kwargs)
 
+# if __name__=='__main__':
+#     resnet_m=resnet18()
+#     all_params = tuple(resnet_m.parameters())
+#     wd_params = list()
+#     no_wd_params = list()
+#     for name, param in resnet_m.named_parameters():
+#         if 'bias' in name:
+#             print(name)
+#     print('#####################')
+#     for name, param in resnet_m.named_parameters():
+#         if 'bias' in name and 'conv' in name:
+#             print(name)
+#             no_wd_params.append(param)
+#         else:
+#             # print(name)
+#             wd_params.append(param)
 if __name__=='__main__':
     resnet_m=resnet18()
-    all_params = tuple(resnet_m.parameters())
-    wd_params = list()
-    no_wd_params = list()
-    for name, param in resnet_m.named_parameters():
-        if 'bias' in name:
-            print(name)
-    print('#####################')
-    for name, param in resnet_m.named_parameters():
-        if 'bias' in name and 'conv' in name:
-            print(name)
-            no_wd_params.append(param)
-        else:
-            # print(name)
-            wd_params.append(param)
+    resnet_m.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=2, bias=False)
+    resnet_m.maxpool = nn.Identity()
 
+    # x=torch.ones([8,3,32,32])
+    # y=resnet_m(x)
+    # print(y)
+
+    resnet_m.set_expansions(use_expansion=True)
+
+    x=torch.ones([8,3,32,32])
+    y=resnet_m(x)
+    print(y)
+
+    resnet_m.re_parameterizes()
+    x=torch.ones([8,3,32,32])
+    y=resnet_m(x)
+    print(y)
+
+    resnet_m.clean_expansions()
+    x=torch.ones([8,3,32,32])
+    y=resnet_m(x)
+    print(y)
+
+
+    a=nn.BatchNorm2d(3,affine=False,track_running_stats=False)
+    print(a.weight)
+    print(a.running_var)
+    # nn.init.constant_(a.weight, 1)
+    # nn.init.constant_(a.bias, 0)
+    # nn.init.constant_(a.running_var, 1)
+    # nn.init.constant_(a.running_mean, 0)
+    x=torch.zeros([8,3,1,1])
+    y=a(x)
+    print(y)
+
+
+    # resnet_m.re_parameterizes()
+    # x=torch.ones([8,3,32,32])
+    # y=resnet_m(x)
+    # print(y)
+    # a=torch.tensor([1,2,3])
+    # b=torch.tensor([2,2,2])
+    # print(a/b)

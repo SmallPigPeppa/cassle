@@ -18,7 +18,7 @@ from torch.optim.lr_scheduler import CosineAnnealingLR, MultiStepLR
 
 
 def static_lr(
-    get_lr: Callable, param_group_indexes: Sequence[int], lrs_to_replace: Sequence[float]
+        get_lr: Callable, param_group_indexes: Sequence[int], lrs_to_replace: Sequence[float]
 ):
     lrs = get_lr()
     for idx, lr in zip(param_group_indexes, lrs_to_replace):
@@ -28,38 +28,38 @@ def static_lr(
 
 class BaseModel(pl.LightningModule):
     def __init__(
-        self,
-        encoder: str,
-        num_classes: int,
-        cifar: bool,
-        zero_init_residual: bool,
-        max_epochs: int,
-        batch_size: int,
-        online_eval_batch_size: int,
-        optimizer: str,
-        lars: bool,
-        lr: float,
-        weight_decay: float,
-        classifier_lr: float,
-        exclude_bias_n_norm: bool,
-        accumulate_grad_batches: int,
-        extra_optimizer_args: Dict,
-        scheduler: str,
-        min_lr: float,
-        warmup_start_lr: float,
-        warmup_epochs: float,
-        multicrop: bool,
-        num_crops: int,
-        num_small_crops: int,
-        tasks: list,
-        num_tasks: int,
-        split_strategy,
-        eta_lars: float = 1e-3,
-        grad_clip_lars: bool = False,
-        lr_decay_steps: Sequence = None,
-        disable_knn_eval: bool = True,
-        knn_k: int = 20,
-        **kwargs,
+            self,
+            encoder: str,
+            num_classes: int,
+            cifar: bool,
+            zero_init_residual: bool,
+            max_epochs: int,
+            batch_size: int,
+            online_eval_batch_size: int,
+            optimizer: str,
+            lars: bool,
+            lr: float,
+            weight_decay: float,
+            classifier_lr: float,
+            exclude_bias_n_norm: bool,
+            accumulate_grad_batches: int,
+            extra_optimizer_args: Dict,
+            scheduler: str,
+            min_lr: float,
+            warmup_start_lr: float,
+            warmup_epochs: float,
+            multicrop: bool,
+            num_crops: int,
+            num_small_crops: int,
+            tasks: list,
+            num_tasks: int,
+            split_strategy,
+            eta_lars: float = 1e-3,
+            grad_clip_lars: bool = False,
+            lr_decay_steps: Sequence = None,
+            disable_knn_eval: bool = True,
+            knn_k: int = 20,
+            **kwargs,
     ):
         """Base model that implements all basic operations for all self-supervised methods.
         It adds shared arguments, extract basic learnable parameters, creates optimizers
@@ -260,14 +260,35 @@ class BaseModel(pl.LightningModule):
     @property
     def learnable_params(self) -> List[Dict[str, Any]]:
         """Defines learnable parameters for the base class.
-
         Returns:
             List[Dict[str, Any]]:
                 list of dicts containing learnable parameters and possible settings.
         """
-
+        all_params = tuple(self.encoder.parameters())
+        wd_params = list()
+        no_wd_params = list()
+        for name, param in self.encoder.named_parameters():
+            if 'bais' in name:
+                no_wd_params.append(param)
+            else:
+                wd_params.append(param)
+        # if not self.extra_args['use_expansion']:
+        #     for name, param in self.encoder.named_parameters():
+        #         if 'expansion' in name:
+        #             no_wd_params.append(param)
+        #         else:
+        #             wd_params.append(param)
+        # else:
+        #     for name, param in self.encoder.named_parameters():
+        #         if 'conv2d_3x3' in name:
+        #             no_wd_params.append(param)
+        #         else:
+        #             wd_params.append(param)
+        print(len(wd_params), len(no_wd_params), len(all_params))
+        assert len(wd_params) + len(no_wd_params) == len(all_params), "Sanity check failed."
         return [
-            {"name": "encoder", "params": self.encoder.parameters()},
+            {"name": "encoder", "params": wd_params, "weight_decay": self.weight_decay, },
+            {"name": "encoder_no_wd_params", "params": no_wd_params, "weight_decay": 0, },
             {
                 "name": "classifier",
                 "params": self.classifier.parameters(),
@@ -297,10 +318,15 @@ class BaseModel(pl.LightningModule):
             raise ValueError(f"{self.optimizer} not in (sgd, adam)")
 
         # create optimizer
+        # optimizer = optimizer(
+        #     self.learnable_params,
+        #     lr=self.lr,
+        #     weight_decay=self.weight_decay,
+        #     **self.extra_optimizer_args,
+        # )
         optimizer = optimizer(
             self.learnable_params,
             lr=self.lr,
-            weight_decay=self.weight_decay,
             **self.extra_optimizer_args,
         )
         # optionally wrap with lars
@@ -411,7 +437,7 @@ class BaseModel(pl.LightningModule):
         outs_task = {k: [out[k] for out in outs_task] for k in outs_task[0].keys()}
 
         if self.multicrop:
-            outs_task["feats"].extend([self.encoder(x) for x in X_task[self.num_crops :]])
+            outs_task["feats"].extend([self.encoder(x) for x in X_task[self.num_crops:]])
 
         if self.online_eval:
             assert "online_eval" in batch.keys()
@@ -431,8 +457,8 @@ class BaseModel(pl.LightningModule):
 
             if not self.disable_knn_eval:
                 print('*************************************debug********************************')
-                print('train_features:',outs_online_eval["online_eval_feats"].detach())
-                print('train_targets:',targets_online_eval)
+                print('train_features:', outs_online_eval["online_eval_feats"].detach())
+                print('train_targets:', targets_online_eval)
                 print('*************************************debug********************************')
                 self.knn(
                     train_features=outs_online_eval["online_eval_feats"].detach(),
@@ -527,11 +553,11 @@ class BaseModel(pl.LightningModule):
 
 class BaseMomentumModel(BaseModel):
     def __init__(
-        self,
-        base_tau_momentum: float,
-        final_tau_momentum: float,
-        momentum_classifier: bool,
-        **kwargs,
+            self,
+            base_tau_momentum: float,
+            final_tau_momentum: float,
+            momentum_classifier: bool,
+            **kwargs,
     ):
         """Base momentum model that implements all basic operations for all self-supervised methods
         that use a momentum encoder. It adds shared momentum arguments, adds basic learnable
@@ -642,7 +668,7 @@ class BaseMomentumModel(BaseModel):
         return {"feats": feats}
 
     def _online_eval_shared_step_momentum(
-        self, X: torch.Tensor, targets: torch.Tensor
+            self, X: torch.Tensor, targets: torch.Tensor
     ) -> Dict[str, Any]:
         """Forwards a batch of images X in the momentum encoder and optionally computes the
         classification loss, the logits, the features, acc@1 and acc@5 for of momentum classifier.
@@ -707,7 +733,6 @@ class BaseMomentumModel(BaseModel):
             outs_online_eval = {"online_eval_momentum_" + k: v for k, v in outs_online_eval.items()}
 
             if self.momentum_classifier is not None:
-
                 metrics = {
                     "train_online_eval_momentum_class_loss": outs_online_eval[
                         "online_eval_momentum_loss"
@@ -754,7 +779,7 @@ class BaseMomentumModel(BaseModel):
         self.last_step = self.trainer.global_step
 
     def validation_step(
-        self, batch: List[torch.Tensor], batch_idx: int
+            self, batch: List[torch.Tensor], batch_idx: int
     ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         """Validation step for pytorch lightning. It performs all the shared operations for the
         momentum encoder and classifier, such as forwarding a batch of images in the momentum

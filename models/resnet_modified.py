@@ -374,6 +374,19 @@ def wide_resnet101_2(pretrained=False, progress=True, **kwargs):
                    pretrained, progress, **kwargs)
 
 if __name__=='__main__':
-    resnet_m=resnet50()
-    resnet_m.active_expansion()
-    resnet_m.reparameterize()
+    resnet_m=resnet18()
+    all_params = tuple(resnet_m.parameters())
+    wd_params = list()
+    no_wd_params = list()
+    for name, param in resnet_m.named_parameters():
+        if 'bias' in name:
+            print(name)
+    print('#####################')
+    for name, param in resnet_m.named_parameters():
+        if 'bias' in name and 'conv' in name:
+            print(name)
+            no_wd_params.append(param)
+        else:
+            # print(name)
+            wd_params.append(param)
+

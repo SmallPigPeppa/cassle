@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 # from torchvision.models.utils import load_state_dict_from_url
 from torch.hub import load_state_dict_from_url
-from .conv_modified import Conv3x3_mofied
+from conv_modified import Conv3x3_mofied
 
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
@@ -238,6 +238,12 @@ class ResNet(nn.Module):
                 # print(module)
                 module.re_parameterize()
 
+    def zero_expansions(self):
+        for module in self.modules():
+            if hasattr(module, 'zero_expansion'):
+                # print(module)
+                module.zero_expansion()
+
 def _resnet(arch, block, layers, pretrained, progress, **kwargs):
     model = ResNet(block, layers, **kwargs)
     if pretrained:
@@ -371,6 +377,73 @@ def wide_resnet101_2(pretrained=False, progress=True, **kwargs):
                    pretrained, progress, **kwargs)
 
 if __name__=='__main__':
-    resnet_m=resnet50()
+    # resnet_m=resnet18()
+    # # resnet_m.zero_expansions()
+    # # resnet_m.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=2, bias=False)
+    # # print(resnet_m.layer1[0].conv1.expansion_1x1.weight)
+    # resnet_m.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=2, bias=False)
+    # # resnet_m.zero_expansions()
+    # resnet_m.maxpool = nn.Identity()
+    # # resnet_m.active_expansion()
+    # # print(resnet_m.layer1[0].conv1.expansion_1x1.weight)
+    # # resnet_m.zero_expansions()
+    # # print(resnet_m.layer1[0])
+    #
+    # input=torch.ones([8,3,32,32])
+    # resnet_m.active_expansion()
+    # output=resnet_m(input)
+    # print(output)
+    # resnet_m.reparameterize()
+    # # print(resnet_m.layer1[0].conv1.expansion_1x1.weight)
+    # # resnet_m.active_expansion()
+    # output=resnet_m(input)
+    # print(output)
+    # # resnet_m.reparameterize()
+    # # resnet_m.active_expansion()
+    # resnet_m.active_expansion(use_expansion=False)
+    # output=resnet_m(input)
+    # print(output)
+    # resnet_m.active_expansion(use_expansion=True)
+    # output=resnet_m(input)
+    # print(output)
+    #
+    # # input2=torch.ones([8,64,32,32])
+    # # resnet_m.layer1[0].conv1.expansion_1x1.weight.data.zero_()
+    # # output=resnet_m.layer1[0].conv1.expansion_1x1(input2)
+    # # print(resnet_m.layer1)
+    # # print(output)
+    # # print(resnet_m.layer1[0].conv1.expansion_1x1)
+    #
+    # # print(resnet_m.layer1[0].conv1.expansion_1x1.weight)
+    #
+    #
+    #
+    # # resnet_m=resnet18()
+    # # resnet_m.maxpool = nn.Identity()
+    # #
+    # # input=torch.ones([8,3,32,32])
+    # # output=resnet_m(input)
+    # # print(output)
+    # # resnet_m.reparameterize()
+    # # output=resnet_m(input)
+    # # print(output)
+    # # resnet_m.active_expansion()
+    # # output=resnet_m(input)
+    # # print(output)
+
+    resnet_m=resnet18()
+    resnet_m.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=2, bias=False)
+    resnet_m.maxpool = nn.Identity()
+    input=torch.ones([8,3,32,32])
+    # 打开 expansion
     resnet_m.active_expansion()
+    output=resnet_m(input)
+    print(output)
+    # 重参数化
     resnet_m.reparameterize()
+    output=resnet_m(input)
+    print(output)
+    # 关闭expansion
+    resnet_m.active_expansion(use_expansion=False)
+    output=resnet_m(input)
+    print(output)

@@ -158,8 +158,8 @@ class BaseModel(pl.LightningModule):
             self.warmup_start_lr = self.warmup_start_lr * self.accumulate_grad_batches
 
         assert encoder in ["resnet18", "resnet50"]
-        # from torchvision.models import resnet18, resnet50
-        from models.resnet_modified import resnet18, resnet50
+        from torchvision.models import resnet18, resnet50
+        # from models.resnet_modified import resnet18, resnet50
 
         self.base_model = {"resnet18": resnet18, "resnet50": resnet50}[encoder]
 

@@ -25,7 +25,7 @@ python3 main_continual.py \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
     --name simclr-cifar100 \
-    --project cassle-official \
+    --project cassle-bnv0 \
     --entity pigpeppa \
     --wandb \
     --save_checkpoint \

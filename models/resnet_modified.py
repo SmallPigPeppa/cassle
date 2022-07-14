@@ -403,7 +403,7 @@ if __name__=='__main__':
     # print(y)
 
     resnet_m.set_expansions(use_expansion=True)
-
+    resnet_m.eval()
     x=torch.ones([8,3,32,32])
     y=resnet_m(x)
     print(y)
@@ -413,28 +413,81 @@ if __name__=='__main__':
     y=resnet_m(x)
     print(y)
 
-    resnet_m.clean_expansions()
+    resnet_m.re_parameterizes()
     x=torch.ones([8,3,32,32])
     y=resnet_m(x)
     print(y)
 
 
-    a=nn.BatchNorm2d(3,affine=False,track_running_stats=False)
-    print(a.weight)
-    print(a.running_var)
-    # nn.init.constant_(a.weight, 1)
-    # nn.init.constant_(a.bias, 0)
-    # nn.init.constant_(a.running_var, 1)
-    # nn.init.constant_(a.running_mean, 0)
-    x=torch.zeros([8,3,1,1])
-    y=a(x)
-    print(y)
-
-
-    # resnet_m.re_parameterizes()
-    # x=torch.ones([8,3,32,32])
-    # y=resnet_m(x)
-    # print(y)
-    # a=torch.tensor([1,2,3])
-    # b=torch.tensor([2,2,2])
-    # print(a/b)
+    # conv=conv3x3(3,1)
+    # conv.eval()
+    # conv.set_expansion()
+    # x=torch.ones([1,3,8,8])
+    # y=conv(x)
+    # print(y[0][0][0])
+    #
+    # # c1 = conv.conv2d_3x3
+    # # y = c1(x)
+    # # print(y[0][0][0])
+    # #
+    # # c2 = conv.expansion_3x3
+    # # y = c2(x)
+    # # print(y[0][0][0])
+    #
+    # conv.re_parameterize()
+    # y=conv(x)
+    # print(y[0][0][0])
+    #
+    #
+    #
+    # # c1=conv.conv2d_3x3
+    # # y=c1(x)
+    # # print(y[0][0][0])
+    # #
+    # # c2=conv.expansion_3x3
+    # # y=c2(x)
+    # # print(y[0][0][0])
+    #
+    #
+    # conv.re_parameterize()
+    # y=conv(x)
+    # print(y[0][0][0])
+    #
+    #
+    #
+    # # c1=conv.conv2d_3x3
+    # # y=c1(x)
+    # # print(y[0][0][0])
+    # #
+    # # c2=conv.expansion_3x3
+    # # y=c2(x)
+    # # print(y[0][0][0])
+    #
+    #
+    # # resnet_m.clean_expansions()
+    # # x=torch.ones([8,3,32,32])
+    # # y=resnet_m(x)
+    # # print(y)
+    # #
+    # #
+    # # a=nn.BatchNorm2d(3)
+    # # a.eval()
+    # # # print(a.weight)
+    # # # print(a.running_var)
+    # # # nn.init.constant_(a.weight, 1)
+    # # # nn.init.constant_(a.bias, 0)
+    # # # nn.init.constant_(a.running_var, 1)
+    # # # nn.init.constant_(a.running_mean, 0)
+    # # x=torch.ones([8,3,1,1])
+    # # y=a(x)
+    # # print(y)
+    #
+    #
+    #
+    # # resnet_m.re_parameterizes()
+    # # x=torch.ones([8,3,32,32])
+    # # y=resnet_m(x)
+    # # print(y)
+    # # a=torch.tensor([1,2,3])
+    # # b=torch.tensor([2,2,2])
+    # # print(a/b)

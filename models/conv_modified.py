@@ -15,10 +15,14 @@ class Conv3x3_modified(nn.Module):
 
     def __init__(self, in_planes, out_planes, stride=1, groups=1, dilation=1, use_expansion=False):
         super(Conv3x3_modified, self).__init__()
-        self.outplanes = out_planes
+        self.out_planes = out_planes
+        self.in_planes=in_planes
+        self.stride=stride
+        self.groups=groups
+        self.dilation=dilation
         self.conv2d_3x3 = nn.Sequential()
         self.conv2d_3x3.add_module('conv',
-                                   conv3x3_bias(in_planes, out_planes, stride=stride, groups=groups, dilation=dilation))
+                                   conv3x3_nobias(in_planes, out_planes, stride=stride, groups=groups, dilation=dilation))
         self.conv2d_3x3.add_module('bn', nn.BatchNorm2d(out_planes))
 
         self.expansion_3x3 = nn.Sequential()
@@ -62,9 +66,10 @@ class Conv3x3_modified(nn.Module):
 
     @torch.no_grad()
     def clean_expansion(self):
-        self.conv2d_3x3.bn = nn.BatchNorm2d(self.outplanes,affine=False,track_running_stats=False)
+        # self.conv2d_3x3.bn = nn.BatchNorm2d(self.outplanes,affine=False,track_running_stats=False)
         # self.conv2d_3x3.bn=nn.Identity()
-        self.expansion_3x3.bn = nn.BatchNorm2d(self.outplanes)
+        # self.expansion_3x3.eval()
+        self.expansion_3x3.bn = nn.BatchNorm2d(self.out_planes)
         nn.init.constant_(self.expansion_3x3.conv.weight.data, 0)
 
         # nn.init.constant_(self.expansion_3x3.conv.bias.data, 0)
@@ -72,12 +77,22 @@ class Conv3x3_modified(nn.Module):
 
     @torch.no_grad()
     def re_parameterize(self):
-        kernel3x3, bias3x3 = self._fuse_bn_tensor(self.conv2d_3x3)
+        # 如果是bn 则说明是第一次re_param
+        if isinstance(self.conv2d_3x3.bn,nn.Identity) and self.conv2d_3x3.conv.bias is not None:
+            kernel3x3, bias3x3 = self.conv2d_3x3.conv.weight.data,self.conv2d_3x3.conv.bias.data
+        # 否则不是第一次re_param
+        else:
+            kernel3x3, bias3x3 = self._fuse_bn_tensor(self.conv2d_3x3)
         expansion_kernel3x3, expansion_bias3x3 = self._fuse_bn_tensor(self.expansion_3x3)
         kernel = kernel3x3 + expansion_kernel3x3
         bias = bias3x3 + expansion_bias3x3
-        self.conv2d_3x3.conv.weight.data = kernel
-        self.conv2d_3x3.conv.bias.data = bias
+        new_conv = conv3x3_bias(self.in_planes, self.out_planes, stride=self.stride, groups=self.groups,
+                                dilation=self.dilation)
+        new_conv.weight.data = kernel
+        new_conv.bias.data = bias
+        self.conv2d_3x3.conv = new_conv
+        self.conv2d_3x3.bn = nn.Identity()
+        self.clean_expansion()
 
         # expansion_3x3.conv expansion_3x3.bn clean weight
         # self.clean_expansion()
@@ -143,3 +158,12 @@ def conv1x1(in_planes, out_planes, stride=1):
 def conv3x3_modified(in_planes, out_planes, stride=1, groups=1, dilation=1):
     return Conv3x3_modified(in_planes, out_planes, stride=stride,
                             groups=groups, dilation=dilation)
+
+
+if __name__=='__main__':
+    a=conv3x3_bias(2,2)
+    b = conv3x3_nobias(2, 2)
+    print(a)
+    print(a.bias.data)
+    if a.bias is not None and b.bias is None:
+        print(b)

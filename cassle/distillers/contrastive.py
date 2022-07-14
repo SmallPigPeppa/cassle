@@ -11,11 +11,11 @@ from cassle.losses.simclr import simclr_loss_func
 def contrastive_distill_wrapper(Method=object):
     class ContrastiveDistillWrapper(base_distill_wrapper(Method)):
         def __init__(
-            self,
-            distill_lamb: float,
-            distill_proj_hidden_dim: int,
-            distill_temperature: float,
-            **kwargs
+                self,
+                distill_lamb: float,
+                distill_proj_hidden_dim: int,
+                distill_temperature: float,
+                **kwargs
         ):
             super().__init__(**kwargs)
 
@@ -32,7 +32,7 @@ def contrastive_distill_wrapper(Method=object):
 
         @staticmethod
         def add_model_specific_args(
-            parent_parser: argparse.ArgumentParser,
+                parent_parser: argparse.ArgumentParser,
         ) -> argparse.ArgumentParser:
             parser = parent_parser.add_argument_group("contrastive_distiller")
 
@@ -64,16 +64,16 @@ def contrastive_distill_wrapper(Method=object):
             p2 = self.distill_predictor(z2)
 
             distill_loss = (
-                simclr_distill_loss_func(p1, p2, frozen_z1, frozen_z2, self.distill_temperature)
-                + simclr_distill_loss_func(frozen_z1, frozen_z2, p1, p2, self.distill_temperature)
-            ) / 2
+                                   simclr_distill_loss_func(p1, p2, frozen_z1, frozen_z2, self.distill_temperature)
+                                   + simclr_distill_loss_func(frozen_z1, frozen_z2, p1, p2, self.distill_temperature)
+                           ) / 2
 
-            old_loss=simclr_loss_func(frozen_z1, frozen_z2, self.distill_temperature)
+            old_loss = simclr_loss_func(frozen_z1, frozen_z2, self.distill_temperature)
             self.log("old_loss", old_loss, on_epoch=True, sync_dist=True)
             self.log("train_contrastive_distill_loss", distill_loss, on_epoch=True, sync_dist=True)
 
             if old_loss > out["loss"]:
-                return out["loss"]
+                return out["loss"] + self.distill_lamb * 0.25 * distill_loss
             return out["loss"] + self.distill_lamb * distill_loss
 
     return ContrastiveDistillWrapper

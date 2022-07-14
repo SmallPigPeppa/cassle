@@ -165,5 +165,5 @@ class SimCLR(BaseModel):
         }
         self.log_dict(metrics, on_epoch=True, sync_dist=True)
 
-        out.update({"loss": out["loss"] + nce_loss, "z": [z1, z2]})
+        out.update({"loss": out["loss"] + nce_loss, "z": [z1, z2],"nce_loss":nce_loss,})
         return out

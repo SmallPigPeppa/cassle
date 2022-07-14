@@ -5,7 +5,7 @@ python3 main_continual.py \
     --split_strategy class \
     --task_idx 0 \
     --max_epochs 500 \
-    --num_tasks 5 \
+    --num_tasks 10 \
     --max_epochs 500 \
     --gpus 0 \
     --precision 16 \
@@ -26,7 +26,7 @@ python3 main_continual.py \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
     --name simclr-cifar100 \
-    --project casslev14 \
+    --project casslev17 \
     --entity pigpeppa \
     --wandb \
     --save_checkpoint \

@@ -397,6 +397,8 @@ if __name__=='__main__':
     resnet_m=resnet18()
     resnet_m.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=2, bias=False)
     resnet_m.maxpool = nn.Identity()
+    for name ,m in resnet_m.named_parameters():
+        print(name)
 
     # x=torch.ones([8,3,32,32])
     # y=resnet_m(x)

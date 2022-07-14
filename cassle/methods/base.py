@@ -268,7 +268,7 @@ class BaseModel(pl.LightningModule):
         wd_params = list()
         no_wd_params = list()
         for name, param in self.encoder.named_parameters():
-            if 'bais' in name:
+            if 'bias' in name and 'conv' in name:
                 no_wd_params.append(param)
             else:
                 wd_params.append(param)

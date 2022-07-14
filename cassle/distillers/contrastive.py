@@ -5,6 +5,7 @@ import torch
 from torch import nn
 from cassle.distillers.base import base_distill_wrapper
 from cassle.losses.simclr import simclr_distill_loss_func
+from cassle.losses.simclr import simclr_loss_func
 
 
 def contrastive_distill_wrapper(Method=object):
@@ -67,8 +68,12 @@ def contrastive_distill_wrapper(Method=object):
                 + simclr_distill_loss_func(frozen_z1, frozen_z2, p1, p2, self.distill_temperature)
             ) / 2
 
+            old_loss=simclr_loss_func(frozen_z1, frozen_z2, self.distill_temperature)
+            self.log("old_loss", old_loss, on_epoch=True, sync_dist=True)
             self.log("train_contrastive_distill_loss", distill_loss, on_epoch=True, sync_dist=True)
 
+            if old_loss > out["loss"]:
+                return out["loss"]
             return out["loss"] + self.distill_lamb * distill_loss
 
     return ContrastiveDistillWrapper

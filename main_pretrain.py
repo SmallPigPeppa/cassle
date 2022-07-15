@@ -174,7 +174,7 @@ def main():
     if args.re_paramaterize:
         model.encoder.reparameterize()
 
-
+    model.encoder.clean_expansions()
 
 
     callbacks = []

@@ -30,6 +30,10 @@ class Conv3x3_mofied(nn.Module):
             self.conv2d_3x3.weight.data = self.conv2d_3x3.weight.data+self.expansion_3x3.weight.data
         self.expansion_3x3.weight.data.zero_()
 
+    @torch.no_grad()
+    def clean_expansion(self):
+        nn.init.constant_(self.expansion_3x3.weight.data, 0)
+
     # def get_equivalent_kernel_bias(self):
     #     # bias no use
     #     kernel3x3, _ = self._fuse_bn_tensor(self.conv2d_3x3)

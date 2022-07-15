@@ -25,7 +25,7 @@ python3 main_continual.py \
     --saturation 0.8 \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
-    --name simclr-cifar100-contrastive-0.5 \
+    --name simclr-cifar100-contrastive \
     --project casslev11 \
     --entity pigpeppa \
     --wandb \
@@ -35,5 +35,4 @@ python3 main_continual.py \
     --proj_hidden_dim 2048 \
     --output_dim 256 \
     --distiller contrastive \
-    --disable_knn_eval \
-    --distill_lamb 0.5
+    --disable_knn_eval

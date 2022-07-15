@@ -309,7 +309,7 @@ class BaseModel(pl.LightningModule):
                     normal_params.append(param)
         print(len(slow_params), len(normal_params), len(all_params))
         assert len(slow_params) + len(normal_params) == len(all_params), "Sanity check failed."
-        return [{"name": "slow_params", "params": slow_params, "lr": self.lr*0.1,
+        return [{"name": "slow_params", "params": slow_params, "lr": self.lr * 0.1,
                  "weight_decay": self.weight_decay, },
                 {"name": "normal_params", "params": normal_params, "lr": self.lr,
                  "weight_decay": self.weight_decay, },

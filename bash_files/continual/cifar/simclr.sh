@@ -15,10 +15,10 @@ python3 main_continual.py \
     --eta_lars 0.02 \
     --exclude_bias_n_norm \
     --scheduler warmup_cosine \
-    --lr 0.4 \
+    --lr 1.6 \
     --classifier_lr 0.1 \
     --weight_decay 1e-5 \
-    --batch_size 256 \
+    --batch_size 1024 \
     --num_workers 5 \
     --brightness 0.8 \
     --contrast 0.8 \
@@ -26,7 +26,7 @@ python3 main_continual.py \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
     --name simclr-cifar100 \
-    --project casslev14 \
+    --project casslev21 \
     --entity pigpeppa \
     --wandb \
     --save_checkpoint \

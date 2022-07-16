@@ -27,7 +27,8 @@ def contrastive_distill_wrapper(Method=object):
                 nn.ReLU(),
                 nn.Linear(distill_proj_hidden_dim, output_dim),
             )
-            self.momentum_updater = MomentumUpdater(base_tau_momentum, final_tau_momentum)
+            # self.momentum_updater = MomentumUpdater(base_tau_momentum, final_tau_momentum)
+            self.momentum_updater = MomentumUpdater(0.99, 1.0)
         @staticmethod
         def add_model_specific_args(
             parent_parser: argparse.ArgumentParser,
@@ -83,7 +84,10 @@ def contrastive_distill_wrapper(Method=object):
 
             if self.trainer.global_step > self.last_step:
                 # update momentum encoder and projector
-                momentum_pairs = [(self.encoder, self.momentum_encoder)]
+                # self.frozen_encoder = deepcopy(self.encoder)
+                # self.frozen_projector = deepcopy(self.projector)
+                # [(self.encoder, self.momentum_encoder)]
+                momentum_pairs = [(self.encoder, self.frozen_encoder),(self.projector,self.frozen_projector)]
                 for mp in momentum_pairs:
                     self.momentum_updater.update(*mp)
                 # log tau momentum

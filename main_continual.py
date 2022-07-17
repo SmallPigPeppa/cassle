@@ -105,13 +105,14 @@ if __name__ == "__main__":
     for task_idx in range(start_task_idx, num_tasks):
         print(f"\n#### Starting Task {task_idx} ####")
 
-        task_args = copy.deepcopy(args)
         if task_idx==0:
+            task_args = copy.deepcopy(args)
             task_args["--task_idx"] = str(task_idx)
             task_args = dict_to_list(task_args)
             run_bash_command(task_args)
         else:
             # use expansion
+            task_args = copy.deepcopy(args)
             task_args.pop("--resume_from_checkpoint", None)
             task_args.pop("--pretrained_model", None)
             assert os.path.exists(last_checkpoint_file)
@@ -131,6 +132,7 @@ if __name__ == "__main__":
             run_bash_command(task_args)
 
             # use distill
+            task_args = copy.deepcopy(args)
             task_args.pop("--resume_from_checkpoint", None)
             task_args.pop("--pretrained_model", None)
             assert os.path.exists(last_checkpoint_file)

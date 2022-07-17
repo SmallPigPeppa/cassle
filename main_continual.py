@@ -119,10 +119,10 @@ if __name__ == "__main__":
             ckpt_path = open(last_checkpoint_file).readlines()[0].rstrip()
             task_args["--pretrained_model"] = ckpt_path
 
-            if task_idx in [1,2,3, 4]:
+            if task_idx in [1,3]:
                 task_args['--use_expansion'] = '   '
             # use re_paramaterize after task1
-            if task_idx in [2,3,4]:
+            if task_idx in [2,4]:
                 task_args['--re_paramaterize'] = '   '
 
             if task_idx != 0 and distill_args:

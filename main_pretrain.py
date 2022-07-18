@@ -164,22 +164,38 @@ def main():
         print(f"Loading previous task checkpoint {args.pretrained_model}...")
         state_dict = torch.load(args.pretrained_model, map_location="cpu")["state_dict"]
         model.load_state_dict(state_dict, strict=False)
-    if args.fixed_pretrained_model:
+
+
+    # paramaterize after load weight
+    if not args.fixed_pretrained_model:
+        if args.use_expansion:
+            model.encoder.active_expansion()
+        else:
+            model.encoder.active_expansion(use_expansion=False)
+        if args.re_paramaterize:
+            model.encoder.reparameterize()
+            model.encoder.zero_expansions()
+
+    elif args.fixed_pretrained_model:
         print(f'Modified Loading previous task checkpoint {args.fixed_pretrained_model}...')
+
+        # 旧模型先重参数化，然后不使用expansion
         model2 = MethodClass(**args.__dict__, tasks=tasks if args.split_strategy == "class" else None)
         state_dict = torch.load(args.fixed_pretrained_model, map_location="cpu")["state_dict"]
         model2.load_state_dict(state_dict, strict=False)
+        model2.encoder.reparameterize()
+        model2.encoder.zero_expansions()
+        model2.encoder.active_expansion(use_expansion=False)
+
+        # 新模型先重参数化，然后不使用expansion
+        model.encoder.reparameterize()
+        model.encoder.zero_expansions()
+        model.encoder.active_expansion(use_expansion=False)
+
+        # 将旧模型的encoder 放入新模型的fronzen_encoder
         from copy import deepcopy
         model.frozen_encoder = deepcopy(model2.encoder)
         model.frozen_projector = deepcopy(model2.projector)
-    # paramaterize after load weight
-    if args.use_expansion:
-        model.encoder.active_expansion()
-    else:
-        model.encoder.active_expansion(use_expansion=False)
-
-    if args.re_paramaterize:
-        model.encoder.reparameterize()
 
 
 

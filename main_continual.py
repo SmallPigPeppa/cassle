@@ -115,6 +115,7 @@ if __name__ == "__main__":
             task_args = copy.deepcopy(args)
             task_args.pop("--resume_from_checkpoint", None)
             task_args.pop("--pretrained_model", None)
+            task_args.pop("--fixed_pretrained_model", None)
             assert os.path.exists(last_checkpoint_file)
             ckpt_path = open(last_checkpoint_file).readlines()[0].rstrip()
             task_args["--pretrained_model"] = ckpt_path

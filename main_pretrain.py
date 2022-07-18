@@ -177,7 +177,7 @@ def main():
             model.encoder.zero_expansions()
 
     elif args.fixed_pretrained_model:
-        print(f'Modified Loading previous task checkpoint {args.fixed_pretrained_model}...')
+        print(f'Fixed Loading previous task checkpoint {args.fixed_pretrained_model}...')
 
         # 旧模型先重参数化，然后不使用expansion
         model2 = MethodClass(**args.__dict__, tasks=tasks if args.split_strategy == "class" else None)

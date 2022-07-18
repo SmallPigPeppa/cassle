@@ -164,7 +164,14 @@ def main():
         print(f"Loading previous task checkpoint {args.pretrained_model}...")
         state_dict = torch.load(args.pretrained_model, map_location="cpu")["state_dict"]
         model.load_state_dict(state_dict, strict=False)
-
+    if args.fixed_pretrained_model:
+        print(f'Modified Loading previous task checkpoint {args.fixed_pretrained_model}...')
+        model2 = MethodClass(**args.__dict__, tasks=tasks if args.split_strategy == "class" else None)
+        state_dict = torch.load(args.fixed_pretrained_model, map_location="cpu")["state_dict"]
+        model2.load_state_dict(state_dict, strict=False)
+        from copy import deepcopy
+        model.frozen_encoder = deepcopy(model2.encoder)
+        model.frozen_projector = deepcopy(model2.projector)
     # paramaterize after load weight
     if args.use_expansion:
         model.encoder.active_expansion()
@@ -237,3 +244,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    pretrained_model='/home/admin/code/cassle_v20.0/experiments/2022_07_17_16_18_26-simclr-cifar100/2s9h5qg7/simclr-cifar100-task2-ep=499-2s9h5qg7.ckpt'
+    state_dict = torch.load(pretrained_model, map_location="cpu")["state_dict"]

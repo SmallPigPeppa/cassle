@@ -10,8 +10,8 @@ def base_distill_wrapper(Method=object):
 
             self.output_dim = kwargs["output_dim"]
 
-            self.frozen_encoder = deepcopy(self.encoder)
-            self.frozen_projector = deepcopy(self.projector)
+            # self.frozen_encoder = deepcopy(self.encoder)
+            # self.frozen_projector = deepcopy(self.projector)
 
         def on_train_start(self):
             super().on_train_start()

@@ -105,7 +105,7 @@ if __name__ == "__main__":
     for task_idx in range(start_task_idx, num_tasks):
         print(f"\n#### Starting Task {task_idx} ####")
 
-        if task_idx==0:
+        if task_idx == 0:
             task_args = copy.deepcopy(args)
             task_args["--task_idx"] = str(task_idx)
             task_args = dict_to_list(task_args)
@@ -119,10 +119,10 @@ if __name__ == "__main__":
             ckpt_path = open(last_checkpoint_file).readlines()[0].rstrip()
             task_args["--pretrained_model"] = ckpt_path
 
-            if task_idx in [1,2,3, 4]:
+            if task_idx in [1, 2, 3, 4]:
                 task_args['--use_expansion'] = '   '
             # use re_paramaterize after task1
-            if task_idx in [2,3,4]:
+            if task_idx in [2, 3, 4]:
                 task_args['--re_paramaterize'] = '   '
 
             if task_idx != 0 and distill_args:
@@ -135,11 +135,14 @@ if __name__ == "__main__":
             task_args = copy.deepcopy(args)
             task_args.pop("--resume_from_checkpoint", None)
             task_args.pop("--pretrained_model", None)
+            task_args.pop("--fixed_pretrained_model", None)
             assert os.path.exists(last_checkpoint_file)
+            # use task_n-1 as ckpt
+            fixed_ckpt_path = ckpt_path
             ckpt_path = open(last_checkpoint_file).readlines()[0].rstrip()
+            task_args["--fixed_pretrained_model"] = fixed_ckpt_path
             task_args["--pretrained_model"] = ckpt_path
-            task_args["--distiller"]='contrastive'
+            task_args["--distiller"] = 'contrastive'
             task_args["--task_idx"] = str(task_idx)
             task_args = dict_to_list(task_args)
             run_bash_command(task_args)
-

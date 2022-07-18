@@ -226,13 +226,13 @@ class ResNet(nn.Module):
     def forward(self, x):
         return self._forward_impl(x)
 
-    def active_expansion(self,use_expansion=True):
+    def set_expansions(self, use_expansion=True):
         for module in self.modules():
             if hasattr(module, 'set_expansion'):
                 # print(module)
                 module.set_expansion(use_expansion=use_expansion)
 
-    def reparameterize(self):
+    def re_parameterizes(self):
         for module in self.modules():
             if hasattr(module, 're_parameterize'):
                 # print(module)
@@ -436,14 +436,14 @@ if __name__=='__main__':
     resnet_m.maxpool = nn.Identity()
     input=torch.ones([8,3,32,32])
     # 打开 expansion
-    resnet_m.active_expansion()
+    resnet_m.set_expansions()
     output=resnet_m(input)
     print(output)
     # 重参数化
-    resnet_m.reparameterize()
+    resnet_m.re_parameterizes()
     output=resnet_m(input)
     print(output)
     # 关闭expansion
-    resnet_m.active_expansion(use_expansion=False)
+    resnet_m.set_expansions(use_expansion=False)
     output=resnet_m(input)
     print(output)

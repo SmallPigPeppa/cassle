@@ -140,6 +140,10 @@ if __name__ == "__main__":
             task_args["--pretrained_model"] = ckpt_path
             task_args["--distiller"]='contrastive'
             task_args["--task_idx"] = str(task_idx)
+            # use re_paramaterize after task1
+            if task_idx in [2,3,4]:
+                task_args['--re_paramaterize'] = '   '
+
             task_args = dict_to_list(task_args)
             run_bash_command(task_args)
 

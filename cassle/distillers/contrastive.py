@@ -22,13 +22,13 @@ def contrastive_distill_wrapper(Method=object):
             self.distill_temperature = distill_temperature
             output_dim = kwargs["output_dim"]
 
-            self.distill_predictor = nn.Sequential(
-                nn.Linear(output_dim, distill_proj_hidden_dim),
-                nn.BatchNorm1d(distill_proj_hidden_dim),
-                nn.ReLU(),
-                nn.Linear(distill_proj_hidden_dim, output_dim),
-            )
-
+            # self.distill_predictor = nn.Sequential(
+            #     nn.Linear(output_dim, distill_proj_hidden_dim),
+            #     nn.BatchNorm1d(distill_proj_hidden_dim),
+            #     nn.ReLU(),
+            #     nn.Linear(distill_proj_hidden_dim, output_dim),
+            # )
+            self.distill_predictor=nn.Identity()
         @staticmethod
         def add_model_specific_args(
             parent_parser: argparse.ArgumentParser,

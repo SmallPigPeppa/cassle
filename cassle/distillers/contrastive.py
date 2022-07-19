@@ -56,11 +56,13 @@ def contrastive_distill_wrapper(Method=object):
 
         def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
             out = super().training_step(batch, batch_idx)
-            z1, z2 = out["z"]
-            frozen_z1, frozen_z2 = out["frozen_z"]
+            # z1, z2 = out["z"]
+            # frozen_z1, frozen_z2 = out["frozen_z"]
+            frozen_z1, frozen_z2=out["frozen_feats"]
+            p1,p2=out["feats"]
 
-            p1 = self.distill_predictor(z1)
-            p2 = self.distill_predictor(z2)
+            # p1 = self.distill_predictor(z1)
+            # p2 = self.distill_predictor(z2)
 
             distill_loss = (
                 simclr_distill_loss_func(p1, p2, frozen_z1, frozen_z2, self.distill_temperature)

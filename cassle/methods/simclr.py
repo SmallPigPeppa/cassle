@@ -10,12 +10,12 @@ from cassle.methods.base import BaseModel
 
 class SimCLR(BaseModel):
     def __init__(
-        self,
-        output_dim: int,
-        proj_hidden_dim: int,
-        temperature: float,
-        supervised: bool = False,
-        **kwargs,
+            self,
+            output_dim: int,
+            proj_hidden_dim: int,
+            temperature: float,
+            supervised: bool = False,
+            **kwargs,
     ):
         """Implements SimCLR (https://arxiv.org/abs/2002.05709).
 
@@ -139,7 +139,7 @@ class SimCLR(BaseModel):
             )
         else:
             feats1, feats2 = out["feats"]
-
+            # attentions1, attentions2 = out['attentions']
             z1 = self.projector(feats1)
             z2 = self.projector(feats2)
 

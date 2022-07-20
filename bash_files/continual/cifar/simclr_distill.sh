@@ -4,9 +4,9 @@ python3 main_continual.py \
     --data_dir $DATA_DIR \
     --split_strategy class \
     --task_idx 0 \
-    --max_epochs 500 \
+    --max_epochs 1 \
     --num_tasks 5 \
-    --max_epochs 500 \
+    --max_epochs 1 \
     --gpus 0 \
     --precision 16 \
     --optimizer sgd \
@@ -35,4 +35,5 @@ python3 main_continual.py \
     --proj_hidden_dim 2048 \
     --output_dim 256 \
     --distiller contrastive \
-    --disable_knn_eval
+    --disable_knn_eval \
+    --distill_lamb 1.0

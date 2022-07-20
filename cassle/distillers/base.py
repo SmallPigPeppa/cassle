@@ -40,7 +40,7 @@ def base_distill_wrapper(Method=object):
             frozen_feats2, frozen_attentions2, frozen_z2 = self.frozen_forward(X2)
 
             out.update(
-                {"frozen_feats": [frozen_feats1, frozen_feats2],"frozen_feats":[frozen_attentions1,frozen_attentions2], "frozen_z": [frozen_z1, frozen_z2]}
+                {"frozen_feats": [frozen_feats1, frozen_feats2],"frozen_attentions":[frozen_attentions1,frozen_attentions2], "frozen_z": [frozen_z1, frozen_z2]}
             )
             return out
 

@@ -10,11 +10,11 @@ from cassle.losses.simclr import simclr_distill_loss_func
 def contrastive_distill_wrapper(Method=object):
     class ContrastiveDistillWrapper(base_distill_wrapper(Method)):
         def __init__(
-            self,
-            distill_lamb: float,
-            distill_proj_hidden_dim: int,
-            distill_temperature: float,
-            **kwargs
+                self,
+                distill_lamb: float,
+                distill_proj_hidden_dim: int,
+                distill_temperature: float,
+                **kwargs
         ):
             super().__init__(**kwargs)
 
@@ -28,10 +28,39 @@ def contrastive_distill_wrapper(Method=object):
                 nn.ReLU(),
                 nn.Linear(distill_proj_hidden_dim, output_dim),
             )
+            self.att0_predictor = nn.Sequential(
+                nn.Linear(output_dim, 4096),
+                nn.BatchNorm1d(4096),
+                nn.ReLU(),
+                nn.Linear(4096, output_dim),
+            )
+            self.avgpool0 = nn.AdaptiveAvgPool2d((8, 8))
+            self.att1_predictor = nn.Sequential(
+                nn.Linear(output_dim, 4096),
+                nn.BatchNorm1d(4096),
+                nn.ReLU(),
+                nn.Linear(4096, output_dim),
+            )
+            self.avgpool1 = nn.AdaptiveAvgPool2d((4, 4))
+            self.att2_predictor = nn.Sequential(
+                nn.Linear(output_dim, 4096),
+                nn.BatchNorm1d(4096),
+                nn.ReLU(),
+                nn.Linear(4096, output_dim),
+            )
+            self.avgpool2 = nn.AdaptiveAvgPool2d((2, 2))
+
+            self.att3_predictor = nn.Sequential(
+                nn.Linear(output_dim, 2048),
+                nn.BatchNorm1d(2048),
+                nn.ReLU(),
+                nn.Linear(2048, output_dim),
+            )
+            self.avgpool3 = nn.AdaptiveAvgPool2d((1, 1))
 
         @staticmethod
         def add_model_specific_args(
-            parent_parser: argparse.ArgumentParser,
+                parent_parser: argparse.ArgumentParser,
         ) -> argparse.ArgumentParser:
             parser = parent_parser.add_argument_group("contrastive_distiller")
 
@@ -54,21 +83,79 @@ def contrastive_distill_wrapper(Method=object):
             ]
             return super().learnable_params + extra_learnable_params
 
+        # def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
+        #     out = super().training_step(batch, batch_idx)
+        #     z1, z2 = out["z"]
+        #     frozen_z1, frozen_z2 = out["frozen_z"]
+        #
+        #     p1 = self.distill_predictor(z1)
+        #     p2 = self.distill_predictor(z2)
+        #
+        #     distill_loss = (
+        #         simclr_distill_loss_func(p1, p2, frozen_z1, frozen_z2, self.distill_temperature)
+        #         + simclr_distill_loss_func(frozen_z1, frozen_z2, p1, p2, self.distill_temperature)
+        #     ) / 2
+        #
+        #     self.log("train_contrastive_distill_loss", distill_loss, on_epoch=True, sync_dist=True)
+        #
+        #     return out["loss"] + self.distill_lamb * distill_loss
+
         def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
             out = super().training_step(batch, batch_idx)
             z1, z2 = out["z"]
             frozen_z1, frozen_z2 = out["frozen_z"]
 
-            p1 = self.distill_predictor(z1)
-            p2 = self.distill_predictor(z2)
+            z1 = self.distill_predictor(z1)
+            z2 = self.distill_predictor(z2)
 
             distill_loss = (
-                simclr_distill_loss_func(p1, p2, frozen_z1, frozen_z2, self.distill_temperature)
-                + simclr_distill_loss_func(frozen_z1, frozen_z2, p1, p2, self.distill_temperature)
-            ) / 2
+                                   simclr_distill_loss_func(z1, z2, frozen_z1, frozen_z2, self.distill_temperature)
+                                   + simclr_distill_loss_func(frozen_z1, frozen_z2, z1, z2, self.distill_temperature)
+                           ) / 2
 
             self.log("train_contrastive_distill_loss", distill_loss, on_epoch=True, sync_dist=True)
 
-            return out["loss"] + self.distill_lamb * distill_loss
+            attentions1, attentions2 = out["attentisons"]
+            frozen_attentions1, frozen_attentions2 = out["frozen_attentions"]
+            att0_1, att0_2 = attentions1[0], attentions2[0]
+            att1_1, att1_2 = attentions1[1], attentions2[1]
+            att2_1, att2_2 = attentions1[2], attentions2[2]
+            att3_1, att3_2 = attentions1[3], attentions2[3]
+            frozen_att0_1, frozen_att0_2 = frozen_attentions1[0], frozen_attentions2[0]
+            frozen_att1_1, frozen_att1_2 = frozen_attentions1[1], frozen_attentions2[1]
+            frozen_att2_1, frozen_att2_2 = frozen_attentions1[2], frozen_attentions2[2]
+            frozen_att3_1, frozen_att3_2 = frozen_attentions1[3], frozen_attentions2[3]
+
+            att0_1=self.att0_predictor(att0_1)
+            att0_2=self.att0_predictor(att0_2)
+            att1_1=self.att1_predictor(att1_1)
+            att1_2=self.att1_predictor(att1_2)
+            att2_1=self.att0_predictor(att2_1)
+            att2_2=self.att0_predictor(att2_2)
+            att3_1=self.att0_predictor(att3_1)
+            att3_2=self.att0_predictor(att3_2)
+
+            att0_loss = (
+                                   simclr_distill_loss_func(att0_1, att0_2, frozen_att0_1, frozen_att0_2, self.distill_temperature)
+                                   + simclr_distill_loss_func(frozen_att0_1, frozen_att0_2, att0_1, att0_2, self.distill_temperature)
+                           ) / 2
+            att1_loss = (
+                                   simclr_distill_loss_func(att1_1, att1_2, frozen_att1_1, frozen_att1_2, self.distill_temperature)
+                                   + simclr_distill_loss_func(frozen_att1_1, frozen_att1_2, att1_1, att1_2, self.distill_temperature)
+                           ) / 2
+            att2_loss = (
+                                   simclr_distill_loss_func(att2_1, att2_2, frozen_att2_1, frozen_att2_2, self.distill_temperature)
+                                   + simclr_distill_loss_func(frozen_att2_1, frozen_att2_2, att2_1, att2_2, self.distill_temperature)
+                           ) / 2
+            att3_loss = (
+                                   simclr_distill_loss_func(att3_1, att3_2, frozen_att3_1, frozen_att3_2, self.distill_temperature)
+                                   + simclr_distill_loss_func(frozen_att3_1, frozen_att3_2, att3_1, att3_2, self.distill_temperature)
+                           ) / 2
+
+            self.log("att0_loss", att0_loss, on_epoch=True, sync_dist=True)
+            self.log("att1_loss", att1_loss, on_epoch=True, sync_dist=True)
+            self.log("att2_loss", att2_loss, on_epoch=True, sync_dist=True)
+            self.log("att3_loss", att3_loss, on_epoch=True, sync_dist=True)
+            return out["loss"] + self.distill_lamb * (distill_loss+att0_loss+att1_loss+att2_loss+att3_loss)
 
     return ContrastiveDistillWrapper

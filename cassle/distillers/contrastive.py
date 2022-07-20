@@ -256,5 +256,5 @@ def contrastive_distill_wrapper(Method=object):
             loss_spatial = (loss_width + loss_height)/2.
             lamb_c = self.lamb_c / len(attentions1)
             lamb_f = self.lamb_f
-            return out["loss"] + lamb_c * loss_spatial + lamb_f * (loss_flat1+loss_flat2)/2.
+            return out["loss"] + lamb_c * loss_spatial + lamb_f * (loss_flat1+loss_flat2)/2.+self.distill_lamb * distill_loss
     return ContrastiveDistillWrapper

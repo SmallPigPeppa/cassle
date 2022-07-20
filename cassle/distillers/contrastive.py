@@ -1,6 +1,6 @@
 import argparse
 from typing import Any, List, Sequence
-
+import torch.nn.functional as F
 import torch
 from torch import nn
 from cassle.distillers.base import base_distill_wrapper
@@ -59,6 +59,8 @@ def contrastive_distill_wrapper(Method=object):
             self.avgpool3 = nn.AdaptiveAvgPool2d((1, 1))
             self.att_predictor=[self.att0_predictor,self.att1_predictor,self.att2_predictor,self.att3_predictor]
             self.avgpool=[self.avgpool0,self.avgpool1,self.avgpool2,self.avgpool3]
+            self.lamb_c=8.0
+            self.lamb_f=10.0
 
         @staticmethod
         def add_model_specific_args(
@@ -154,6 +156,45 @@ def contrastive_distill_wrapper(Method=object):
         # self.log("att2_loss", att2_loss, on_epoch=True, sync_dist=True)
         # self.log("att3_loss", att3_loss, on_epoch=True, sync_dist=True)
 
+        # def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
+        #     out = super().training_step(batch, batch_idx)
+        #     z1, z2 = out["z"]
+        #     frozen_z1, frozen_z2 = out["frozen_z"]
+        #
+        #     z1 = self.distill_predictor(z1)
+        #     z2 = self.distill_predictor(z2)
+        #
+        #     distill_loss = (
+        #                            simclr_distill_loss_func(z1, z2, frozen_z1, frozen_z2, self.distill_temperature)
+        #                            + simclr_distill_loss_func(frozen_z1, frozen_z2, z1, z2, self.distill_temperature)
+        #                    ) / 2
+        #
+        #     self.log("train_contrastive_distill_loss", distill_loss, on_epoch=True, sync_dist=True)
+        #
+        #     attentions1, attentions2 = out["attentions"]
+        #     frozen_attentions1, frozen_attentions2 = out["frozen_attentions"]
+        #     att_loss=[]
+        #     for i,(att1, att2,frozen_att1,frozen_att2) in enumerate(zip(attentions1, attentions2,frozen_attentions1, frozen_attentions2)):
+        #         att1=self.avgpool[i](att1)
+        #         att2 = self.avgpool[i](att2)
+        #         att1=torch.flatten(att1,1)
+        #         att2 = torch.flatten(att2, 1)
+        #         frozen_att1=self.avgpool[i](frozen_att1)
+        #         frozen_att2 = self.avgpool[i](frozen_att2)
+        #         frozen_att1=torch.flatten(frozen_att1,1)
+        #         frozen_att2 = torch.flatten(frozen_att2, 1)
+        #
+        #         att1=self.att_predictor[i](att1)
+        #         att2 = self.att_predictor[i](att2)
+        #
+        #         att_loss.append((
+        #                            simclr_distill_loss_func(att1, att2, frozen_att1, frozen_att2, self.distill_temperature)
+        #                            + simclr_distill_loss_func(frozen_att1, frozen_att2, att1, att2, self.distill_temperature)
+        #                    ) / 2)
+        #         self.log(f"att{i}_loss", att_loss[i], on_epoch=True, sync_dist=True)
+        #     # return out["loss"] + self.distill_lamb * (distill_loss+att_loss[0]+att_loss[1]+att_loss[2]+att_loss[3])
+        #     return out["loss"] + self.distill_lamb * (distill_loss)
+
         def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
             out = super().training_step(batch, batch_idx)
             z1, z2 = out["z"]
@@ -171,26 +212,49 @@ def contrastive_distill_wrapper(Method=object):
 
             attentions1, attentions2 = out["attentions"]
             frozen_attentions1, frozen_attentions2 = out["frozen_attentions"]
-            att_loss=[]
-            for i,(att1, att2,frozen_att1,frozen_att2) in enumerate(zip(attentions1, attentions2,frozen_attentions1, frozen_attentions2)):
-                att1=self.avgpool[i](att1)
-                att2 = self.avgpool[i](att2)
-                att1=torch.flatten(att1,1)
-                att2 = torch.flatten(att2, 1)
-                frozen_att1=self.avgpool[i](frozen_att1)
-                frozen_att2 = self.avgpool[i](frozen_att2)
-                frozen_att1=torch.flatten(frozen_att1,1)
-                frozen_att2 = torch.flatten(frozen_att2, 1)
+            att_loss = []
+            features1 = self.avgpool[3](attentions1[3])
+            features1 = torch.flatten(features1, 1)
+            features1 = features1 / torch.norm(features1, 2, 1).unsqueeze(1)
+            old_features1=self.avgpool[3](frozen_attentions1[3])
+            old_features1 = torch.flatten(old_features1, 1)
+            old_features1 = old_features1 / torch.norm(old_features1, 2, 1).unsqueeze(1)
+            features2 = self.avgpool[3](attentions2[3])
+            features2 = torch.flatten(features2, 1)
+            features2 = features2 / torch.norm(features2, 2, 1).unsqueeze(1)
+            old_features2=self.avgpool[3](frozen_attentions2[3])
+            old_features2 = torch.flatten(old_features2, 1)
+            old_features2 = old_features1 / torch.norm(old_features2, 2, 1).unsqueeze(1)
 
-                att1=self.att_predictor[i](att1)
-                att2 = self.att_predictor[i](att2)
+            loss_flat1 = (features1 - old_features1).norm(2).pow(2).sum() / 256
+            loss_flat2 = (features2 - old_features2).norm(2).pow(2).sum() / 256
+            loss_width, loss_height = 0, 0
+            for i, (att1, att2, frozen_att1, frozen_att2) in enumerate(
+                    zip(attentions1, attentions2, frozen_attentions1, frozen_attentions2)):
+                att1=att1.pow(2)
+                att2 = att2.pow(2)
+                frozen_att1=frozen_att1.pow(2)
+                frozen_att2 = frozen_att2.pow(2)
+                # act: (B x C x H x W)
+                act_width1 = F.normalize(att1.sum(dim=3).view(att1.shape[0], -1), dim=1, p=2)
+                old_act_width1 = F.normalize(frozen_att1.sum(dim=3).view(frozen_att1.shape[0], -1), dim=1, p=2)
+                loss_width += torch.mean(torch.frobenius_norm(act_width1 - old_act_width1, dim=-1))
+                act_width2 = F.normalize(att2.sum(dim=3).view(att2.shape[0], -1), dim=1, p=2)
+                old_act_width2 = F.normalize(frozen_att2.sum(dim=3).view(frozen_att2.shape[0], -1), dim=1, p=2)
+                loss_width += torch.mean(torch.frobenius_norm(act_width2 - old_act_width2, dim=-1))
 
-                att_loss.append((
-                                   simclr_distill_loss_func(att1, att2, frozen_att1, frozen_att2, self.distill_temperature)
-                                   + simclr_distill_loss_func(frozen_att1, frozen_att2, att1, att2, self.distill_temperature)
-                           ) / 2)
-                self.log(f"att{i}_loss", att_loss[i], on_epoch=True, sync_dist=True)
+
+                act_height1 = F.normalize(att1.sum(dim=2).view(att1.shape[0], -1), dim=1, p=2)
+                old_act_height1= F.normalize(frozen_att1.sum(dim=2).view(frozen_att1.shape[0], -1), dim=1, p=2)
+                loss_width += torch.mean(torch.frobenius_norm(act_height1 - old_act_height1, dim=-1))
+                act_height2 = F.normalize(att2.sum(dim=2).view(att2.shape[0], -1), dim=1, p=2)
+                old_act_height2 = F.normalize(frozen_att2.sum(dim=2).view(frozen_att2.shape[0], -1), dim=1, p=2)
+                loss_width += torch.mean(torch.frobenius_norm(act_height2 - old_act_height2, dim=-1))
+
+                # self.log(f"att{i}_loss", att_loss[i], on_epoch=True, sync_dist=True)
             # return out["loss"] + self.distill_lamb * (distill_loss+att_loss[0]+att_loss[1]+att_loss[2]+att_loss[3])
-            return out["loss"] + self.distill_lamb * (distill_loss)
-
+            loss_spatial = (loss_width + loss_height)/2.
+            lamb_c = self.lamb_c / len(attentions1)
+            lamb_f = self.lamb_f
+            return out["loss"] + lamb_c * loss_spatial + lamb_f * (loss_flat1+loss_flat2)/2.
     return ContrastiveDistillWrapper

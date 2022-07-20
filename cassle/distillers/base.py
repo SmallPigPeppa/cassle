@@ -28,8 +28,8 @@ def base_distill_wrapper(Method=object):
 
         @torch.no_grad()
         def frozen_forward(self, X):
-            out = self.frozen_encoder(X)
-            return out['feats'], out['attentions'], self.frozen_projector(out)
+            feats,attentions = self.frozen_encoder(X)
+            return feats, attentions, self.frozen_projector(feats)
 
         def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
             _, (X1, X2), _ = batch[f"task{self.current_task_idx}"]

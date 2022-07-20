@@ -146,6 +146,6 @@ if __name__ == "__main__":
             task_args["--distiller"] = 'contrastive'
             task_args["--task_idx"] = str(task_idx)
             task_args['--distill_lamb']='2.0'
-            task_args['--lr']='0.2'
+            # task_args['--lr']='0.2'
             task_args = dict_to_list(task_args)
             run_bash_command(task_args)

@@ -28,19 +28,19 @@ def base_distill_wrapper(Method=object):
 
         @torch.no_grad()
         def frozen_forward(self, X):
-            feats = self.frozen_encoder(X)
-            return feats, self.frozen_projector(feats)
+            out = self.frozen_encoder(X)
+            return out['feats'], out['attentions'], self.frozen_projector(out)
 
         def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
             _, (X1, X2), _ = batch[f"task{self.current_task_idx}"]
 
             out = super().training_step(batch, batch_idx)
 
-            frozen_feats1, frozen_z1 = self.frozen_forward(X1)
-            frozen_feats2, frozen_z2 = self.frozen_forward(X2)
+            frozen_feats1, frozen_attentions1, frozen_z1 = self.frozen_forward(X1)
+            frozen_feats2, frozen_attentions2, frozen_z2 = self.frozen_forward(X2)
 
             out.update(
-                {"frozen_feats": [frozen_feats1, frozen_feats2], "frozen_z": [frozen_z1, frozen_z2]}
+                {"frozen_feats": [frozen_feats1, frozen_feats2],"frozen_feats":[frozen_attentions1,frozen_attentions2], "frozen_z": [frozen_z1, frozen_z2]}
             )
             return out
 

@@ -3,7 +3,7 @@ python3 main_continual.py \
     --encoder resnet18 \
     --data_dir $DATA_DIR \
     --split_strategy class \
-    --task_idx 0 \
+    --task_idx 1 \
     --max_epochs 500 \
     --num_tasks 5 \
     --max_epochs 500 \
@@ -25,8 +25,8 @@ python3 main_continual.py \
     --saturation 0.8 \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
-    --name simclr-cifar100-contrastive \
-    --project cassle-official \
+    --name simclr-cifar100-contrastive-v0.0 \
+    --project cassle-podnet \
     --entity pigpeppa \
     --wandb \
     --save_checkpoint \
@@ -35,4 +35,5 @@ python3 main_continual.py \
     --proj_hidden_dim 2048 \
     --output_dim 256 \
     --distiller contrastive \
-    --disable_knn_eval
+    --disable_knn_eval \
+    --pretrained_model $PRETRAINED_PATH

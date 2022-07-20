@@ -191,6 +191,6 @@ def contrastive_distill_wrapper(Method=object):
                            ) / 2)
                 self.log(f"att{i}_loss", att_loss[i], on_epoch=True, sync_dist=True)
             # return out["loss"] + self.distill_lamb * (distill_loss+att_loss[0]+att_loss[1]+att_loss[2]+att_loss[3])
-            return out["loss"] + self.distill_lamb * (att_loss[3])
+            return out["loss"] + self.distill_lamb * (distill_loss)
 
     return ContrastiveDistillWrapper

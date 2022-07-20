@@ -29,32 +29,32 @@ def contrastive_distill_wrapper(Method=object):
                 nn.Linear(distill_proj_hidden_dim, output_dim),
             )
             self.att0_predictor = nn.Sequential(
-                nn.Linear(output_dim, 4096),
-                nn.BatchNorm1d(4096),
+                nn.Linear(4096, 8192),
+                nn.BatchNorm1d(8192),
                 nn.ReLU(),
-                nn.Linear(4096, output_dim),
+                nn.Linear(8192, 4096),
             )
             self.avgpool0 = nn.AdaptiveAvgPool2d((8, 8))
             self.att1_predictor = nn.Sequential(
-                nn.Linear(output_dim, 4096),
+                nn.Linear(2048, 4096),
                 nn.BatchNorm1d(4096),
                 nn.ReLU(),
-                nn.Linear(4096, output_dim),
+                nn.Linear(4096, 2048),
             )
             self.avgpool1 = nn.AdaptiveAvgPool2d((4, 4))
             self.att2_predictor = nn.Sequential(
-                nn.Linear(output_dim, 4096),
+                nn.Linear(1024, 4096),
                 nn.BatchNorm1d(4096),
                 nn.ReLU(),
-                nn.Linear(4096, output_dim),
+                nn.Linear(4096, 1024),
             )
             self.avgpool2 = nn.AdaptiveAvgPool2d((2, 2))
 
             self.att3_predictor = nn.Sequential(
-                nn.Linear(output_dim, 2048),
+                nn.Linear(512, 2048),
                 nn.BatchNorm1d(2048),
                 nn.ReLU(),
-                nn.Linear(2048, output_dim),
+                nn.Linear(2048, 512),
             )
             self.avgpool3 = nn.AdaptiveAvgPool2d((1, 1))
             self.att_predictor=[self.att0_predictor,self.att1_predictor,self.att2_predictor,self.att3_predictor]

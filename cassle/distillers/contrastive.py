@@ -115,7 +115,7 @@ def contrastive_distill_wrapper(Method=object):
 
             self.log("train_contrastive_distill_loss", distill_loss, on_epoch=True, sync_dist=True)
 
-            attentions1, attentions2 = out["attentisons"]
+            attentions1, attentions2 = out["attentions"]
             frozen_attentions1, frozen_attentions2 = out["frozen_attentions"]
             att0_1, att0_2 = attentions1[0], attentions2[0]
             att1_1, att1_2 = attentions1[1], attentions2[1]

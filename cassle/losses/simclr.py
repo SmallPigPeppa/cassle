@@ -50,7 +50,9 @@ def simclr_distill_loss_func(
 
 
     if valid_pos is not None:
-        mean_log_prob_pos = (valid_pos * log_prob).sum(1) / pos_mask.sum(1)
+        tmp = torch.zeros((2 * b, 2 * b), dtype=torch.bool, device=device)
+        tmp[range(len(pos_mask)), range(len(pos_mask))] = valid_pos
+        mean_log_prob_pos = (tmp * log_prob).sum(1) / pos_mask.sum(1)
     else:
         mean_log_prob_pos = (pos_mask * log_prob).sum(1) / pos_mask.sum(1)
 

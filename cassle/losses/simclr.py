@@ -4,13 +4,13 @@ from typing import Optional
 
 
 def simclr_distill_loss_func(
-    p1: torch.Tensor,
-    p2: torch.Tensor,
-    z1: torch.Tensor,
-    z2: torch.Tensor,
-    temperature: float = 0.1,
+        p1: torch.Tensor,
+        p2: torch.Tensor,
+        z1: torch.Tensor,
+        z2: torch.Tensor,
+        temperature: float = 0.1,
+        valid_pos=None
 ) -> torch.Tensor:
-
     device = z1.device
 
     b = z1.size(0)
@@ -25,6 +25,9 @@ def simclr_distill_loss_func(
     # positive mask are matches i, j (i from aug1, j from aug2), where i == j and matches j, i
     pos_mask = torch.zeros((2 * b, 2 * b), dtype=torch.bool, device=device)
     pos_mask.fill_diagonal_(True)
+    # if we have extra "positives"
+    if valid_pos is not None:
+        pos_mask[range(len(pos_mask)), range(len(pos_mask))] = valid_pos
 
     # all matches excluding the main diagonal
     logit_mask = torch.ones_like(pos_mask, device=device)
@@ -43,10 +46,10 @@ def simclr_distill_loss_func(
 
 
 def simclr_loss_func(
-    z1: torch.Tensor,
-    z2: torch.Tensor,
-    temperature: float = 0.1,
-    extra_pos_mask: Optional[torch.Tensor] = None,
+        z1: torch.Tensor,
+        z2: torch.Tensor,
+        temperature: float = 0.1,
+        extra_pos_mask: Optional[torch.Tensor] = None,
 ) -> torch.Tensor:
     """Computes SimCLR's loss given batch of projected features z1 from view 1 and
     projected features z2 from view 2.
@@ -95,7 +98,7 @@ def simclr_loss_func(
 
 
 def manual_simclr_loss_func(
-    z: torch.Tensor, pos_mask: torch.Tensor, neg_mask: torch.Tensor, temperature: float = 0.1
+        z: torch.Tensor, pos_mask: torch.Tensor, neg_mask: torch.Tensor, temperature: float = 0.1
 ) -> torch.Tensor:
     """Manually computes SimCLR's loss given batch of projected features z
     from different views, a positive boolean mask of all positives and

@@ -70,13 +70,34 @@ def contrastive_distill_wrapper(Method=object):
             pos_logits = logits * pos_mask
             return pos_logits.sum(1)
 
+        # def get_positive_logits(self, z1, z2):
+        #     device = z1.device
+        #     b = z1.size(0)
+        #     z = torch.cat((z1, z2), dim=0)
+        #     z = F.normalize(z, dim=-1)
+        #     logits = torch.einsum("if, jf -> ij", z, z) / self.distill_temperature
+        #     pos_mask = torch.zeros((2 * b, 2 * b), dtype=torch.bool, device=device)
+        #     pos_mask[:, b:].fill_diagonal_(True)
+        #     pos_mask[b:, :].fill_diagonal_(True)
+        #     logit_mask = torch.ones_like(pos_mask, device=device).fill_diagonal_(0)
+        #     logits = torch.exp(logits)
+        #     logits = logits / (logits * logit_mask).sum(1, keepdim=True)
+        #     pos_logits = logits * pos_mask
+        #     return pos_logits
+
+        # def get_valid_mask(self, z1, z2, frozen_z1, frozen_z2):
+        #     pos_logits_new = self.get_positive_logits(z1, z2)
+        #     pos_logits_old = self.get_positive_logits(frozen_z1, frozen_z2)
+        #     b = z1.size(0)
+        #     mask1 = pos_logits_old[:b] > pos_logits_new[:b]
+        #     mask2 = pos_logits_old[b:2 * b] > pos_logits_new[b:2 * b]
+        #     valid_mask = mask1 | mask2
+        #     return valid_mask
+
         def get_valid_mask(self, z1, z2, frozen_z1, frozen_z2):
             pos_logits_new = self.get_positive_logits(z1, z2)
             pos_logits_old = self.get_positive_logits(frozen_z1, frozen_z2)
-            b = z1.size(0)
-            mask1 = pos_logits_old[:b] > pos_logits_new[:b]
-            mask2 = pos_logits_old[b:2 * b] > pos_logits_new[b:2 * b]
-            valid_mask = mask1 | mask2
+            valid_mask=pos_logits_old>=pos_logits_new
             return valid_mask
 
         def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
@@ -87,15 +108,16 @@ def contrastive_distill_wrapper(Method=object):
             p2 = self.distill_predictor(z2)
 
             valid_mask=self.get_valid_mask(p1,p2,frozen_z1,frozen_z2)
-            p1=p1[valid_mask]
-            p2=p2[valid_mask]
-            frozen_z1=frozen_z1[valid_mask]
-            frozen_z2 = frozen_z2[valid_mask]
-            self.log("valid_sample", p1.size(0), on_epoch=True, sync_dist=True)
-            if p1.size(0) >0:
+            valid_mask=valid_mask.repeat(2)
+            # p1=p1[valid_mask]
+            # p2=p2[valid_mask]
+            # frozen_z1=frozen_z1[valid_mask]
+            # frozen_z2 = frozen_z2[valid_mask]
+            self.log("valid_sample", sum(valid_mask), on_epoch=True, sync_dist=True)
+            if sum(valid_mask) >0:
                 distill_loss = (
-                                       simclr_distill_loss_func(p1, p2, frozen_z1, frozen_z2, self.distill_temperature)
-                                       + simclr_distill_loss_func(frozen_z1, frozen_z2, p1, p2, self.distill_temperature)
+                                       simclr_distill_loss_func(p1, p2, frozen_z1, frozen_z2, self.distill_temperature,valid_pos=valid_mask)
+                                       + simclr_distill_loss_func(frozen_z1, frozen_z2, p1, p2, self.distill_temperature,valid_pos=valid_mask)
                                ) / 2
             else:
                 distill_loss = 0.

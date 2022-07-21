@@ -137,11 +137,19 @@ if __name__ == '__main__':
     B=get_positive_logits(b1,b2)
     print(A)
     print(B)
-    c1=A[:2]>B[:2]
+    c1=A[:2]>A[:2]
     print(c1)
-    c2=A[2:4]>B[2:4]
+    c2=A[2:4]>=B[2:4]
     print(c2)
     print(c1|c2)
     print(a1)
     print(a1[c1|c2])
     print(a1[False,False])
+    print(sum(c2))
+    a=torch.tensor([[True,True],[True,True]])
+    b = torch.tensor([False,False])
+    print(a)
+    a[range(len(a)), range(len(a))] = b
+    print(a)
+
+

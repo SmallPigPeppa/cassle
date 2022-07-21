@@ -156,7 +156,7 @@ if __name__ == "__main__":
             if task_idx != 0 and task_idx != start_task_idx:
                 task_args.pop("--resume_from_checkpoint", None)
                 task_args.pop("--pretrained_model", None)
-                task_args.pop("--fixed_pretrained_model", None)
+                # task_args.pop("--fixed_pretrained_model", None)
                 assert os.path.exists(last_checkpoint_file)
                 ckpt_path = open(last_checkpoint_file).readlines()[0].rstrip()
                 task_args["--pretrained_model"] = ckpt_path
@@ -164,7 +164,7 @@ if __name__ == "__main__":
             # ckpt_set.append(ckpt_path)
             # task_args["--fixed_pretrained_model"] = ckpt_set[-1]
             # use task_n-1 as ckpt
-            task_args["--fixed_pretrained_model"] = '/home/admin/code/cassle_v32.0/experiments/2022_07_20_21_07_33-simclr-cifar100/2l9dhj6d/simclr-cifar100-task2-ep=499-2l9dhj6d.ckpt'
+            # task_args["--fixed_pretrained_model"] = '/home/admin/code/cassle_v32.0/experiments/2022_07_20_21_07_33-simclr-cifar100/2l9dhj6d/simclr-cifar100-task2-ep=499-2l9dhj6d.ckpt'
             task_args["--distiller"] = 'contrastive'
             task_args["--task_idx"] = str(task_idx)
             task_args['--re_paramaterize'] = '   '

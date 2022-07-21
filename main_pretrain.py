@@ -181,8 +181,8 @@ def main():
 
         # 旧模型先重参数化，然后不使用expansion
         model2 = MethodClass(**args.__dict__, tasks=tasks if args.split_strategy == "class" else None)
-        state_dict = torch.load(args.fixed_pretrained_model, map_location="cpu")["state_dict"]
-        model2.load_state_dict(state_dict, strict=False)
+        state_dict2 = torch.load(args.fixed_pretrained_model, map_location="cpu")["state_dict"]
+        model2.load_state_dict(state_dict2, strict=False)
         model2.encoder.reparameterize()
         model2.encoder.zero_expansions()
         model2.encoder.active_expansion(use_expansion=False)

@@ -30,7 +30,12 @@ def simclr_distill_loss_func(
         # print(pos_mask.shape)
         # print(len(pos_mask))
         # print(valid_pos.shape)
+        print('###########################')
+        print(valid_pos.sum())
+        print(pos_mask.sum())
         pos_mask[range(len(pos_mask)), range(len(pos_mask))] = valid_pos
+        print(pos_mask.sum())
+        print('###########################')
 
     # all matches excluding the main diagonal
     logit_mask = torch.ones_like(pos_mask, device=device)

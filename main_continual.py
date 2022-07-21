@@ -102,6 +102,7 @@ if __name__ == "__main__":
     #     run_bash_command(task_args)
 
     # main task loop
+    ckpt_set=[]
     for task_idx in range(start_task_idx, num_tasks):
         print(f"\n#### Starting Task {task_idx} ####")
 
@@ -113,13 +114,12 @@ if __name__ == "__main__":
         elif task_idx ==1:
             # use expansion
             task_args = copy.deepcopy(args)
-            # if task_idx != 0 and task_idx != start_task_idx:
-            task_args.pop("--resume_from_checkpoint", None)
-            task_args.pop("--pretrained_model", None)
-            assert os.path.exists(last_checkpoint_file)
-            ckpt_path = open(last_checkpoint_file).readlines()[0].rstrip()
-            task_args["--pretrained_model"] = ckpt_path
-
+            if task_idx != 0 and task_idx != start_task_idx:
+                task_args.pop("--resume_from_checkpoint", None)
+                task_args.pop("--pretrained_model", None)
+                assert os.path.exists(last_checkpoint_file)
+                ckpt_path = open(last_checkpoint_file).readlines()[0].rstrip()
+                task_args["--pretrained_model"] = ckpt_path
             # task_args.pop("--resume_from_checkpoint", None)
             # task_args.pop("--pretrained_model", None)
             # task_args.pop("--fixed_pretrained_model", None)
@@ -152,11 +152,14 @@ if __name__ == "__main__":
             task_args = dict_to_list(task_args)
             run_bash_command(task_args)
         else:
-            task_args = copy.deepcopy(args)
-            task_args.pop("--resume_from_checkpoint", None)
-            task_args.pop("--pretrained_model", None)
-            task_args.pop("--fixed_pretrained_model", None)
-            assert os.path.exists(last_checkpoint_file)
+            if task_idx != 0 and task_idx != start_task_idx:
+                task_args = copy.deepcopy(args)
+                task_args.pop("--resume_from_checkpoint", None)
+                task_args.pop("--pretrained_model", None)
+                task_args.pop("--fixed_pretrained_model", None)
+                assert os.path.exists(last_checkpoint_file)
+            ckpt_set.append(ckpt_path)
+            task_args["--fixed_pretrained_model"] = ckpt_set[-1]
             # use task_n-1 as ckpt
             ckpt_path = open(last_checkpoint_file).readlines()[0].rstrip()
             task_args["--pretrained_model"] = ckpt_path

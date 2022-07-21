@@ -5,16 +5,17 @@ import torch
 from torch import nn
 from cassle.distillers.base import base_distill_wrapper
 from cassle.losses.simclr import simclr_distill_loss_func
+import torch.nn.functional as F
 
 
 def contrastive_distill_wrapper(Method=object):
     class ContrastiveDistillWrapper(base_distill_wrapper(Method)):
         def __init__(
-            self,
-            distill_lamb: float,
-            distill_proj_hidden_dim: int,
-            distill_temperature: float,
-            **kwargs
+                self,
+                distill_lamb: float,
+                distill_proj_hidden_dim: int,
+                distill_temperature: float,
+                **kwargs
         ):
             super().__init__(**kwargs)
 
@@ -31,7 +32,7 @@ def contrastive_distill_wrapper(Method=object):
 
         @staticmethod
         def add_model_specific_args(
-            parent_parser: argparse.ArgumentParser,
+                parent_parser: argparse.ArgumentParser,
         ) -> argparse.ArgumentParser:
             parser = parent_parser.add_argument_group("contrastive_distiller")
 
@@ -54,18 +55,50 @@ def contrastive_distill_wrapper(Method=object):
             ]
             return super().learnable_params + extra_learnable_params
 
+        def get_positive_logits(self, z1, z2):
+            device = z1.device
+            b = z1.size(0)
+            z = torch.cat((z1, z2), dim=0)
+            z = F.normalize(z, dim=-1)
+            logits = torch.einsum("if, jf -> ij", z, z) / self.distill_temperature
+            pos_mask = torch.zeros((2 * b, 2 * b), dtype=torch.bool, device=device)
+            pos_mask[:, b:].fill_diagonal_(True)
+            pos_mask[b:, :].fill_diagonal_(True)
+            logit_mask = torch.ones_like(pos_mask, device=device).fill_diagonal_(0)
+            logits = torch.exp(logits)
+            logits = logits / (logits * logit_mask).sum(1, keepdim=True)
+            pos_logits = logits * pos_mask
+            return pos_logits.sum(1)
+
+        def get_valid_mask(self, z1, z2, frozen_z1, frozen_z2):
+            pos_logits_new = self.get_positive_logits(z1, z2)
+            pos_logits_old = self.get_positive_logits(frozen_z1, frozen_z2)
+            b = z1.size(0)
+            mask1 = pos_logits_old[:b] > pos_logits_new[:b]
+            mask2 = pos_logits_old[b:2 * b] > pos_logits_new[b:2 * b]
+            valid_mask = mask1 | mask2
+            return valid_mask
+
         def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
             out = super().training_step(batch, batch_idx)
             z1, z2 = out["z"]
             frozen_z1, frozen_z2 = out["frozen_z"]
-
             p1 = self.distill_predictor(z1)
             p2 = self.distill_predictor(z2)
 
-            distill_loss = (
-                simclr_distill_loss_func(p1, p2, frozen_z1, frozen_z2, self.distill_temperature)
-                + simclr_distill_loss_func(frozen_z1, frozen_z2, p1, p2, self.distill_temperature)
-            ) / 2
+            valid_mask=self.get_valid_mask(p1,p2,frozen_z1,frozen_z2)
+            p1=p1[valid_mask]
+            p2=p2[valid_mask]
+            frozen_z1=frozen_z1[valid_mask]
+            frozen_z2 = frozen_z2[valid_mask]
+            self.log("valid_sample", p1.size(0), on_epoch=True, sync_dist=True)
+            if p1.size(0) >0:
+                distill_loss = (
+                                       simclr_distill_loss_func(p1, p2, frozen_z1, frozen_z2, self.distill_temperature)
+                                       + simclr_distill_loss_func(frozen_z1, frozen_z2, p1, p2, self.distill_temperature)
+                               ) / 2
+            else:
+                distill_loss = 0.
 
             self.log("train_contrastive_distill_loss", distill_loss, on_epoch=True, sync_dist=True)
 

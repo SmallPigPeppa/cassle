@@ -92,7 +92,7 @@ def contrastive_distill_wrapper(Method=object):
             frozen_z1=frozen_z1[valid_mask]
             frozen_z2 = frozen_z2[valid_mask]
             # repeat
-            n=int(256/p1.size(0))*2
+            n=int(256/p1.size(0))
             p1=p1.repeat(n)
             p2 = p2.repeat(n)
             frozen_z1=frozen_z1.repeat(n)

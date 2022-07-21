@@ -109,6 +109,10 @@ def contrastive_distill_wrapper(Method=object):
 
             valid_mask=self.get_valid_mask(p1,p2,frozen_z1,frozen_z2)
             valid_mask=valid_mask.repeat(2)
+
+            device = z1.device
+            b = z1.size(0)
+            valid_mask=torch.ones((2 * b, 2 * b), dtype=torch.bool, device=device)
             # p1=p1[valid_mask]
             # p2=p2[valid_mask]
             # frozen_z1=frozen_z1[valid_mask]

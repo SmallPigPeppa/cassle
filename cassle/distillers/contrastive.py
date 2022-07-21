@@ -91,6 +91,15 @@ def contrastive_distill_wrapper(Method=object):
             p2=p2[valid_mask]
             frozen_z1=frozen_z1[valid_mask]
             frozen_z2 = frozen_z2[valid_mask]
+            # repeat
+            n=int(256/p1.size(0))*1.2
+            p1=p1.repeat(n)
+            p2 = p2.repeat(n)
+            frozen_z1=frozen_z1.repeat(n)
+            frozen_z2 = frozen_z2.repeat(n)
+
+
+
             self.log("valid_sample", p1.size(0), on_epoch=True, sync_dist=True)
             if p1.size(0) >0:
                 distill_loss = (

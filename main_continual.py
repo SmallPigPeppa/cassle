@@ -161,8 +161,8 @@ if __name__ == "__main__":
                 ckpt_path = open(last_checkpoint_file).readlines()[0].rstrip()
                 task_args["--pretrained_model"] = ckpt_path
 
-            ckpt_set.append(ckpt_path)
-            task_args["--fixed_pretrained_model"] = ckpt_set[-1]
+            # ckpt_set.append(ckpt_path)
+            # task_args["--fixed_pretrained_model"] = ckpt_set[-1]
             # use task_n-1 as ckpt
             task_args["--distiller"] = 'contrastive'
             task_args["--task_idx"] = str(task_idx)

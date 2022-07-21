@@ -110,15 +110,15 @@ def contrastive_distill_wrapper(Method=object):
             valid_mask=self.get_valid_mask(p1,p2,frozen_z1,frozen_z2)
             valid_mask=valid_mask.repeat(2)
 
-            device = z1.device
-            b = z1.size(0)
-            valid_mask=torch.ones((2 * b), dtype=torch.bool, device=device)
+            # device = z1.device
+            # b = z1.size(0)
+            # valid_mask=torch.ones((2 * b), dtype=torch.bool, device=device)
             # p1=p1[valid_mask]
             # p2=p2[valid_mask]
             # frozen_z1=frozen_z1[valid_mask]
             # frozen_z2 = frozen_z2[valid_mask]
-            self.log("valid_sample", (valid_mask.sum()), on_epoch=True, sync_dist=True)
-            if 1 >0:
+            self.log("valid_sample", (valid_mask.sum()/2.0), on_epoch=True, sync_dist=True)
+            if valid_mask.sum() >0:
                 distill_loss = (
                                        simclr_distill_loss_func(p1, p2, frozen_z1, frozen_z2, self.distill_temperature,valid_pos=valid_mask)
                                        + simclr_distill_loss_func(frozen_z1, frozen_z2, p1, p2, self.distill_temperature,valid_pos=valid_mask)

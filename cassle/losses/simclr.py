@@ -27,15 +27,15 @@ def simclr_distill_loss_func(
     pos_mask.fill_diagonal_(True)
     # if we have extra "positives"
     # if valid_pos is not None:
-        # # print(pos_mask.shape)
-        # # print(len(pos_mask))
-        # # print(valid_pos.shape)
-        # print('###########################')
-        # print(valid_pos.sum())
-        # print(pos_mask.sum())
-        # pos_mask[range(len(pos_mask)), range(len(pos_mask))] = valid_pos
-        # print(pos_mask.sum())
-        # print('###########################')
+    # # print(pos_mask.shape)
+    # # print(len(pos_mask))
+    # # print(valid_pos.shape)
+    # print('###########################')
+    # print(valid_pos.sum())
+    # print(pos_mask.sum())
+    # pos_mask[range(len(pos_mask)), range(len(pos_mask))] = valid_pos
+    # print(pos_mask.sum())
+    # print('###########################')
 
     # all matches excluding the main diagonal
     logit_mask = torch.ones_like(pos_mask, device=device)
@@ -48,14 +48,12 @@ def simclr_distill_loss_func(
 
     # compute mean of log-likelihood over positives
 
-
     if valid_pos is not None:
         tmp = torch.zeros((2 * b, 2 * b), dtype=torch.bool, device=device)
         tmp[range(len(pos_mask)), range(len(pos_mask))] = valid_pos
         mean_log_prob_pos = (tmp * log_prob).sum(1) / pos_mask.sum(1)
     else:
         mean_log_prob_pos = (pos_mask * log_prob).sum(1) / pos_mask.sum(1)
-
 
     # loss
     loss = -mean_log_prob_pos.mean()

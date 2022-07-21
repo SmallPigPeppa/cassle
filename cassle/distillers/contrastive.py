@@ -120,8 +120,8 @@ def contrastive_distill_wrapper(Method=object):
             self.log("valid_sample", (valid_mask.sum()), on_epoch=True, sync_dist=True)
             if 1 >0:
                 distill_loss = (
-                                       simclr_distill_loss_func(p1, p2, frozen_z1, frozen_z2, self.distill_temperature,valid_pos=valid_mask)
-                                       + simclr_distill_loss_func(frozen_z1, frozen_z2, p1, p2, self.distill_temperature,valid_pos=valid_mask)
+                                       simclr_distill_loss_func(p1, p2, frozen_z1, frozen_z2, self.distill_temperature,valid_pos=None)
+                                       + simclr_distill_loss_func(frozen_z1, frozen_z2, p1, p2, self.distill_temperature,valid_pos=None)
                                ) / 2
             else:
                 distill_loss = 0.

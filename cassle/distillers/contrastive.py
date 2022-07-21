@@ -108,7 +108,7 @@ def contrastive_distill_wrapper(Method=object):
             p2 = self.distill_predictor(z2)
 
             valid_mask=self.get_valid_mask(p1,p2,frozen_z1,frozen_z2)
-            valid_mask=valid_mask.repeat(2)
+            valid_mask=valid_mask.repeat(1)
             # p1=p1[valid_mask]
             # p2=p2[valid_mask]
             # frozen_z1=frozen_z1[valid_mask]

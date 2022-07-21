@@ -192,11 +192,11 @@ def main():
         model.encoder.zero_expansions()
         model.encoder.active_expansion(use_expansion=False)
 
-        print(model)
+        # print(model)
         # 将旧模型的encoder 放入新模型的fronzen_encoder
-        # from copy import deepcopy
-        # model.frozen_encoder = deepcopy(model2.encoder)
-        # model.frozen_projector = deepcopy(model2.projector)
+        from copy import deepcopy
+        model.frozen_encoder = deepcopy(model2.encoder)
+        model.frozen_projector = deepcopy(model2.projector)
 
 
 

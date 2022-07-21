@@ -151,5 +151,6 @@ if __name__ == '__main__':
     print(a)
     a[range(len(a)), range(len(a))] = b
     print(a)
+    print(b.repeat(2))
 
 

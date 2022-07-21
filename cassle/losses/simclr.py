@@ -27,6 +27,9 @@ def simclr_distill_loss_func(
     pos_mask.fill_diagonal_(True)
     # if we have extra "positives"
     if valid_pos is not None:
+        print(pos_mask.shape)
+        print(len(pos_mask))
+        print(valid_pos.shape)
         pos_mask[range(len(pos_mask)), range(len(pos_mask))] = valid_pos
 
     # all matches excluding the main diagonal

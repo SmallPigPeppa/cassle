@@ -85,20 +85,20 @@ def contrastive_distill_wrapper(Method=object):
         #     pos_logits = logits * pos_mask
         #     return pos_logits
 
-        # def get_valid_mask(self, z1, z2, frozen_z1, frozen_z2):
-        #     pos_logits_new = self.get_positive_logits(z1, z2)
-        #     pos_logits_old = self.get_positive_logits(frozen_z1, frozen_z2)
-        #     b = z1.size(0)
-        #     mask1 = pos_logits_old[:b] > pos_logits_new[:b]
-        #     mask2 = pos_logits_old[b:2 * b] > pos_logits_new[b:2 * b]
-        #     valid_mask = mask1 | mask2
-        #     return valid_mask
-
         def get_valid_mask(self, z1, z2, frozen_z1, frozen_z2):
             pos_logits_new = self.get_positive_logits(z1, z2)
             pos_logits_old = self.get_positive_logits(frozen_z1, frozen_z2)
-            valid_mask=pos_logits_old>=pos_logits_new
+            b = z1.size(0)
+            mask1 = pos_logits_old[:b] > pos_logits_new[:b]
+            mask2 = pos_logits_old[b:2 * b] > pos_logits_new[b:2 * b]
+            valid_mask = mask1 | mask2
             return valid_mask
+
+        # def get_valid_mask(self, z1, z2, frozen_z1, frozen_z2):
+        #     pos_logits_new = self.get_positive_logits(z1, z2)
+        #     pos_logits_old = self.get_positive_logits(frozen_z1, frozen_z2)
+        #     valid_mask=pos_logits_old>=pos_logits_new
+        #     return valid_mask
 
         def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
             out = super().training_step(batch, batch_idx)

@@ -66,9 +66,10 @@ if __name__ == "__main__":
             args["--resume_from_checkpoint"] = ckpt_path
 
     # main task loop
+    use_expansion_tasks=[1]
     for task_idx in range(start_task_idx, num_tasks):
         # 在训练前，添加我们的训练
-        if task_idx in [1]:
+        if task_idx in use_expansion_tasks:
             print(f"\n#### Starting Task {task_idx} ####")
 
             task_args = copy.deepcopy(args)
@@ -89,6 +90,8 @@ if __name__ == "__main__":
             # modified
             task_args["--use_expansion"] = '    '
             task_args["--re_param"] = '    '
+            if task_idx == use_expansion_tasks[0]:
+                task_args["--use_original_fixed_model"] = '    '
             ckpt_path_before = ckpt_path
 
             task_args = dict_to_list(task_args)
@@ -113,7 +116,7 @@ if __name__ == "__main__":
         task_args["--task_idx"] = str(task_idx)
 
         # modified
-        if task_idx in [1]:
+        if task_idx in use_expansion_tasks:
             task_args["--fixed_model_path"] = ckpt_path_before
         if task_idx not in [0]:
             task_args["--distiller"]= 'contrastive'

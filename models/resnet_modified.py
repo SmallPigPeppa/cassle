@@ -432,18 +432,23 @@ if __name__=='__main__':
     # # print(output)
 
     resnet_m=resnet18()
-    resnet_m.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=2, bias=False)
-    resnet_m.maxpool = nn.Identity()
-    input=torch.ones([8,3,32,32])
-    # 打开 expansion
-    resnet_m.set_expansions()
-    output=resnet_m(input)
-    print(output)
-    # 重参数化
-    resnet_m.re_params()
-    output=resnet_m(input)
-    print(output)
-    # 关闭expansion
-    resnet_m.set_expansions(use_expansion=False)
-    output=resnet_m(input)
-    print(output)
+    a=0
+    for x,_ in resnet_m.named_parameters():
+        a=a+1
+        print(x)
+    print(a)
+    # resnet_m.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=2, bias=False)
+    # resnet_m.maxpool = nn.Identity()
+    # input=torch.ones([8,3,32,32])
+    # # 打开 expansion
+    # resnet_m.set_expansions()
+    # output=resnet_m(input)
+    # print(output)
+    # # 重参数化
+    # resnet_m.re_params()
+    # output=resnet_m(input)
+    # print(output)
+    # # 关闭expansion
+    # resnet_m.set_expansions(use_expansion=False)
+    # output=resnet_m(input)
+    # print(output)

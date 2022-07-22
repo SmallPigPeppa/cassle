@@ -282,6 +282,7 @@ class BaseModel(pl.LightningModule):
     #         },
     #     ]
 
+
     @property
     def learnable_params(self) -> List[Dict[str, Any]]:
         """Defines learnable parameters for the base class.

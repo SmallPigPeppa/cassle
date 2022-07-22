@@ -6,8 +6,10 @@ from typing import Optional
 def simclr_distill_loss_func(
         p1: torch.Tensor,
         p2: torch.Tensor,
+        p3: torch.Tensor,
         z1: torch.Tensor,
         z2: torch.Tensor,
+        z3: torch.Tensor,
         temperature: float = 0.1,
         valid_pos=None
 ) -> torch.Tensor:
@@ -15,15 +17,15 @@ def simclr_distill_loss_func(
 
     b = z1.size(0)
 
-    p = F.normalize(torch.cat([p1, p2]), dim=-1)
-    z = F.normalize(torch.cat([z1, z2]), dim=-1)
+    p = F.normalize(torch.cat([p1, p2,p3]), dim=-1)
+    z = F.normalize(torch.cat([z1, z2,z3]), dim=-1)
 
     logits = torch.einsum("if, jf -> ij", p, z) / temperature
     logits_max, _ = torch.max(logits, dim=1, keepdim=True)
     logits = logits - logits_max.detach()
 
     # positive mask are matches i, j (i from aug1, j from aug2), where i == j and matches j, i
-    pos_mask = torch.zeros((2 * b, 2 * b), dtype=torch.bool, device=device)
+    pos_mask = torch.zeros((3 * b, 3 * b), dtype=torch.bool, device=device)
     pos_mask.fill_diagonal_(True)
     # if we have extra "positives"
     # if valid_pos is not None:
@@ -39,7 +41,8 @@ def simclr_distill_loss_func(
 
     # all matches excluding the main diagonal
     logit_mask = torch.ones_like(pos_mask, device=device)
-    logit_mask.fill_diagonal_(True)
+    logit_mask.fill_diagonal_(
+        True)
     logit_mask[:, b:].fill_diagonal_(True)
     logit_mask[b:, :].fill_diagonal_(True)
 
@@ -49,9 +52,12 @@ def simclr_distill_loss_func(
     # compute mean of log-likelihood over positives
 
     if valid_pos is not None:
-        tmp = torch.zeros((2 * b, 2 * b), dtype=torch.bool, device=device)
-        tmp[range(len(pos_mask)), range(len(pos_mask))] = valid_pos
-        mean_log_prob_pos = (tmp * log_prob).sum(1) / pos_mask.sum(1)
+        # tmp = torch.zeros((2 * b, 2 * b), dtype=torch.bool, device=device)
+        # tmp[range(len(pos_mask)), range(len(pos_mask))] = valid_pos
+        mean_log_prob_pos = (pos_mask * log_prob).sum(1) / pos_mask.sum(1)
+        tmp=torch.ones(2 * b, dtype=torch.float, device=device)
+        tmp[valid_pos]=1.5
+        mean_log_prob_pos=tmp*mean_log_prob_pos
     else:
         mean_log_prob_pos = (pos_mask * log_prob).sum(1) / pos_mask.sum(1)
 

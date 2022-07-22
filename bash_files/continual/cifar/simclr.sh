@@ -25,7 +25,7 @@ python3 main_continual.py \
     --saturation 0.8 \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
-    --name v37 \
+    --name v39 \
     --project casslev33 \
     --entity pigpeppa \
     --wandb \

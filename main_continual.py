@@ -92,7 +92,7 @@ if __name__ == "__main__":
             task_args["--re_param"] = '    '
             if task_idx == use_expansion_tasks[0]:
                 task_args["--use_original_fixed_model"] = '    '
-            ckpt_path_before = ckpt_path
+            ckpt_path_before = task_args["--pretrained_model"]
 
             task_args = dict_to_list(task_args)
 

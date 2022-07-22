@@ -37,6 +37,7 @@ class Conv3x3_mofied(nn.Module):
         if not self.use_expansion:
             return self.conv2d_3x3(x)
         else:
+            print('#########use expansion############')
             with torch.no_grad():
                 out1 = self.conv2d_3x3(x)
             return self.expansion_1x1(x) + out1

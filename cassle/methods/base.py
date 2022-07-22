@@ -262,25 +262,6 @@ class BaseModel(pl.LightningModule):
             assert new_task >= self._current_task_idx
         self._current_task_idx = new_task
 
-    # @property
-    # def learnable_params(self) -> List[Dict[str, Any]]:
-    #     """Defines learnable parameters for the base class.
-    #
-    #     Returns:
-    #         List[Dict[str, Any]]:
-    #             list of dicts containing learnable parameters and possible settings.
-    #     """
-    #
-    #     return [
-    #         {"name": "encoder", "params": self.encoder.parameters()},
-    #         {
-    #             "name": "classifier",
-    #             "params": self.classifier.parameters(),
-    #             "lr": self.classifier_lr,
-    #             "weight_decay": 0,
-    #         },
-    #     ]
-
     @property
     def learnable_params(self) -> List[Dict[str, Any]]:
         """Defines learnable parameters for the base class.

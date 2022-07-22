@@ -113,9 +113,11 @@ if __name__ == "__main__":
         task_args["--task_idx"] = str(task_idx)
 
         # modified
-        task_args["--re_param"] = '    '
         if task_idx in [1]:
             task_args["--fixed_model_path"] = ckpt_path_before
+        if task_idx not in [0]:
+            task_args["--distiller"]= 'contrastive'
+            task_args["--re_param"] = '    '
 
         task_args = dict_to_list(task_args)
 

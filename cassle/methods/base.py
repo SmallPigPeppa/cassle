@@ -270,7 +270,7 @@ class BaseModel(pl.LightningModule):
                 list of dicts containing learnable parameters and possible settings.
         """
 
-        if not self.use_expansion:
+        if not self.encoder.use_expansion:
             all_params = tuple(self.encoder.parameters())
             wd_params = list()
             no_wd_params = list()

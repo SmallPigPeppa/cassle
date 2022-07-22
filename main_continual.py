@@ -67,6 +67,34 @@ if __name__ == "__main__":
 
     # main task loop
     for task_idx in range(start_task_idx, num_tasks):
+        # 在训练前，添加我们的训练
+        if task_idx in [1]:
+            print(f"\n#### Starting Task {task_idx} ####")
+
+            task_args = copy.deepcopy(args)
+
+            # add pretrained model arg
+            if task_idx != 0 and task_idx != start_task_idx:
+                task_args.pop("--resume_from_checkpoint", None)
+                task_args.pop("--pretrained_model", None)
+                assert os.path.exists(last_checkpoint_file)
+                ckpt_path = open(last_checkpoint_file).readlines()[0].rstrip()
+                task_args["--pretrained_model"] = ckpt_path
+
+            if task_idx != 0 and distill_args:
+                task_args.update(distill_args)
+
+            task_args["--task_idx"] = str(task_idx)
+
+            # modified
+            task_args["--use_expansion"] = '    '
+            task_args["--re_param"] = '    '
+            ckpt_path_before = ckpt_path
+
+            task_args = dict_to_list(task_args)
+
+            run_bash_command(task_args)
+
         print(f"\n#### Starting Task {task_idx} ####")
 
         task_args = copy.deepcopy(args)
@@ -83,6 +111,12 @@ if __name__ == "__main__":
             task_args.update(distill_args)
 
         task_args["--task_idx"] = str(task_idx)
+
+        # modified
+        task_args["--re_param"] = '    '
+        if task_idx in [1]:
+            task_args["--fixed_model_path"] = ckpt_path_before
+
         task_args = dict_to_list(task_args)
 
         run_bash_command(task_args)

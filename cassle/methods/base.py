@@ -158,7 +158,8 @@ class BaseModel(pl.LightningModule):
             self.warmup_start_lr = self.warmup_start_lr * self.accumulate_grad_batches
 
         assert encoder in ["resnet18", "resnet50"]
-        from torchvision.models import resnet18, resnet50
+        # from torchvision.models import resnet18, resnet50
+        from models.resnet_modified import resnet18, resnet50
 
         self.base_model = {"resnet18": resnet18, "resnet50": resnet50}[encoder]
 
@@ -244,6 +245,12 @@ class BaseModel(pl.LightningModule):
         parser.add_argument("--disable_knn_eval", action="store_true")
         parser.add_argument("--knn_k", default=20, type=int)
 
+        # modified
+        parser.add_argument("--fixed_model_path", type=str)
+        parser.add_argument("--use_expansion", action="store_true")
+        parser.add_argument("--re_param", action="store_true")
+
+
         return parent_parser
 
     @property
@@ -256,24 +263,75 @@ class BaseModel(pl.LightningModule):
             assert new_task >= self._current_task_idx
         self._current_task_idx = new_task
 
+    # @property
+    # def learnable_params(self) -> List[Dict[str, Any]]:
+    #     """Defines learnable parameters for the base class.
+    #
+    #     Returns:
+    #         List[Dict[str, Any]]:
+    #             list of dicts containing learnable parameters and possible settings.
+    #     """
+    #
+    #     return [
+    #         {"name": "encoder", "params": self.encoder.parameters()},
+    #         {
+    #             "name": "classifier",
+    #             "params": self.classifier.parameters(),
+    #             "lr": self.classifier_lr,
+    #             "weight_decay": 0,
+    #         },
+    #     ]
+
     @property
     def learnable_params(self) -> List[Dict[str, Any]]:
         """Defines learnable parameters for the base class.
-
         Returns:
             List[Dict[str, Any]]:
                 list of dicts containing learnable parameters and possible settings.
         """
-
-        return [
-            {"name": "encoder", "params": self.encoder.parameters()},
-            {
-                "name": "classifier",
-                "params": self.classifier.parameters(),
-                "lr": self.classifier_lr,
-                "weight_decay": 0,
-            },
-        ]
+        if not self.use_expansion:
+            all_params = tuple(self.encoder.parameters())
+            wd_params = list()
+            no_wd_params = list()
+            for name, param in self.encoder.named_parameters():
+                if 'expansion' in name:
+                    no_wd_params.append(param)
+                else:
+                    wd_params.append(param)
+            # if not self.extra_args['use_expansion']:
+            #     for name, param in self.encoder.named_parameters():
+            #         if 'expansion' in name:
+            #             no_wd_params.append(param)
+            #         else:
+            #             wd_params.append(param)
+            # else:
+            #     for name, param in self.encoder.named_parameters():
+            #         if 'conv2d_3x3' in name:
+            #             no_wd_params.append(param)
+            #         else:
+            #             wd_params.append(param)
+            print(len(wd_params), len(no_wd_params), len(all_params))
+            assert len(wd_params) + len(no_wd_params) == len(all_params), "Sanity check failed."
+            return [
+                {"name": "encoder", "params": wd_params, "weight_decay": self.weight_decay, },
+                {"name": "encoder_no_wd_params", "params": no_wd_params, "weight_decay": 0, },
+                {
+                    "name": "classifier",
+                    "params": self.classifier.parameters(),
+                    "lr": self.classifier_lr,
+                    "weight_decay": 0,
+                },
+            ]
+        else:
+            return [
+                    {"name": "encoder", "params": self.encoder.parameters(),"weight_decay": self.weight_decay},
+                    {
+                        "name": "classifier",
+                        "params": self.classifier.parameters(),
+                        "lr": self.classifier_lr,
+                        "weight_decay": 0,
+                    },
+                ]
 
     def configure_optimizers(self) -> Tuple[List, List]:
         """Collects learnable parameters and configures the optimizer and learning rate scheduler.
@@ -296,10 +354,10 @@ class BaseModel(pl.LightningModule):
             raise ValueError(f"{self.optimizer} not in (sgd, adam)")
 
         # create optimizer
+        # weight_decay = self.weight_decay,
         optimizer = optimizer(
             self.learnable_params,
             lr=self.lr,
-            weight_decay=self.weight_decay,
             **self.extra_optimizer_args,
         )
         # optionally wrap with lars

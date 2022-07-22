@@ -1,7 +1,7 @@
 import os
 from pprint import pprint
 import types
-
+from copy import deepcopy
 import torch
 from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import LearningRateMonitor
@@ -164,6 +164,28 @@ def main():
         print(f"Loading previous task checkpoint {args.pretrained_model}...")
         state_dict = torch.load(args.pretrained_model, map_location="cpu")["state_dict"]
         model.load_state_dict(state_dict, strict=False)
+
+
+
+    # modified
+    if args.use_expansion:
+        model.encoder.set_expansions(use_expansion=True)
+    else:
+        model.encoder.set_expansions(use_expansion=False)
+
+    if args.re_param:
+        model.encoder.re_params()
+        model.encoder.clean_expansions()
+
+    if args.fixed_model_path:
+        model_tmp=MethodClass(**args.__dict__, tasks=tasks if args.split_strategy == "class" else None)
+        state_dict_tmp = torch.load(args.fixed_model_path, map_location="cpu")["state_dict"]
+        model_tmp.load_state_dict(state_dict_tmp, strict=False)
+        model.frozen_encoder=deepcopy(model_tmp.encoder)
+        model.frozen_projector=deepcopy(model_tmp.projector)
+    else:
+        model.frozen_encoder=deepcopy(model.encoder)
+        model.frozen_projector=deepcopy(model.projector)
 
     callbacks = []
 

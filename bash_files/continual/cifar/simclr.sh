@@ -35,5 +35,6 @@ python3 main_continual.py \
     --proj_hidden_dim 2048 \
     --output_dim 256 \
     --disable_knn_eval \
-    --pretrained_model $PRETRAINED_PATH
+    --pretrained_model $PRETRAINED_PATH \
+    ----fixed_pretrained_model $FIXED_PATH
 

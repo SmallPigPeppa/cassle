@@ -36,5 +36,5 @@ python3 main_continual.py \
     --output_dim 256 \
     --disable_knn_eval \
     --pretrained_model $PRETRAINED_PATH \
-    ----fixed_pretrained_model $FIXED_PATH
+    --fixed_pretrained_model $FIXED_PATH
 

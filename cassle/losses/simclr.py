@@ -15,15 +15,15 @@ def simclr_distill_loss_func(
 
     b = z1.size(0)
 
-    p = F.normalize(torch.cat([p1, p2,p3]), dim=-1)
-    z = F.normalize(torch.cat([z1, z2,z3]), dim=-1)
+    p = F.normalize(torch.cat([p1, p2]), dim=-1)
+    z = F.normalize(torch.cat([z1, z2]), dim=-1)
 
     logits = torch.einsum("if, jf -> ij", p, z) / temperature
     logits_max, _ = torch.max(logits, dim=1, keepdim=True)
     logits = logits - logits_max.detach()
 
     # positive mask are matches i, j (i from aug1, j from aug2), where i == j and matches j, i
-    pos_mask = torch.zeros((3 * b, 3 * b), dtype=torch.bool, device=device)
+    pos_mask = torch.zeros((2 * b, 2 * b), dtype=torch.bool, device=device)
     pos_mask.fill_diagonal_(True)
     # if we have extra "positives"
     # if valid_pos is not None:

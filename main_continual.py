@@ -168,6 +168,7 @@ if __name__ == "__main__":
             task_args["--distiller"] = 'contrastive'
             task_args["--task_idx"] = str(task_idx)
             task_args['--re_paramaterize'] = '   '
+            # task_args['--use_expansion'] = '   '
             task_args = dict_to_list(task_args)
             run_bash_command(task_args)
 

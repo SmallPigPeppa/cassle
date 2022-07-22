@@ -58,7 +58,7 @@ def contrastive_distill_wrapper(Method=object):
             if self.current_epoch == 40:
                 self.encoder.reparameterize()
                 self.encoder.zero_expansions()
-                self.encoder.active_expansion(use_expansion=True)
+                self.encoder.active_expansion(use_expansion=False)
 
         def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
             out = super().training_step(batch, batch_idx)

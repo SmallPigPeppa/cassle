@@ -6,10 +6,8 @@ from typing import Optional
 def simclr_distill_loss_func(
         p1: torch.Tensor,
         p2: torch.Tensor,
-        p3: torch.Tensor,
         z1: torch.Tensor,
         z2: torch.Tensor,
-        z3: torch.Tensor,
         temperature: float = 0.1,
         valid_pos=None
 ) -> torch.Tensor:

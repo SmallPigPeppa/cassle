@@ -166,8 +166,10 @@ def main():
         model.load_state_dict(state_dict, strict=False)
 
 
-
     # modified
+    if args.num_tasks==0:
+        model.encoder.clean_expansions()
+
     if args.use_expansion:
         model.encoder.set_expansions(use_expansion=True)
     else:

@@ -292,15 +292,15 @@ class BaseModel(pl.LightningModule):
             },
         ]
         # else:
-            return [
-                {"name": "encoder", "params": self.encoder.parameters(), "weight_decay": self.weight_decay},
-                {
-                    "name": "classifier",
-                    "params": self.classifier.parameters(),
-                    "lr": self.classifier_lr,
-                    "weight_decay": 0,
-                },
-            ]
+        #     return [
+        #         {"name": "encoder", "params": self.encoder.parameters(), "weight_decay": self.weight_decay},
+        #         {
+        #             "name": "classifier",
+        #             "params": self.classifier.parameters(),
+        #             "lr": self.classifier_lr,
+        #             "weight_decay": 0,
+        #         },
+        #     ]
     #
     # @property
     # def learnable_params(self) -> List[Dict[str, Any]]:

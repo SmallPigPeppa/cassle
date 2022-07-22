@@ -166,7 +166,7 @@ def main():
         # 如果是导入task0 且 使用fixed_model_path
         if args.use_original_fixed_model and args.fixed_model_path:
             from utils import get_modified_state_dict
-            # state_dict=get_modified_state_dict(state_dict)
+            state_dict=get_modified_state_dict(state_dict)
             model.load_state_dict(state_dict, strict=False)
             model.encoder.clean_expansions()
         else:

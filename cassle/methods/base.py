@@ -263,76 +263,76 @@ class BaseModel(pl.LightningModule):
             assert new_task >= self._current_task_idx
         self._current_task_idx = new_task
 
-    # @property
-    # def learnable_params(self) -> List[Dict[str, Any]]:
-    #     """Defines learnable parameters for the base class.
-    #
-    #     Returns:
-    #         List[Dict[str, Any]]:
-    #             list of dicts containing learnable parameters and possible settings.
-    #     """
-    #
-    #     return [
-    #         {"name": "encoder", "params": self.encoder.parameters()},
-    #         {
-    #             "name": "classifier",
-    #             "params": self.classifier.parameters(),
-    #             "lr": self.classifier_lr,
-    #             "weight_decay": 0,
-    #         },
-    #     ]
-
-
     @property
     def learnable_params(self) -> List[Dict[str, Any]]:
         """Defines learnable parameters for the base class.
+
         Returns:
             List[Dict[str, Any]]:
                 list of dicts containing learnable parameters and possible settings.
         """
-        if not self.use_expansion:
-            all_params = tuple(self.encoder.parameters())
-            wd_params = list()
-            no_wd_params = list()
-            for name, param in self.encoder.named_parameters():
-                if 'expansion' in name:
-                    no_wd_params.append(param)
-                else:
-                    wd_params.append(param)
-            # if not self.extra_args['use_expansion']:
-            #     for name, param in self.encoder.named_parameters():
-            #         if 'expansion' in name:
-            #             no_wd_params.append(param)
-            #         else:
-            #             wd_params.append(param)
-            # else:
-            #     for name, param in self.encoder.named_parameters():
-            #         if 'conv2d_3x3' in name:
-            #             no_wd_params.append(param)
-            #         else:
-            #             wd_params.append(param)
-            print(len(wd_params), len(no_wd_params), len(all_params))
-            assert len(wd_params) + len(no_wd_params) == len(all_params), "Sanity check failed."
-            return [
-                {"name": "encoder", "params": wd_params, "weight_decay": self.weight_decay, },
-                {"name": "encoder_no_wd_params", "params": no_wd_params, "weight_decay": 0, },
-                {
-                    "name": "classifier",
-                    "params": self.classifier.parameters(),
-                    "lr": self.classifier_lr,
-                    "weight_decay": 0,
-                },
-            ]
-        else:
-            return [
-                    {"name": "encoder", "params": self.encoder.parameters(),"weight_decay": self.weight_decay},
-                    {
-                        "name": "classifier",
-                        "params": self.classifier.parameters(),
-                        "lr": self.classifier_lr,
-                        "weight_decay": 0,
-                    },
-                ]
+
+        return [
+            {"name": "encoder", "params": self.encoder.parameters()},
+            {
+                "name": "classifier",
+                "params": self.classifier.parameters(),
+                "lr": self.classifier_lr,
+                "weight_decay": 0,
+            },
+        ]
+
+
+    # @property
+    # def learnable_params(self) -> List[Dict[str, Any]]:
+    #     """Defines learnable parameters for the base class.
+    #     Returns:
+    #         List[Dict[str, Any]]:
+    #             list of dicts containing learnable parameters and possible settings.
+    #     """
+    #     if not self.use_expansion:
+    #         all_params = tuple(self.encoder.parameters())
+    #         wd_params = list()
+    #         no_wd_params = list()
+    #         for name, param in self.encoder.named_parameters():
+    #             if 'expansion' in name:
+    #                 no_wd_params.append(param)
+    #             else:
+    #                 wd_params.append(param)
+    #         # if not self.extra_args['use_expansion']:
+    #         #     for name, param in self.encoder.named_parameters():
+    #         #         if 'expansion' in name:
+    #         #             no_wd_params.append(param)
+    #         #         else:
+    #         #             wd_params.append(param)
+    #         # else:
+    #         #     for name, param in self.encoder.named_parameters():
+    #         #         if 'conv2d_3x3' in name:
+    #         #             no_wd_params.append(param)
+    #         #         else:
+    #         #             wd_params.append(param)
+    #         print(len(wd_params), len(no_wd_params), len(all_params))
+    #         assert len(wd_params) + len(no_wd_params) == len(all_params), "Sanity check failed."
+    #         return [
+    #             {"name": "encoder", "params": wd_params, "weight_decay": self.weight_decay, },
+    #             {"name": "encoder_no_wd_params", "params": no_wd_params, "weight_decay": 0, },
+    #             {
+    #                 "name": "classifier",
+    #                 "params": self.classifier.parameters(),
+    #                 "lr": self.classifier_lr,
+    #                 "weight_decay": 0,
+    #             },
+    #         ]
+    #     else:
+    #         return [
+    #                 {"name": "encoder", "params": self.encoder.parameters(),"weight_decay": self.weight_decay},
+    #                 {
+    #                     "name": "classifier",
+    #                     "params": self.classifier.parameters(),
+    #                     "lr": self.classifier_lr,
+    #                     "weight_decay": 0,
+    #                 },
+    #             ]
 
     def configure_optimizers(self) -> Tuple[List, List]:
         """Collects learnable parameters and configures the optimizer and learning rate scheduler.

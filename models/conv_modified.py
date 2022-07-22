@@ -3,6 +3,12 @@ import torch
 import numpy as np
 
 
+# def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1):
+#     """3x3 convolution with padding"""
+#     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
+#                      padding=dilation, groups=groups, bias=False, dilation=dilation)
+
+
 class Conv3x3_mofied(nn.Module):
     def __init__(self, in_planes, out_planes, stride=1, groups=1, dilation=1, use_expansion=False):
         super(Conv3x3_mofied, self).__init__()
@@ -47,7 +53,6 @@ class Conv3x3_mofied(nn.Module):
             return torch.nn.functional.pad(kernel1x1, [1, 1, 1, 1])
 
 
-
 def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1):
     """3x3 convolution with padding"""
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
@@ -57,3 +62,13 @@ def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1):
 def conv1x1(in_planes, out_planes, stride=1):
     """1x1 convolution"""
     return nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
+
+
+if __name__ == '__main__':
+    x = torch.rand([4, 3, 32, 32])
+    c1 = conv3x3(3, 4)
+    # c2=Conv3x3_mofied(3,4)
+    c2 = conv3x3(3, 4)
+    print(c1(x)[0][0][0])
+    # print(c2.conv2d_3x3(x)[0][0][0])
+    print(c2(x)[0][0][0])

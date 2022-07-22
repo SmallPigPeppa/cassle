@@ -164,7 +164,7 @@ if __name__ == "__main__":
             # ckpt_set.append(ckpt_path)
             # task_args["--fixed_pretrained_model"] = ckpt_set[-1]
             # use task_n-1 as ckpt
-            task_args["--fixed_pretrained_model"] = '/home/admin/code/cassle_v32.0/experiments/2022_07_20_21_07_33-simclr-cifar100/3gvv0vgp/simclr-cifar100-task3-ep=499-3gvv0vgp.ckpt'
+            # task_args["--fixed_pretrained_model"] = '/home/admin/code/cassle_v32.0/experiments/2022_07_20_21_07_33-simclr-cifar100/3gvv0vgp/simclr-cifar100-task3-ep=499-3gvv0vgp.ckpt'
             task_args["--distiller"] = 'contrastive'
             task_args["--task_idx"] = str(task_idx)
             task_args['--re_paramaterize'] = '   '

@@ -4,17 +4,17 @@ from typing import Any, List, Sequence
 import torch
 from torch import nn
 from cassle.distillers.base import base_distill_wrapper
-from cassle.losses.simclr import simclr_distill_loss_func
+from cassle.losses.simclr import simclr_distill_loss_func, simclr_loss_func
 
 
 def contrastive_distill_wrapper(Method=object):
     class ContrastiveDistillWrapper(base_distill_wrapper(Method)):
         def __init__(
-            self,
-            distill_lamb: float,
-            distill_proj_hidden_dim: int,
-            distill_temperature: float,
-            **kwargs
+                self,
+                distill_lamb: float,
+                distill_proj_hidden_dim: int,
+                distill_temperature: float,
+                **kwargs
         ):
             super().__init__(**kwargs)
 
@@ -31,7 +31,7 @@ def contrastive_distill_wrapper(Method=object):
 
         @staticmethod
         def add_model_specific_args(
-            parent_parser: argparse.ArgumentParser,
+                parent_parser: argparse.ArgumentParser,
         ) -> argparse.ArgumentParser:
             parser = parent_parser.add_argument_group("contrastive_distiller")
 
@@ -68,11 +68,14 @@ def contrastive_distill_wrapper(Method=object):
             p1 = self.distill_predictor(z1)
             p2 = self.distill_predictor(z2)
 
-            distill_loss = (
-                simclr_distill_loss_func(p1, p2, frozen_z1, frozen_z2, self.distill_temperature)
-                + simclr_distill_loss_func(frozen_z1, frozen_z2, p1, p2, self.distill_temperature)
-            ) / 2
-
+            # distill_loss = (
+            #     simclr_distill_loss_func(p1, p2, frozen_z1, frozen_z2, self.distill_temperature)
+            #     + simclr_distill_loss_func(frozen_z1, frozen_z2, p1, p2, self.distill_temperature)
+            # ) / 2
+            distill_loss = (simclr_loss_func(p1, frozen_z1, self.distill_temperature) + simclr_loss_func(frozen_z1, p1,
+                                                                                                         self.distill_temperature) + simclr_loss_func(
+                p2, frozen_z2, self.distill_temperature) + simclr_loss_func(frozen_z2, p2,
+                                                                            self.distill_temperature)) / 4.
             self.log("train_contrastive_distill_loss", distill_loss, on_epoch=True, sync_dist=True)
 
             return out["loss"] + self.distill_lamb * distill_loss

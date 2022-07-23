@@ -3,7 +3,7 @@ python3 main_continual.py \
     --encoder resnet18 \
     --data_dir $DATA_DIR \
     --split_strategy class \
-    --task_idx 1 \
+    --task_idx 0 \
     --max_epochs 500 \
     --num_tasks 5 \
     --max_epochs 500 \
@@ -25,7 +25,7 @@ python3 main_continual.py \
     --saturation 0.8 \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
-    --name test-v50 \
+    --name debug \
     --project cassle-official \
     --entity pigpeppa \
     --wandb \
@@ -35,5 +35,4 @@ python3 main_continual.py \
     --proj_hidden_dim 2048 \
     --output_dim 256 \
     --disable_knn_eval \
-    --pretrained_model $PRETRAINED_PATH
 

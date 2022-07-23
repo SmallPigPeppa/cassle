@@ -3,7 +3,7 @@ python3 main_continual.py \
     --encoder resnet18 \
     --data_dir $DATA_DIR \
     --split_strategy class \
-    --task_idx 0 \
+    --task_idx 1 \
     --max_epochs 500 \
     --num_tasks 5 \
     --max_epochs 500 \
@@ -35,4 +35,5 @@ python3 main_continual.py \
     --proj_hidden_dim 2048 \
     --output_dim 256 \
     --disable_knn_eval \
+    --pretrained_model $PRETRAINED_PATH
 

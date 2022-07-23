@@ -88,7 +88,7 @@ class LARSWrapper:
                 for p in group["params"]:
                     if p.grad is not None and (p.ndim != 1 or not self.exclude_bias_n_norm):
                         self.update_p(p, group, weight_decay)
-        print('#############','len(weight_decays)',len(weight_decays),'#############')
+        # print('#############','len(weight_decays)',len(weight_decays),'#############')
         # update the optimizer
         self.optim.step(closure=closure)
 

@@ -164,9 +164,9 @@ def main():
         print(f"Loading previous task checkpoint {args.pretrained_model}...")
         state_dict = torch.load(args.pretrained_model, map_location="cpu")["state_dict"]
         # 如果是导入task0 且 使用fixed_model_path
-        if args.use_original_fixed_model and args.fixed_model_path:
+        if args.use_original_fixed_model and args.fixed_model_path and not args.distiller:
             from utils import get_modified_state_dict
-            state_dict=get_modified_state_dict(state_dict)
+            # state_dict=get_modified_state_dict(state_dict)
             model.load_state_dict(state_dict, strict=False)
             model.encoder.clean_expansions()
         else:

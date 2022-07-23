@@ -190,7 +190,7 @@ def main():
         # 新模型先重参数化，然后使用expansion
         model.encoder.reparameterize()
         model.encoder.zero_expansions()
-        model.encoder.active_expansion(use_expansion=True)
+        model.encoder.active_expansion(use_expansion=False)
 
         # 将旧模型的encoder 放入新模型的fronzen_encoder
         from copy import deepcopy

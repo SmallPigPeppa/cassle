@@ -80,14 +80,14 @@ class LARSWrapper:
         for group in self.optim.param_groups:
             weight_decay = group.get("weight_decay", 0)
             weight_decays.append(weight_decay)
+            if 'no_wd' not in group["name"]:
+                # reset weight decay
+                group["weight_decay"] = 0
 
-            # reset weight decay
-            group["weight_decay"] = 0
-
-            # update the parameters
-            for p in group["params"]:
-                if p.grad is not None and (p.ndim != 1 or not self.exclude_bias_n_norm):
-                    self.update_p(p, group, weight_decay)
+                # update the parameters
+                for p in group["params"]:
+                    if p.grad is not None and (p.ndim != 1 or not self.exclude_bias_n_norm):
+                        self.update_p(p, group, weight_decay)
 
         # update the optimizer
         self.optim.step(closure=closure)

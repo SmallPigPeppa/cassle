@@ -42,17 +42,17 @@ class Conv3x3_mofied(nn.Module):
         #         out1 = self.conv2d_3x3(x)
         #     return self.expansion_1x1(x) + out1
 
-    def get_equivalent_kernel_bias(self):
-        # bias no use
-        kernel3x3 = self.conv2d_3x3.weight
-        kernel1x1 = self.expansion_1x1.weight
-        return kernel3x3 + self._pad_1x1_to_3x3_tensor(kernel1x1)
-
-    def _pad_1x1_to_3x3_tensor(self, kernel1x1):
-        if kernel1x1 is None:
-            return 0
-        else:
-            return torch.nn.functional.pad(kernel1x1, [1, 1, 1, 1])
+    # def get_equivalent_kernel_bias(self):
+    #     # bias no use
+    #     kernel3x3 = self.conv2d_3x3.weight
+    #     kernel1x1 = self.expansion_1x1.weight
+    #     return kernel3x3 + self._pad_1x1_to_3x3_tensor(kernel1x1)
+    #
+    # def _pad_1x1_to_3x3_tensor(self, kernel1x1):
+    #     if kernel1x1 is None:
+    #         return 0
+    #     else:
+    #         return torch.nn.functional.pad(kernel1x1, [1, 1, 1, 1])
 
 
 def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1):

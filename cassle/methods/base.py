@@ -317,6 +317,7 @@ class BaseModel(pl.LightningModule):
             # {"name": "encoder_no_wd_params", "params": no_wd_params, "weight_decay": 0, },
             return [
                 {"name": "encoder", "params": wd_params, "weight_decay": self.weight_decay, },
+                {"name": "encoder_no_wd_params", "params": no_wd_params, "weight_decay": 0,"momentum":0 },
                 {
                     "name": "classifier",
                     "params": self.classifier.parameters(),
@@ -398,18 +399,18 @@ class BaseModel(pl.LightningModule):
 
         # create optimizer
         # weight_decay = self.weight_decay,
-        # optimizer = optimizer(
-        #     self.learnable_params,
-        #     lr=self.lr,
-        #     weight_decay=0.,
-        #     **self.extra_optimizer_args,
-        # )
-        print('self.extra_optimizer_args',self.extra_optimizer_args)
         optimizer = optimizer(
             self.learnable_params,
             lr=self.lr,
-            weight_decay=0.
+            weight_decay=0.,
+            **self.extra_optimizer_args,
         )
+        # print('self.extra_optimizer_args',self.extra_optimizer_args)
+        # optimizer = optimizer(
+        #     self.learnable_params,
+        #     lr=self.lr,
+        #     weight_decay=0.
+        # )
 
         # optionally wrap with lars
         if self.lars:

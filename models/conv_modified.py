@@ -40,13 +40,14 @@ class Conv3x3_mofied(nn.Module):
         # self.expansion_1x1.weight.data.zero_()
 
     def forward(self, x):
-        if not self.use_expansion:
-            return self.conv2d_3x3(x)
-        else:
-            # print('#########use expansion############')
-            with torch.no_grad():
-                out1 = self.conv2d_3x3(x)
-            return self.expansion_1x1(x) + out1
+        # if not self.use_expansion:
+        #     return self.conv2d_3x3(x)
+        # else:
+        #     # print('#########use expansion############')
+        #     with torch.no_grad():
+        #         out1 = self.conv2d_3x3(x)
+        #     return self.expansion_1x1(x) + out1
+        return self.conv2d_3x3(x)
 
     def get_equivalent_kernel_bias(self):
         # bias no use

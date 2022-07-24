@@ -404,11 +404,13 @@ class BaseModel(pl.LightningModule):
         #     weight_decay=0.,
         #     **self.extra_optimizer_args,
         # )
+        print('self.extra_optimizer_args',self.extra_optimizer_args)
         optimizer = optimizer(
             self.learnable_params,
             lr=self.lr,
             weight_decay=0.
         )
+
         # optionally wrap with lars
         if self.lars:
             optimizer = LARSWrapper(

@@ -175,7 +175,7 @@ def main():
 
     # modified
     if args.num_tasks==0:
-        model.encoder.clean_expansions()
+        # model.encoder.clean_expansions()
         model.encoder.set_expansions(use_expansion=False)
     if args.use_expansion:
         model.encoder.set_expansions(use_expansion=True)

@@ -23,12 +23,12 @@ class Conv3x3_mofied(nn.Module):
 
     def set_expansion(self, use_expansion=True):
         self.use_expansion = use_expansion
-        if use_expansion:
-            for pg in self.conv2d_3x3.parameters():
-                pg.requires_grad = False
-        else:
-            for pg in self.expansion_1x1.parameters():
-                pg.requires_grad = False
+        # if use_expansion:
+        #     for pg in self.conv2d_3x3.parameters():
+        #         pg.requires_grad = False
+        # else:
+        #     for pg in self.expansion_1x1.parameters():
+        #         pg.requires_grad = False
 
     def re_param(self):
         kernel = self.get_equivalent_kernel_bias()

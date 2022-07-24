@@ -306,11 +306,11 @@ class BaseModel(pl.LightningModule):
             wd_params = list()
             no_wd_params = list()
             for name, param in self.encoder.named_parameters():
-                # if 'expansion_1x1' in name:
-                #     no_wd_params.append(param)
-                # else:
-                #     wd_params.append(param)
-                no_wd_params.append(param)
+                if 'expansion_1x1' in name:
+                    no_wd_params.append(param)
+                else:
+                    wd_params.append(param)
+                # no_wd_params.append(param)
             print(len(wd_params), len(no_wd_params), len(all_params))
             assert len(wd_params) + len(no_wd_params) == len(all_params), "Sanity check failed."
             return [

@@ -82,14 +82,15 @@ class LARSWrapper:
             weight_decays.append(weight_decay)
             # reset weight decay
             group["weight_decay"] = 0
+            print('#############', group["name"], 'len(group)', len(group), '#############')
+            import pdb
+            pdb.set_trace()
 
             # update the parameters
             for p in group["params"]:
                 if p.grad is not None and (p.ndim != 1 or not self.exclude_bias_n_norm):
                     self.update_p(p, group, weight_decay)
-                    print('#############',group["name"],'len(group)',len(group),'#############')
-                    import pdb
-                    pdb.set_trace()
+
 
         # print('#############','len(weight_decays)',len(weight_decays),'#############')
         # update the optimizer

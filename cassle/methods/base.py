@@ -256,7 +256,6 @@ class BaseModel(pl.LightningModule):
         parser.add_argument("--re_param", action="store_true")
         parser.add_argument("--use_original_fixed_model", action="store_true")
 
-
         return parent_parser
 
     @property
@@ -268,6 +267,7 @@ class BaseModel(pl.LightningModule):
         if hasattr(self, "_current_task_idx"):
             assert new_task >= self._current_task_idx
         self._current_task_idx = new_task
+
     @property
     def learnable_params(self) -> List[Dict[str, Any]]:
         """Defines learnable parameters for the base class.
@@ -317,8 +317,9 @@ class BaseModel(pl.LightningModule):
 
             # {"name": "encoder_no_wd_params", "params": no_wd_params, "weight_decay": 0, },
             return [
-                {"name": "encoder", "params": (p for name, p in self.named_parameters() if 'expansion' not in name and 'test' not in name), "weight_decay": self.weight_decay, },
-                {"name": "encoder_no_wd_params", "params": (p for name, p in self.named_parameters() if 'expansion' in name or 'test' in name), "weight_decay": 0,"momentum":0 },
+                {"name": "encoder",
+                 "params": (p for name, p in self.named_parameters() if 'expansion' not in name and 'test' not in name),
+                 "weight_decay": self.weight_decay, },
                 {
                     "name": "classifier",
                     "params": self.classifier.parameters(),
@@ -326,6 +327,7 @@ class BaseModel(pl.LightningModule):
                     "weight_decay": 0,
                 },
             ]
+
     #
     # @property
     # def learnable_params(self) -> List[Dict[str, Any]]:

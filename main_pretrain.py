@@ -193,9 +193,9 @@ def main():
         model.frozen_encoder=deepcopy(model_tmp.encoder)
         model.frozen_projector=deepcopy(model_tmp.projector)
     else:
-        pass
-        # model.frozen_encoder=deepcopy(model.encoder)
-        # model.frozen_projector=deepcopy(model.projector)
+        # pass
+        model.frozen_encoder=deepcopy(model.encoder)
+        model.frozen_projector=deepcopy(model.projector)
 
     callbacks = []
 

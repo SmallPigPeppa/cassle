@@ -307,7 +307,7 @@ class BaseModel(pl.LightningModule):
             wd_params = list()
             no_wd_params = list()
             for name, param in self.encoder.named_parameters():
-                if 'expansion_1x1' not in name and 'test' not in name:
+                if hasattr(param,'requires_grad') and 'expansion_1x1' not in name and 'test' not in name:
                     wd_params.append(param)
                 else:
                     no_wd_params.append(param)
@@ -317,8 +317,8 @@ class BaseModel(pl.LightningModule):
 
             # {"name": "encoder_no_wd_params", "params": no_wd_params, "weight_decay": 0, },
             return [
-                {"name": "encoder", "params": self.encoder.parameters(), "weight_decay": 0., },
-
+                {"name": "encoder", "params": wd_params, "weight_decay": self.weight_decay, },
+                {"name": "encoder_no_wd", "params": no_wd_params, "weight_decay": 0, },
                 {
                     "name": "classifier",
                     "params": self.classifier.parameters(),

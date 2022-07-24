@@ -290,9 +290,10 @@ class BaseModel(pl.LightningModule):
                     wd_params.append(param)
             print(len(wd_params), len(no_wd_params), len(all_params))
             assert len(wd_params) + len(no_wd_params) == len(all_params), "Sanity check failed."
+            # {"name": "encoder_no_wd_params", "params": no_wd_params, "weight_decay": 0, },
             return [
                 {"name": "encoder", "params": wd_params, "weight_decay": self.weight_decay, },
-                {"name": "encoder_no_wd_params", "params": no_wd_params, "weight_decay": 0, },
+
                 {
                     "name": "classifier",
                     "params": self.classifier.parameters(),

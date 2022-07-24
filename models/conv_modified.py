@@ -14,8 +14,8 @@ class Conv3x3_mofied(nn.Module):
         super(Conv3x3_mofied, self).__init__()
         # nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=2, bias=False)
         self.conv2d_3x3 = conv3x3(in_planes, out_planes, stride=stride, groups=groups, dilation=dilation)
-        self.expansion_1x1 = nn.Conv2d(100, 200, kernel_size=1, stride=stride, bias=False)
-        # self.expansion_1x1 = nn.Identity()
+        expansion_1x1 = nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
+        self.expansion_1x1 = nn.Identity()
         # nn.init.constant_(self.expansion_1x1.weight.data, 0.0)
         # self.expansion_1x1.weight.data.zero_()
 

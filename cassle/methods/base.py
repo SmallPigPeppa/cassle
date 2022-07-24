@@ -109,7 +109,7 @@ class BaseModel(pl.LightningModule):
         self.optimizer = optimizer
         self.lars = lars
         self.lr = lr
-        self.weight_decay = 1e-5
+        self.weight_decay = weight_decay
         self.classifier_lr = classifier_lr
         self.exclude_bias_n_norm = exclude_bias_n_norm
         self.accumulate_grad_batches = accumulate_grad_batches
@@ -398,11 +398,16 @@ class BaseModel(pl.LightningModule):
 
         # create optimizer
         # weight_decay = self.weight_decay,
+        # optimizer = optimizer(
+        #     self.learnable_params,
+        #     lr=self.lr,
+        #     weight_decay=0.,
+        #     **self.extra_optimizer_args,
+        # )
         optimizer = optimizer(
             self.learnable_params,
             lr=self.lr,
-            weight_decay=0.,
-            **self.extra_optimizer_args,
+            weight_decay=0.
         )
         # optionally wrap with lars
         if self.lars:

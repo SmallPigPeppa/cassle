@@ -314,10 +314,11 @@ class BaseModel(pl.LightningModule):
                 # no_wd_params.append(param)
             print(len(wd_params), len(no_wd_params), len(all_params))
             assert len(wd_params) + len(no_wd_params) == len(all_params), "Sanity check failed."
+
             # {"name": "encoder_no_wd_params", "params": no_wd_params, "weight_decay": 0, },
             return [
-                {"name": "encoder", "params": wd_params, "weight_decay": self.weight_decay, },
-                {"name": "encoder_no_wd_params", "params": no_wd_params, "weight_decay": 0,"momentum":0 },
+                {"name": "encoder", "params": (p for name, p in self.named_parameters() if 'expansion' not in name and 'test' not in name), "weight_decay": self.weight_decay, },
+                {"name": "encoder_no_wd_params", "params": (p for name, p in self.named_parameters() if 'expansion' in name or 'test' in name), "weight_decay": 0,"momentum":0 },
                 {
                     "name": "classifier",
                     "params": self.classifier.parameters(),

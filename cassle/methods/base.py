@@ -318,6 +318,7 @@ class BaseModel(pl.LightningModule):
             # {"name": "encoder_no_wd_params", "params": no_wd_params, "weight_decay": 0, },
             return [
                 {"name": "encoder", "params": wd_params, "weight_decay": self.weight_decay, },
+                {"name": "encoder_no_wd", "params": no_wd_params, "weight_decay": 10., },
                 {
                     "name": "classifier",
                     "params": self.classifier.parameters(),

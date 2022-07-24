@@ -318,8 +318,11 @@ class BaseModel(pl.LightningModule):
             # {"name": "encoder_no_wd_params", "params": no_wd_params, "weight_decay": 0, },
             return [
                 {"name": "encoder",
-                 "params": (p for name, p in self.named_parameters() if 'expansion' not in name and 'test' not in name),
+                 "params": (p for name, p in self.encoder.named_parameters() if 'expansion' not in name and 'test' not in name),
                  "weight_decay": self.weight_decay, },
+                {"name": "encoder_no_wd_params",
+                 "params": (p for name, p in self.encoder.named_parameters() if 'expansion' in name or 'test' in name),
+                 "weight_decay": 0, "momentum": 0},
                 {
                     "name": "classifier",
                     "params": self.classifier.parameters(),

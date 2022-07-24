@@ -83,8 +83,8 @@ class LARSWrapper:
             # reset weight decay
             group["weight_decay"] = 0
             print('#############', group["name"], 'len(group["params"])', len(group["params"]), '#############')
-            import pdb
-            pdb.set_trace()
+            # import pdb
+            # pdb.set_trace()
 
             # update the parameters
             for p in group["params"]:

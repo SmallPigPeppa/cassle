@@ -182,6 +182,9 @@ class BaseModel(pl.LightningModule):
         print('use_expansion:', self.extra_args['use_expansion'])
         print('######################################')
 
+
+        print(self.learnable_params)
+
     @staticmethod
     def add_model_specific_args(parent_parser: ArgumentParser) -> ArgumentParser:
         """Adds shared basic arguments that are shared for all methods.

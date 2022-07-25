@@ -183,7 +183,7 @@ class BaseModel(pl.LightningModule):
         print('######################################')
 
 
-        print(self.learnable_params)
+        print(self.learnable_params())
 
     @staticmethod
     def add_model_specific_args(parent_parser: ArgumentParser) -> ArgumentParser:
@@ -271,7 +271,7 @@ class BaseModel(pl.LightningModule):
             assert new_task >= self._current_task_idx
         self._current_task_idx = new_task
 
-    @property
+    # @property
     def learnable_params(self) -> List[Dict[str, Any]]:
         """Defines learnable parameters for the base class.
 

@@ -297,8 +297,10 @@ class BaseModel(pl.LightningModule):
             for name, param in self.encoder.named_parameters():
                 if hasattr(param, 'requires_grad') and 'conv2d_3x3' not in name:
                     wd_params.append(param)
+                    wd_params_names.append(name)
                 else:
                     no_wd_params.append(param)
+                    no_wd_params_names.append(name)
         # debug
         print('len(wd_params):', len(wd_params), '\nlen(no_wd_params):', len(no_wd_params), '\nlen(all_params)',
               len(tuple(self.encoder.parameters())))

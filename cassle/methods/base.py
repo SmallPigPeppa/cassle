@@ -179,7 +179,7 @@ class BaseModel(pl.LightningModule):
             self.knn = WeightedKNNClassifier(k=knn_k, distance_fx="euclidean")
 
         print('######################################')
-        print('use_expansion:',self.extra_args['use_expansion'])
+        print('use_expansion:', self.extra_args['use_expansion'])
         print('######################################')
 
     @staticmethod
@@ -318,7 +318,6 @@ class BaseModel(pl.LightningModule):
             },
         ]
 
-
     def configure_optimizers(self) -> Tuple[List, List]:
         """Collects learnable parameters and configures the optimizer and learning rate scheduler.
 
@@ -347,7 +346,6 @@ class BaseModel(pl.LightningModule):
             weight_decay=0.,
             **self.extra_optimizer_args,
         )
-
         # optionally wrap with lars
         if self.lars:
             optimizer = LARSWrapper(

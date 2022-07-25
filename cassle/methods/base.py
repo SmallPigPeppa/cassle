@@ -271,7 +271,7 @@ class BaseModel(pl.LightningModule):
             assert new_task >= self._current_task_idx
         self._current_task_idx = new_task
 
-    # @property
+    @property
     def learnable_params(self) -> List[Dict[str, Any]]:
     # def test(self) -> List[Dict[str, Any]]:
         """Defines learnable parameters for the base class.

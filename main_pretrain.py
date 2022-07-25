@@ -246,7 +246,7 @@ def main():
 
     model.current_task_idx = args.task_idx
     # 保存一下初始化
-    initial_ckpt_path='/admin/code/cassle_initial.ckpt'
+    initial_ckpt_path='/home/admin/code/cassle_initial.ckpt'
     trainer_tmp=Trainer(max_epochs=0)
     trainer_tmp.fit(model,train_loaders, val_loader)
     trainer_tmp.save_checkpoint(initial_ckpt_path)

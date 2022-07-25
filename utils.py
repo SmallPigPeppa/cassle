@@ -12,7 +12,7 @@ def get_modified_state_dict(state_dict):
     return modified_state_dict
 
 
-# def get_ckpt():
+
 
 
 if __name__=='__main__':

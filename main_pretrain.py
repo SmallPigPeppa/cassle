@@ -248,7 +248,8 @@ def main():
     # 保存一下初始化
     initial_ckpt_path='/admin/code/cassle_initial.ckpt'
     trainer.save_checkpoint(initial_ckpt_path)
-
+    print('************************************* save initial ckpt ********************************')
+    print(f'initial_ckpt_path:{initial_ckpt_path}')
 
     if args.dali:
         trainer.fit(model, val_dataloaders=val_loader)

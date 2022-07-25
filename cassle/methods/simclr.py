@@ -63,9 +63,9 @@ class SimCLR(BaseModel):
         """
 
         extra_learnable_params = [{"name":"projector","params": self.projector.parameters()}]
-        # return super().learnable_params + extra_learnable_params
+        return super().learnable_params + extra_learnable_params
 
-        return extra_learnable_params
+        # return extra_learnable_params
 
     def forward(self, X: torch.tensor, *args, **kwargs) -> Dict[str, Any]:
         """Performs the forward pass of the encoder, the projector and the predictor.

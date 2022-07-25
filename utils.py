@@ -11,6 +11,10 @@ def get_modified_state_dict(state_dict):
         modified_state_dict[key] = value
     return modified_state_dict
 
+
+# def get_ckpt():
+
+
 if __name__=='__main__':
     import torch.nn as nn
     a=nn.Conv2d(3, 3, kernel_size=1, stride=1, bias=False)

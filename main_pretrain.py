@@ -245,6 +245,10 @@ def main():
     )
 
     model.current_task_idx = args.task_idx
+    # 保存一下初始化
+    initial_ckpt_path='/admin/code/cassle_initial.ckpt'
+    trainer.save_checkpoint(initial_ckpt_path)
+
 
     if args.dali:
         trainer.fit(model, val_dataloaders=val_loader)

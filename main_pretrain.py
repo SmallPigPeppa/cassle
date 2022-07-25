@@ -171,15 +171,16 @@ def main():
             model.encoder.clean_expansions()
         else:
             model.load_state_dict(state_dict, strict=False)
-
+    print('############################################################')
+    print('load initial weight: /home/admin/code/cassle_initial.ckpt')
+    print('############################################################')
+    state_dict_initial = torch.load('/home/admin/code/cassle_initial.ckpt', map_location="cpu")["state_dict"]
+    model.load_state_dict(state_dict_initial, strict=False)
 
     # modified
     if args.num_tasks==0:
         model.encoder.clean_expansions()
         model.encoder.set_expansions(use_expansion=False)
-        print('load initial weight: /home/admin/code/cassle_initial.ckpt')
-        state_dict_initial = torch.load('/home/admin/code/cassle_initial.ckpt', map_location="cpu")["state_dict"]
-        model.load_state_dict(state_dict_initial, strict=False)
     if args.use_expansion:
         model.encoder.set_expansions(use_expansion=True)
     else:

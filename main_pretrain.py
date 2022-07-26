@@ -163,6 +163,9 @@ def main():
     elif args.pretrained_model:
         print(f"Loading previous task checkpoint {args.pretrained_model}...")
         state_dict = torch.load(args.pretrained_model, map_location="cpu")["state_dict"]
+        if args.task_idx == 0:
+            from utils import get_modified_state_dict
+            state_dict = get_modified_state_dict(state_dict)
         model.load_state_dict(state_dict, strict=False)
 
     # print('############################################################')
@@ -175,7 +178,7 @@ def main():
     # model.encoder.set_expansions(use_expansion=False)
 
     # expansion
-    if args.task_idx==0:
+    if args.task_idx == 0:
         model.encoder.clean_expansions()
         model.encoder.set_expansions(use_expansion=False)
     elif args.use_expansion:
@@ -190,14 +193,14 @@ def main():
 
     # use fixed_model_path
     if args.fixed_model_path:
-        model_tmp=MethodClass(**args.__dict__, tasks=tasks if args.split_strategy == "class" else None)
+        model_tmp = MethodClass(**args.__dict__, tasks=tasks if args.split_strategy == "class" else None)
         state_dict_tmp = torch.load(args.fixed_model_path, map_location="cpu")["state_dict"]
         model_tmp.load_state_dict(state_dict_tmp, strict=False)
-        model.frozen_encoder=deepcopy(model_tmp.encoder)
-        model.frozen_projector=deepcopy(model_tmp.projector)
+        model.frozen_encoder = deepcopy(model_tmp.encoder)
+        model.frozen_projector = deepcopy(model_tmp.projector)
     else:
-        model.frozen_encoder=deepcopy(model.encoder)
-        model.frozen_projector=deepcopy(model.projector)
+        model.frozen_encoder = deepcopy(model.encoder)
+        model.frozen_projector = deepcopy(model.projector)
 
     callbacks = []
 

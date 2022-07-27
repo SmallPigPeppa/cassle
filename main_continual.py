@@ -66,7 +66,7 @@ if __name__ == "__main__":
             args["--resume_from_checkpoint"] = ckpt_path
 
     # main task loop
-    use_expansion_tasks=[1,2,3,4]
+    use_expansion_tasks=[]
     for task_idx in range(start_task_idx, num_tasks):
         # 在训练前，在use_expansion_tasks添加我们的expansion训练
         if task_idx in use_expansion_tasks:
@@ -107,7 +107,7 @@ if __name__ == "__main__":
 
         # add pretrained model arg
         # 如果不是第0个任务则使用txt中的起点
-        if task_idx != 0 :
+        if task_idx != 0:
             task_args.pop("--resume_from_checkpoint", None)
             task_args.pop("--pretrained_model", None)
             assert os.path.exists(last_checkpoint_file)

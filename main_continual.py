@@ -107,7 +107,8 @@ if __name__ == "__main__":
 
         # add pretrained model arg
         # 如果不是第0个任务则使用txt中的起点
-        if task_idx != 0:
+        # if task_idx != 0:
+        if task_idx != 0 and task_idx != start_task_idx:
             task_args.pop("--resume_from_checkpoint", None)
             task_args.pop("--pretrained_model", None)
             assert os.path.exists(last_checkpoint_file)
@@ -122,6 +123,7 @@ if __name__ == "__main__":
         # 如果在use expansion 设定的任务中，则手动设定fixed model path
         if task_idx in use_expansion_tasks:
             task_args["--fixed_model_path"] = ckpt_path_before
+
         # 只要不是第0个任务，就需要重参数化
         if task_idx not in [0]:
             task_args["--re_param"] = '    '

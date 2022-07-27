@@ -166,7 +166,11 @@ def main():
         if args.task_idx==1:
             from utils import get_modified_state_dict
             state_dict=get_modified_state_dict(state_dict)
-        model.load_state_dict(state_dict, strict=False)
+            model.load_state_dict(state_dict, strict=False)
+            model.encoder.clean_expansions()
+            model.encoder.set_expansions(use_expansion=False)
+        else:
+            model.load_state_dict(state_dict, strict=False)
 
     # print('############################################################')
     # print('load initial weight: /home/admin/code/cassle_initial.ckpt')

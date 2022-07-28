@@ -179,7 +179,7 @@ def main():
 
     # expansion
     if args.task_idx==0:
-        model.encoder.clean_expansions()
+        # model.encoder.clean_expansions()
         model.encoder.set_expansions(use_expansion=False)
     elif args.use_expansion:
         model.encoder.set_expansions(use_expansion=True)

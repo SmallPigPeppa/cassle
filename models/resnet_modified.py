@@ -164,8 +164,8 @@ class ResNet(nn.Module):
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(512 * block.expansion, num_classes)
 
-        from torchvision.models import resnet18, resnet50
-        self.test=resnet18()
+        # from torchvision.models import resnet18, resnet50
+        # self.test=resnet18()
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):

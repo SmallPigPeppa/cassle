@@ -10,13 +10,14 @@ python3 main_continual.py \
     --gpus 0 \
     --precision 16 \
     --optimizer sgd \
+    --lars \
     --grad_clip_lars \
     --eta_lars 0.02 \
     --exclude_bias_n_norm \
     --scheduler warmup_cosine \
     --lr 0.4 \
     --classifier_lr 0.1 \
-    --weight_decay 0. \
+    --weight_decay 1e-5 \
     --batch_size 256 \
     --num_workers 5 \
     --brightness 0.8 \
@@ -24,7 +25,7 @@ python3 main_continual.py \
     --saturation 0.8 \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
-    --name v57.0-nowd \
+    --name v57.0-initial \
     --project cassle-compare \
     --entity pigpeppa \
     --wandb \

@@ -25,8 +25,8 @@ python3 main_continual.py \
     --saturation 0.8 \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
-    --name debug \
-    --project cassle-official \
+    --name v57.0 \
+    --project cassle-compare \
     --entity pigpeppa \
     --wandb \
     --save_checkpoint \

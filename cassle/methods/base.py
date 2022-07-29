@@ -346,11 +346,12 @@ class BaseModel(pl.LightningModule):
 
         # create optimizer
         weight_decay = self.weight_decay,
-        # ** self.extra_optimizer_args,
+        #
         optimizer = optimizer(
             self.learnable_params,
             lr=self.lr,
-            weight_decay=0.
+            weight_decay=0.,
+            **self.extra_optimizer_args,
         )
         # optionally wrap with lars
         if self.lars:

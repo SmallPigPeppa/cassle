@@ -4,9 +4,9 @@ python3 main_continual.py \
     --data_dir $DATA_DIR \
     --split_strategy class \
     --task_idx 0 \
-    --max_epochs 500 \
+    --max_epochs 1000 \
     --num_tasks 5 \
-    --max_epochs 500 \
+    --max_epochs 1000 \
     --gpus 0 \
     --precision 16 \
     --optimizer sgd \
@@ -25,7 +25,7 @@ python3 main_continual.py \
     --saturation 0.8 \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
-    --name v57.0-good-initial \
+    --name v57.0-1000 \
     --project cassle-compare \
     --entity pigpeppa \
     --wandb \

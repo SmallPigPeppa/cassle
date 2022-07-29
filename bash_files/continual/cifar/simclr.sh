@@ -25,7 +25,7 @@ python3 main_continual.py \
     --saturation 0.8 \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
-    --name v57.0-problem \
+    --name v57.0-good-initial \
     --project cassle-compare \
     --entity pigpeppa \
     --wandb \

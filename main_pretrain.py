@@ -165,11 +165,11 @@ def main():
         state_dict = torch.load(args.pretrained_model, map_location="cpu")["state_dict"]
         model.load_state_dict(state_dict, strict=False)
 
-    # print('############################################################')
-    # print('load initial weight: /home/admin/code/cassle_initial.ckpt')
-    # print('############################################################')
-    # state_dict_initial = torch.load('/home/admin/code/cassle_initial.ckpt', map_location="cpu")["state_dict"]
-    # model.load_state_dict(state_dict_initial, strict=False)
+    print('############################################################')
+    print('load initial weight: /home/admin/code/cassle_initial.ckpt')
+    print('############################################################')
+    state_dict_initial = torch.load('/home/admin/code/cassle_initial.ckpt', map_location="cpu")["state_dict"]
+    model.load_state_dict(state_dict_initial, strict=False)
 
     # model.encoder.clean_expansions()
     # model.encoder.set_expansions(use_expansion=False)

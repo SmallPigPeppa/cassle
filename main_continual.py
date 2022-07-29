@@ -76,7 +76,7 @@ if __name__ == "__main__":
             # 如果不是第一次用expasion，则使用txt中记录的路径
             # 如果start_task_idx 不是从0开始，且第一次使用expansion，说明要用--pretrained_model中的path
             # 否则使用txt中记录的path
-            if task_idx != use_expansion_tasks[0] and start_task_idx!=0:
+            if task_idx != 0 and task_idx!=start_task_idx:
                 task_args.pop("--resume_from_checkpoint", None)
                 task_args.pop("--pretrained_model", None)
                 assert os.path.exists(last_checkpoint_file)

@@ -3,7 +3,7 @@ python3 main_continual.py \
     --encoder resnet18 \
     --data_dir $DATA_DIR \
     --split_strategy class \
-    --task_idx 1 \
+    --task_idx 0 \
     --max_epochs 500 \
     --num_tasks 5 \
     --max_epochs 500 \
@@ -25,8 +25,8 @@ python3 main_continual.py \
     --saturation 0.8 \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
-    --name simclr-cifar100 \
-    --project cassle-v51 \
+    --name simclr-cifar100-10steps \
+    --project cassle-v60 \
     --entity pigpeppa \
     --wandb \
     --save_checkpoint \
@@ -36,4 +36,3 @@ python3 main_continual.py \
     --output_dim 256 \
     --distiller contrastive \
     --disable_knn_eval \
-    --pretrained_model $PRETRAINED_PATH

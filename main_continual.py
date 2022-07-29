@@ -66,7 +66,7 @@ if __name__ == "__main__":
             args["--resume_from_checkpoint"] = ckpt_path
 
     # main task loop
-    use_expansion_tasks=[1,2,3,4]
+    use_expansion_tasks=[1,2,3,4,5,6,7,8,9]
     for task_idx in range(start_task_idx, num_tasks):
         # 在训练前，在use_expansion_tasks添加我们的expansion训练
         if task_idx in use_expansion_tasks:

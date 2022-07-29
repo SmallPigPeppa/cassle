@@ -165,11 +165,11 @@ def main():
         state_dict = torch.load(args.pretrained_model, map_location="cpu")["state_dict"]
         model.load_state_dict(state_dict, strict=False)
 
-    print('############################################################')
-    print('load initial weight: /home/admin/code/cassle_initial.ckpt')
-    print('############################################################')
-    state_dict_initial = torch.load('/home/admin/code/cassle_initial.ckpt', map_location="cpu")["state_dict"]
-    model.load_state_dict(state_dict_initial, strict=False)
+    # print('############################################################')
+    # print('load initial weight: /home/admin/code/cassle_initial.ckpt')
+    # print('############################################################')
+    # state_dict_initial = torch.load('/home/admin/code/cassle_initial.ckpt', map_location="cpu")["state_dict"]
+    # model.load_state_dict(state_dict_initial, strict=False)
 
     # model.encoder.clean_expansions()
     # model.encoder.set_expansions(use_expansion=False)
@@ -179,7 +179,7 @@ def main():
 
     # expansion
     if args.task_idx==0:
-        model.encoder.clean_expansions()
+        # model.encoder.clean_expansions()
         model.encoder.set_expansions(use_expansion=False)
     elif args.use_expansion:
         model.encoder.set_expansions(use_expansion=True)
@@ -251,13 +251,13 @@ def main():
 
     model.current_task_idx = args.task_idx
 
-    # # 保存一下初始化
-    # initial_ckpt_path='/home/admin/code/cassle_initial.ckpt'
-    # trainer_tmp=Trainer(max_epochs=0)
-    # trainer_tmp.fit(model,train_loaders, val_loader)
-    # trainer_tmp.save_checkpoint(initial_ckpt_path)
-    # print('************************************* save initial ckpt ********************************')
-    # print(f'initial_ckpt_path:{initial_ckpt_path}')
+    # 保存一下初始化
+    initial_ckpt_path='/home/admin/code/cassle_initial.ckpt'
+    trainer_tmp=Trainer(max_epochs=0)
+    trainer_tmp.fit(model,train_loaders, val_loader)
+    trainer_tmp.save_checkpoint(initial_ckpt_path)
+    print('************************************* save initial ckpt ********************************')
+    print(f'initial_ckpt_path:{initial_ckpt_path}')
 
     if args.dali:
         trainer.fit(model, val_dataloaders=val_loader)

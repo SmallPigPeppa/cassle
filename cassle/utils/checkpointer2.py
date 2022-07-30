@@ -131,7 +131,7 @@ class Checkpointer(Callback):
             # with open(self.logdir / "last_checkpoint.txt", "w") as f:
             #     f.write(str(ckpt) + "\n" + str(self.json_path))
 
-            with open(self.logdir / "best_checkpoint.txt", "w") as f:
+            with open(self.logdir / "last_checkpoint.txt", "w") as f:
                 f.write(str(ckpt) + "\n" + str(self.json_path))
 
             # self.last_ckpt = ckpt

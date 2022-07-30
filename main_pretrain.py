@@ -25,7 +25,7 @@ except ImportError:
 else:
     _umap_available = True
 
-from cassle.utils.checkpointer import Checkpointer
+from cassle.utils.checkpointer2 import Checkpointer
 from cassle.utils.classification_dataloader import prepare_data as prepare_data_classification
 from cassle.utils.pretrain_dataloader import (
     prepare_dataloader,

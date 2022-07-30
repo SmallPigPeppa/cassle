@@ -159,9 +159,9 @@ class Checkpointer(Callback):
         #     self.save(trainer)
         monitor_candidates = self._monitor_candidates(trainer)
         current_monitor = monitor_candidates.get(self.monitor)
-        print('#################################current_monitor#################################')
-        print(current_monitor)
-        print('###################################################################################')
+        # print('#################################current_monitor#################################')
+        # print(current_monitor)
+        # print('###################################################################################')
         if current_monitor >= self.best_monitor:
             self.best_monitor=current_monitor
             self.save(trainer)

@@ -87,10 +87,10 @@ if __name__ == "__main__":
                 pass
 
             # 学新知识时，不加distill
-            for k in distill_args.keys():
-                args.pop(k, None)
-            # if task_idx != 0 and distill_args:
-            #     task_args.update(distill_args)
+            # for k in distill_args.keys():
+            #     args.pop(k, None)
+            if task_idx != 0 and distill_args:
+                task_args.update(distill_args)
 
             task_args["--task_idx"] = str(task_idx)
 

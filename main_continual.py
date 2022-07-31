@@ -84,11 +84,11 @@ if __name__ == "__main__":
             else:
                 pass
 
-            # 学新知识时，不加distill
-            for k in distill_args.keys():
-                args.pop(k, None)
-            # if task_idx != 0 and distill_args:
-            #     task_args.update(distill_args)
+            # 学新知识时，加distill
+            # for k in distill_args.keys():
+            #     args.pop(k, None)
+            if task_idx != 0 and distill_args:
+                task_args.update(distill_args)
 
             task_args["--task_idx"] = str(task_idx)
 

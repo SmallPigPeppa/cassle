@@ -94,7 +94,7 @@ if __name__ == "__main__":
 
             # 在学习新任务时，使用expansion
             task_args["--use_expansion"] = '    '
-            task_args["--re_param"] = '    '
+            # task_args["--re_param"] = '    '
             ckpt_path_before = task_args["--pretrained_model"]
 
             task_args = dict_to_list(task_args)

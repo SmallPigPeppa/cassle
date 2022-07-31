@@ -53,8 +53,9 @@ class Checkpointer(Callback):
         self.logdir = Path(logdir)
         self.frequency = frequency
         self.keep_previous_checkpoints = keep_previous_checkpoints
-        self.monitor='val_acc1'
-        self.best_monitor=0.
+        # self.monitor='val_acc1'
+        self.monitor='val_loss'
+        self.best_monitor=1000.
 
     @staticmethod
     def add_checkpointer_args(parent_parser: ArgumentParser):
@@ -162,7 +163,7 @@ class Checkpointer(Callback):
         # print('#################################current_monitor#################################')
         # print(current_monitor)
         # print('###################################################################################')
-        if current_monitor >= self.best_monitor:
+        if current_monitor <= self.best_monitor:
             self.best_monitor=current_monitor
             self.save(trainer)
 

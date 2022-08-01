@@ -26,7 +26,7 @@ python3 main_continual.py \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
     --name simclr-cifar100 \
-    --project cassle-v68 \
+    --project cassle-v72 \
     --entity pigpeppa \
     --wandb \
     --save_checkpoint \
@@ -36,4 +36,3 @@ python3 main_continual.py \
     --output_dim 256 \
     --distiller contrastive \
     --disable_knn_eval \
-    --pretrained_model $PRETRAINED_PATH

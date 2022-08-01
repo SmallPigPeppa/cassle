@@ -74,7 +74,7 @@ if __name__ == "__main__":
             task_args = copy.deepcopy(args)
 
             # 如果不是第一次用expasion，则使用txt中记录的路径
-            if task_idx != use_expansion_tasks[0]:
+            if task_idx != 0 and task_idx!=start_task_idx:
                 task_args.pop("--resume_from_checkpoint", None)
                 task_args.pop("--pretrained_model", None)
                 assert os.path.exists(last_checkpoint_file)
@@ -93,9 +93,12 @@ if __name__ == "__main__":
             task_args["--task_idx"] = str(task_idx)
 
             # 在学习新任务时，使用expansion
-            task_args["--use_expansion"] = '    '
-            task_args["--re_param"] = '    '
+            # task_args["--use_expansion"] = '    '
+            # task_args["--re_param"] = '    '
             ckpt_path_before = task_args["--pretrained_model"]
+            # 使用随机初始化
+            task_args.pop("--pretrained_model", None)
+            # task_args["--re_param"] = '    '
 
             task_args = dict_to_list(task_args)
 
@@ -123,8 +126,8 @@ if __name__ == "__main__":
         if task_idx in use_expansion_tasks:
             task_args["--fixed_model_path"] = ckpt_path_before
         # 只要不是第0个任务，就需要重参数化
-        if task_idx not in [0]:
-            task_args["--re_param"] = '    '
+        # if task_idx not in [0]:
+        #     task_args["--re_param"] = '    '
 
 
         task_args = dict_to_list(task_args)

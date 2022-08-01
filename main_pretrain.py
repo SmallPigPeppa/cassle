@@ -174,19 +174,19 @@ def main():
     # model.encoder.clean_expansions()
     # model.encoder.set_expansions(use_expansion=False)
 
-    # expansion
-    if args.task_idx==0:
-        model.encoder.clean_expansions()
-        model.encoder.set_expansions(use_expansion=False)
-    elif args.use_expansion:
-        model.encoder.set_expansions(use_expansion=True)
-    else:
-        model.encoder.set_expansions(use_expansion=False)
-
-    # re_param
-    if args.re_param:
-        model.encoder.re_params()
-        model.encoder.clean_expansions()
+    # # expansion
+    # if args.task_idx==0:
+    #     model.encoder.clean_expansions()
+    #     model.encoder.set_expansions(use_expansion=False)
+    # elif args.use_expansion:
+    #     model.encoder.set_expansions(use_expansion=True)
+    # else:
+    #     model.encoder.set_expansions(use_expansion=False)
+    #
+    # # re_param
+    # if args.re_param:
+    #     model.encoder.re_params()
+    #     model.encoder.clean_expansions()
 
     # use fixed_model_path
     if args.fixed_model_path:

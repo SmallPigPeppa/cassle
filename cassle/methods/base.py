@@ -158,8 +158,8 @@ class BaseModel(pl.LightningModule):
             self.warmup_start_lr = self.warmup_start_lr * self.accumulate_grad_batches
 
         assert encoder in ["resnet18", "resnet50"]
-        # from torchvision.models import resnet18, resnet50
-        from models.resnet_modified import resnet18, resnet50
+        from torchvision.models import resnet18, resnet50
+        # from models.resnet_modified import resnet18, resnet50
         # from models.resnet import resnet18, resnet50
 
         self.base_model = {"resnet18": resnet18, "resnet50": resnet50}[encoder]
@@ -271,6 +271,24 @@ class BaseModel(pl.LightningModule):
             assert new_task >= self._current_task_idx
         self._current_task_idx = new_task
 
+    @property
+    def learnable_params(self) -> List[Dict[str, Any]]:
+        """Defines learnable parameters for the base class.
+
+        Returns:
+            List[Dict[str, Any]]:
+                list of dicts containing learnable parameters and possible settings.
+        """
+
+        return [
+            {"name": "encoder", "params": self.encoder.parameters()},
+            {
+                "name": "classifier",
+                "params": self.classifier.parameters(),
+                "lr": self.classifier_lr,
+                "weight_decay": 0,
+            },
+        ]
     # @property
     # def learnable_params(self) -> List[Dict[str, Any]]:
     # # def test(self) -> List[Dict[str, Any]]:
@@ -345,11 +363,11 @@ class BaseModel(pl.LightningModule):
             raise ValueError(f"{self.optimizer} not in (sgd, adam)")
 
         # create optimizer
-        weight_decay = self.weight_decay,
+        # weight_decay = self.weight_decay,
         optimizer = optimizer(
             self.learnable_params,
             lr=self.lr,
-            weight_decay=0.,
+            weight_decay=self.weight_decay,
             **self.extra_optimizer_args,
         )
         # optionally wrap with lars

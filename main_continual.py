@@ -74,7 +74,7 @@ if __name__ == "__main__":
             task_args = copy.deepcopy(args)
 
             # 如果不是第一次用expasion，则使用txt中记录的路径
-            if task_idx != use_expansion_tasks[0]:
+            if task_idx != 0 and task_idx != start_task_idx:
                 task_args.pop("--resume_from_checkpoint", None)
                 task_args.pop("--pretrained_model", None)
                 assert os.path.exists(last_checkpoint_file)

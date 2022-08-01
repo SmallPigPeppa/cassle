@@ -183,6 +183,10 @@ def main():
     else:
         model.encoder.set_expansions(use_expansion=False)
 
+    if args.fix_expansion:
+        model.encoder.set_expansions(use_expansion=True)
+        model.encoder.fix_expansions()
+
     # re_param
     if args.re_param:
         model.encoder.re_params()

@@ -123,6 +123,8 @@ if __name__ == "__main__":
         if task_idx in use_expansion_tasks:
             task_args["--fixed_model_path"] = ckpt_path_before
 
+        task_args["--fix_expansion"] = '    '
+
         # 只要不是第0个任务，就需要重参数化
         # if task_idx not in [0]:
         #     task_args["--re_param"] = '    '

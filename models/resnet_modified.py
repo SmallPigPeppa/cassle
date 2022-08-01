@@ -246,6 +246,12 @@ class ResNet(nn.Module):
                 # print(module)
                 module.clean_expansion()
 
+    def fix_expansions(self):
+        for module in self.modules():
+            if hasattr(module, 'fix_expansion'):
+                # print(module)
+                module.fix_expansion()
+
 def _resnet(arch, block, layers, pretrained, progress, **kwargs):
     model = ResNet(block, layers, **kwargs)
     if pretrained:

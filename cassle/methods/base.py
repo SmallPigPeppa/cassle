@@ -258,6 +258,7 @@ class BaseModel(pl.LightningModule):
         parser.add_argument("--use_expansion", action="store_true")
         parser.add_argument("--re_param", action="store_true")
         parser.add_argument("--use_original_fixed_model", action="store_true")
+        parser.add_argument("--fix_expansion", action="store_true")
 
         return parent_parser
 

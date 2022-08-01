@@ -184,7 +184,6 @@ def main():
         model.encoder.set_expansions(use_expansion=False)
 
     if args.fix_expansion:
-        model.encoder.set_expansions(use_expansion=True)
         model.encoder.fix_expansions()
 
     # re_param

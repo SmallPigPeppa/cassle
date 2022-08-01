@@ -41,8 +41,9 @@ class Conv3x3_mofied(nn.Module):
         # self.expansion_1x1.weight.data.zero_()
 
     def fix_expansion(self):
-        for pg in self.expansion_1x1.parameters():
-            pg.requires_grad = False
+        # for pg in self.expansion_1x1.parameters():
+        #     pg.requires_grad = False
+        self.use_expansion = True
 
     def forward(self, x):
         if not self.use_expansion:

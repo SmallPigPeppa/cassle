@@ -3,7 +3,7 @@ python3 main_continual.py \
     --encoder resnet18 \
     --data_dir $DATA_DIR \
     --split_strategy class \
-    --task_idx 1 \
+    --task_idx 0 \
     --max_epochs 1 \
     --num_tasks 5 \
     --max_epochs 1 \

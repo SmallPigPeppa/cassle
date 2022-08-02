@@ -73,7 +73,7 @@ def contrastive_distill_wrapper(Method=object):
 
 
         def training_epoch_end(self, training_step_outputs):
-            if self.current_epoch == 250:
+            if self.current_epoch == 20:
                 self.encoder.re_params()
                 self.encoder.clean_expansions()
                 self.encoder.set_expansions(use_expansion=False)

@@ -33,6 +33,7 @@ class Checkpointer(Callback):
         logdir: Union[str, Path] = Path("trained_models"),
         frequency: int = 1,
         keep_previous_checkpoints: bool = False,
+        task_idx: int = 1,
     ):
         """Custom checkpointer callback that stores checkpoints in an easier to access way.
 
@@ -54,8 +55,8 @@ class Checkpointer(Callback):
         self.frequency = frequency
         self.keep_previous_checkpoints = keep_previous_checkpoints
         # self.monitor='val_acc1'
-        self.monitor='val_loss'
-        self.best_monitor=1000.
+        self.monitor=f'val_acc1_task{task_idx}'
+        self.best_monitor=0.
 
     @staticmethod
     def add_checkpointer_args(parent_parser: ArgumentParser):
@@ -163,7 +164,7 @@ class Checkpointer(Callback):
         # print('#################################current_monitor#################################')
         # print(current_monitor)
         # print('###################################################################################')
-        if current_monitor <= self.best_monitor:
+        if current_monitor >= self.best_monitor:
             self.best_monitor=current_monitor
             self.save(trainer)
 

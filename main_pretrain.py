@@ -224,6 +224,7 @@ def main():
             args,
             logdir=args.checkpoint_dir,
             frequency=args.checkpoint_frequency,
+            task_idx=args.task_idx
         )
         callbacks.append(ckpt)
 

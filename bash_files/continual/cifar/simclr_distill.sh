@@ -25,7 +25,7 @@ python3 main_continual.py \
     --saturation 0.8 \
     --hue 0.2 \
     --gaussian_prob 0.0 0.0 \
-    --name simclr-cifar100-v62 \
+    --name simclr-cifar100-v73 \
     --project cassle-v62 \
     --entity pigpeppa \
     --wandb \

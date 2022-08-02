@@ -25,7 +25,7 @@ except ImportError:
 else:
     _umap_available = True
 
-from cassle.utils.checkpointer2 import Checkpointer
+
 from cassle.utils.classification_dataloader import prepare_data as prepare_data_classification
 from cassle.utils.pretrain_dataloader import (
     prepare_dataloader,
@@ -219,13 +219,28 @@ def main():
         callbacks.append(lr_monitor)
 
     if args.save_checkpoint:
-        # save checkpoint on last epoch only
-        ckpt = Checkpointer(
-            args,
-            logdir=args.checkpoint_dir,
-            frequency=args.checkpoint_frequency,
-            task_idx=args.task_idx
-        )
+        # # save checkpoint on last epoch only
+        # ckpt = Checkpointer(
+        #     args,
+        #     logdir=args.checkpoint_dir,
+        #     frequency=args.checkpoint_frequency,
+        #     task_idx=args.task_idx
+        # )
+        # callbacks.append(ckpt)
+        if args.fixed_model_path:
+            from cassle.utils.checkpointer import Checkpointer
+            ckpt = Checkpointer(
+                args,
+                logdir=args.checkpoint_dir,
+                frequency=args.checkpoint_frequency,
+            )
+        else:
+            from cassle.utils.checkpointer2 import Checkpointer
+            ckpt = Checkpointer(
+                args,
+                logdir=args.checkpoint_dir,
+                frequency=args.checkpoint_frequency,
+            )
         callbacks.append(ckpt)
 
     if args.auto_umap:

@@ -71,4 +71,11 @@ def contrastive_distill_wrapper(Method=object):
 
             return out["loss"] + self.distill_lamb * distill_loss
 
+
+        def training_epoch_end(self, training_step_outputs):
+            if self.current_epoch == 250:
+                self.encoder.re_params()
+                self.encoder.clean_expansions()
+                self.encoder.set_expansions(use_expansion=False)
+
     return ContrastiveDistillWrapper

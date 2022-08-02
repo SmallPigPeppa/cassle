@@ -174,6 +174,9 @@ def main():
     # model.encoder.clean_expansions()
     # model.encoder.set_expansions(use_expansion=False)
 
+    if args.task_idx==1 and not args.fixed_model_path:
+        model.encoder.clean_expansions()
+
     # expansion
     if args.task_idx==0:
         model.encoder.clean_expansions()

@@ -15,6 +15,7 @@ class Conv3x3_mofied(nn.Module):
         # nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=2, bias=False)
         self.conv2d_3x3 = conv3x3(in_planes, out_planes, stride=stride, groups=groups, dilation=dilation)
         self.expansion_1x1 = nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
+        self.expansion_1x1_2 = nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
         # self.expansion_1x1 = nn.Identity()
         # nn.init.constant_(self.expansion_1x1.weight.data, 0.0)
         # self.expansion_1x1.weight.data.zero_()
@@ -29,6 +30,8 @@ class Conv3x3_mofied(nn.Module):
         else:
             for pg in self.expansion_1x1.parameters():
                 pg.requires_grad = False
+            for pg in self.expansion_1x1_2.parameters():
+                pg.requires_grad = False
 
     def re_param(self):
         kernel = self.get_equivalent_kernel_bias()
@@ -38,6 +41,9 @@ class Conv3x3_mofied(nn.Module):
     def clean_expansion(self):
         nn.init.constant_(self.expansion_1x1.weight.data, 0.0)
         self.expansion_1x1.zero_grad()
+
+        nn.init.constant_(self.expansion_1x1_2.weight.data, 0.0)
+        self.expansion_1x1_2.zero_grad()
         # self.expansion_1x1.weight.data.zero_()
 
     def forward(self, x):
@@ -46,14 +52,15 @@ class Conv3x3_mofied(nn.Module):
         else:
             with torch.no_grad():
                 out1 = self.conv2d_3x3(x)
-            return self.expansion_1x1(x) + out1
+            return self.expansion_1x1(x) +self.expansion_1x1_2(x)+ out1
         # return self.conv2d_3x3(x)
 
     def get_equivalent_kernel_bias(self):
         # bias no use
         kernel3x3 = self.conv2d_3x3.weight
         kernel1x1 = self.expansion_1x1.weight
-        return kernel3x3 + self._pad_1x1_to_3x3_tensor(kernel1x1)
+        kernel1x1_2 = self.expansion_1x1.weight
+        return kernel3x3 + self._pad_1x1_to_3x3_tensor(kernel1x1)+self._pad_1x1_to_3x3_tensor(kernel1x1_2)
 
     def _pad_1x1_to_3x3_tensor(self, kernel1x1):
         if kernel1x1 is None:

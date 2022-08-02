@@ -97,7 +97,7 @@ if __name__ == "__main__":
             # task_args["--re_param"] = '    '
             ckpt_path_before = task_args["--pretrained_model"]
             # 使用随机初始化
-            task_args.pop("--pretrained_model", None)
+            # task_args.pop("--pretrained_model", None)
             # task_args["--re_param"] = '    '
 
             task_args = dict_to_list(task_args)

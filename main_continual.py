@@ -107,7 +107,7 @@ if __name__ == "__main__":
 
         # add pretrained model arg
         # 如果不是第0个任务则使用txt中的起点
-        if task_idx != 0 :
+        if task_idx != 0 and task_idx!= start_task_idx :
             task_args.pop("--resume_from_checkpoint", None)
             task_args.pop("--pretrained_model", None)
             assert os.path.exists(last_checkpoint_file)

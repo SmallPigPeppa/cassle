@@ -186,7 +186,7 @@ def main():
     # re_param
     if args.re_param:
         model.encoder.re_params()
-        model.encoder.clean_expansions()
+        # model.encoder.clean_expansions()
 
     # use fixed_model_path
     if args.fixed_model_path:

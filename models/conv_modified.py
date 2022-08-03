@@ -36,7 +36,8 @@ class Conv3x3_mofied(nn.Module):
         self.clean_expansion()
 
     def clean_expansion(self):
-        nn.init.constant_(self.expansion_1x1.weight.data, 0.0)
+        # nn.init.constant_(self.expansion_1x1.weight.data, 0.0)
+        nn.init.kaiming_normal_(self.expansion_1x1.weight, mode='fan_out', nonlinearity='relu')
         self.expansion_1x1.zero_grad()
         # self.expansion_1x1.weight.data.zero_()
 

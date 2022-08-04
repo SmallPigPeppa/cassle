@@ -8,7 +8,7 @@ python3 main_linear.py \
     --gpus 0 \
     --precision 16 \
     --optimizer sgd \
-    --scheduler warmup_cosine
+    --scheduler warmup_cosine \
     --lr 1.0 \
     --weight_decay 0 \
     --batch_size 256 \

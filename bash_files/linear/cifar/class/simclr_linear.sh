@@ -8,9 +8,8 @@ python3 main_linear.py \
     --gpus 0 \
     --precision 16 \
     --optimizer sgd \
-    --scheduler step \
+    --scheduler warmup_cosine
     --lr 1.0 \
-    --lr_decay_steps 60 80 \
     --weight_decay 0 \
     --batch_size 256 \
     --num_workers 7 \
@@ -20,3 +19,6 @@ python3 main_linear.py \
     --entity pigpeppa \
     --wandb \
     --save_checkpoint
+
+#    --scheduler step \
+#    --lr_decay_steps 60 80 \

@@ -7,7 +7,8 @@ from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import LearningRateMonitor
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.plugins import DDPPlugin
-from torchvision.models import resnet18, resnet50
+# from torchvision.models import resnet18, resnet50
+from models.resnet_modified import resnet18, resnet50
 
 from cassle.args.setup import parse_args_linear
 

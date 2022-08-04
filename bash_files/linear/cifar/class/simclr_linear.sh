@@ -14,7 +14,6 @@ python3 main_linear.py \
     --weight_decay 0 \
     --batch_size 256 \
     --num_workers 7 \
-    --dali \
     --name v51 \
     --pretrained_feature_extractor $PRETRAINED_PATH \
     --project cassle-eval \

@@ -60,7 +60,7 @@ def main():
         del state[k]
     backbone.load_state_dict(state, strict=False)
 
-    backbone.re_params()
+    # backbone.re_params()
 
     print(f"Loaded {ckpt_path}")
 

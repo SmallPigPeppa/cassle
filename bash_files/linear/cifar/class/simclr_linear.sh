@@ -21,5 +21,6 @@ python3 main_linear.py \
     --wandb \
     --save_checkpoint
 
+
 #    --scheduler step \
 #    --lr_decay_steps 60 80 \

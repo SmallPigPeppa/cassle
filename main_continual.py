@@ -66,7 +66,8 @@ if __name__ == "__main__":
             args["--resume_from_checkpoint"] = ckpt_path
 
     # main task loop
-    use_expansion_tasks=[1,3,4]
+    use_expansion_tasks = [1, 2, 3, 4]
+    use_expansion_tasks2 = [1, 3, 4]
     for task_idx in range(start_task_idx, num_tasks):
         # 在训练前，在use_expansion_tasks添加我们的expansion训练
         if task_idx in use_expansion_tasks:
@@ -93,7 +94,8 @@ if __name__ == "__main__":
             task_args["--task_idx"] = str(task_idx)
             # task_args["--max_epochs"]='800'
             # 在学习新任务时，使用expansion
-            task_args["--use_expansion"] = '    '
+            if task_idx in use_expansion_tasks2:
+                task_args["--use_expansion"] = '    '
             task_args["--re_param"] = '    '
             ckpt_path_before = task_args["--pretrained_model"]
 
@@ -107,7 +109,7 @@ if __name__ == "__main__":
 
         # add pretrained model arg
         # 如果不是第0个任务则使用txt中的起点
-        if task_idx != 0 :
+        if task_idx != 0:
             task_args.pop("--resume_from_checkpoint", None)
             task_args.pop("--pretrained_model", None)
             assert os.path.exists(last_checkpoint_file)
@@ -125,7 +127,6 @@ if __name__ == "__main__":
         # 只要不是第0个任务，就需要重参数化
         if task_idx not in [0]:
             task_args["--re_param"] = '    '
-
 
         task_args = dict_to_list(task_args)
 

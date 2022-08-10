@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
         # add use_expansion and re_reparameterize
 
-        if task_idx in [1,2,3,4]:
+        if task_idx in [1,3,4]:
             task_args['--use_expansion'] = '   '
         # use re_paramaterize after task1
         # if task_idx in [1,2,3,4]:

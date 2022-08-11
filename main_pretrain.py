@@ -38,7 +38,7 @@ from cassle.utils.pretrain_dataloader import (
 
 
 def main():
-    seed_everything(5)
+    seed_everything(0)
 
     args = parse_args_pretrain()
 
@@ -53,6 +53,7 @@ def main():
     if args.split_strategy == "class":
         assert args.num_classes % args.num_tasks == 0
         tasks = torch.randperm(args.num_classes).chunk(args.num_tasks)
+        print(tasks)
 
     # pretrain and online eval dataloaders
     if not args.dali:

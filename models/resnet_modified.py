@@ -226,17 +226,17 @@ class ResNet(nn.Module):
     def forward(self, x):
         return self._forward_impl(x)
 
-    def active_expansion(self,use_expansion=True):
+    def set_expansions(self,use_expansion=True):
         for module in self.modules():
             if hasattr(module, 'set_expansion'):
                 # print(module)
                 module.set_expansion(use_expansion=use_expansion)
 
-    def reparameterize(self):
+    def re_params(self):
         for module in self.modules():
-            if hasattr(module, 're_parameterize'):
+            if hasattr(module, 're_param'):
                 # print(module)
-                module.re_parameterize()
+                module.re_param()
 
     def zero_expansions(self):
         for module in self.modules():
@@ -440,7 +440,7 @@ if __name__=='__main__':
     output=resnet_m(input)
     print(output)
     # 重参数化
-    resnet_m.reparameterize()
+    resnet_m.re_params()
     output=resnet_m(input)
     print(output)
     # 关闭expansion

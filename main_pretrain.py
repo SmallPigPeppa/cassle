@@ -166,13 +166,16 @@ def main():
         model.load_state_dict(state_dict, strict=False)
 
     # paramaterize after load weight
+    if args.task_idx==1:
+        model.encoder.zero_expansions()
+
     if args.use_expansion:
-        model.encoder.active_expansion()
+        model.encoder.set_expansions(use_expansion=True)
     else:
-        model.encoder.active_expansion(use_expansion=False)
+        model.encoder.set_expansions(use_expansion=False)
 
     if args.re_paramaterize:
-        model.encoder.reparameterize()
+        model.encoder.re_params()
 
 
 

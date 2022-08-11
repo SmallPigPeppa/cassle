@@ -66,7 +66,7 @@ if __name__ == "__main__":
             args["--resume_from_checkpoint"] = ckpt_path
 
     # main task loop
-    use_expansion_tasks=[1,2,3,4]
+    use_expansion_tasks = [1, 2, 3, 4]
     for task_idx in range(start_task_idx, num_tasks):
         # 在训练前，在use_expansion_tasks添加我们的expansion训练
         if task_idx in use_expansion_tasks:
@@ -91,10 +91,12 @@ if __name__ == "__main__":
             #     task_args.update(distill_args)
 
             task_args["--task_idx"] = str(task_idx)
-            task_args["--max_epochs"]='800'
+            task_args["--max_epochs"] = '800'
             # 在学习新任务时，使用expansion
-            task_args["--use_expansion"] = '    '
-            task_args["--re_param"] = '    '
+            if task_idx in [1, 3, 4]:
+                task_args["--use_expansion"] = '    '
+            if task_idx in [1, 2, 3, 4]:
+                task_args["--re_param"] = '    '
             ckpt_path_before = task_args["--pretrained_model"]
 
             task_args = dict_to_list(task_args)

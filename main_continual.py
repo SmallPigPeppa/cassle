@@ -91,7 +91,7 @@ if __name__ == "__main__":
             #     task_args.update(distill_args)
 
             task_args["--task_idx"] = str(task_idx)
-            task_args["--max_epochs"]='800'
+            # task_args["--max_epochs"]='800'
             # 在学习新任务时，使用expansion
             task_args["--use_expansion"] = '    '
             task_args["--re_param"] = '    '

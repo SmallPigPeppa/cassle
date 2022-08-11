@@ -66,37 +66,96 @@ if __name__ == "__main__":
             args["--resume_from_checkpoint"] = ckpt_path
 
     # main task loop
-    for task_idx in range(start_task_idx, num_tasks):
+    for task_idx in [0, 1, -2, 2, 3,  4]:
         print(f"\n#### Starting Task {task_idx} ####")
 
         task_args = copy.deepcopy(args)
+        if task_idx < 0:
+            task_idx = -1 * task_idx
+            print(f"\n#### Starting Task {task_idx} ####")
 
-        # add pretrained model arg
-        if task_idx != 0 and task_idx != start_task_idx:
-            task_args.pop("--resume_from_checkpoint", None)
-            task_args.pop("--pretrained_model", None)
-            assert os.path.exists(last_checkpoint_file)
-            ckpt_path = open(last_checkpoint_file).readlines()[0].rstrip()
-            task_args["--pretrained_model"] = ckpt_path
+            task_args = copy.deepcopy(args)
 
-        if task_idx != 0 and distill_args:
-            task_args.update(distill_args)
+            # add pretrained model arg
+            if task_idx != 0 and task_idx != start_task_idx:
+                task_args.pop("--resume_from_checkpoint", None)
+                task_args.pop("--pretrained_model", None)
+                assert os.path.exists(last_checkpoint_file)
+                ckpt_path = open(last_checkpoint_file).readlines()[0].rstrip()
+                task_args["--pretrained_model"] = ckpt_path
 
-        # add use_expansion and re_reparameterize
+            if task_idx != 0 and distill_args:
+                task_args.update(distill_args)
 
-        if task_idx in [1,3,4]:
-            task_args['--use_expansion'] = '   '
-        # use re_paramaterize after task1
-        if task_idx in [2,3,4]:
-            task_args['--re_paramaterize'] = '   '
+            task_args["--task_idx"] = str(task_idx)
+            task_args = dict_to_list(task_args)
 
-        # if task_idx == 1 :
-        #     task_args['--use_expansion'] = '   '
-        # # use re_paramaterize after task1
-        # if task_idx ==2:
-        #     task_args['--re_paramaterize'] = '   '
+            run_bash_command(task_args)
+        else:
+            print(f"\n#### Starting Task {task_idx} ####")
 
-        task_args["--task_idx"] = str(task_idx)
-        task_args = dict_to_list(task_args)
+            task_args = copy.deepcopy(args)
 
-        run_bash_command(task_args)
+            # add pretrained model arg
+            if task_idx != 0 and task_idx != start_task_idx:
+                task_args.pop("--resume_from_checkpoint", None)
+                task_args.pop("--pretrained_model", None)
+                assert os.path.exists(last_checkpoint_file)
+                ckpt_path = open(last_checkpoint_file).readlines()[0].rstrip()
+                task_args["--pretrained_model"] = ckpt_path
+
+            if task_idx != 0 and distill_args:
+                task_args.update(distill_args)
+
+            # add use_expansion and re_reparameterize
+
+            if task_idx in [1, 2, 3, 4]:
+                task_args['--use_expansion'] = '   '
+            # use re_paramaterize after task1
+            if task_idx in [2, 3, 4]:
+                task_args['--re_paramaterize'] = '   '
+
+            # if task_idx == 1 :
+            #     task_args['--use_expansion'] = '   '
+            # # use re_paramaterize after task1
+            # if task_idx ==2:
+            #     task_args['--re_paramaterize'] = '   '
+
+            task_args["--task_idx"] = str(task_idx)
+            task_args = dict_to_list(task_args)
+
+            run_bash_command(task_args)
+    # for task_idx in range(start_task_idx, num_tasks):
+    #     print(f"\n#### Starting Task {task_idx} ####")
+    #
+    #     task_args = copy.deepcopy(args)
+    #
+    #     # add pretrained model arg
+    #     if task_idx != 0 and task_idx != start_task_idx:
+    #         task_args.pop("--resume_from_checkpoint", None)
+    #         task_args.pop("--pretrained_model", None)
+    #         assert os.path.exists(last_checkpoint_file)
+    #         ckpt_path = open(last_checkpoint_file).readlines()[0].rstrip()
+    #         task_args["--pretrained_model"] = ckpt_path
+    #
+    #     if task_idx != 0 and distill_args:
+    #         task_args.update(distill_args)
+    #
+    #     # add use_expansion and re_reparameterize
+    #
+    #     if task_idx in [1, 3, 4]:
+    #         task_args['--use_expansion'] = '   '
+    #     # use re_paramaterize after task1
+    #     if task_idx in [2, 3, 4]:
+    #         task_args['--re_paramaterize'] = '   '
+    #
+    #     # if task_idx == 1 :
+    #     #     task_args['--use_expansion'] = '   '
+    #     # # use re_paramaterize after task1
+    #     # if task_idx ==2:
+    #     #     task_args['--re_paramaterize'] = '   '
+    #
+    #     task_args["--task_idx"] = str(task_idx)
+    #     task_args = dict_to_list(task_args)
+    #
+    #     run_bash_command(task_args)

@@ -177,7 +177,15 @@ def main():
     if args.re_paramaterize:
         model.encoder.re_params()
 
-
+    # if args.fixed_model_path:
+    #     model_tmp=MethodClass(**args.__dict__, tasks=tasks if args.split_strategy == "class" else None)
+    #     state_dict_tmp = torch.load(args.fixed_model_path, map_location="cpu")["state_dict"]
+    #     model_tmp.load_state_dict(state_dict_tmp, strict=False)
+    #     model.frozen_encoder=deepcopy(model_tmp.encoder)
+    #     model.frozen_projector=deepcopy(model_tmp.projector)
+    # else:
+    #     model.frozen_encoder=deepcopy(model.encoder)
+    #     model.frozen_projector=deepcopy(model.projector)
 
 
     callbacks = []

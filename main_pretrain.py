@@ -166,10 +166,10 @@ def main():
         model.load_state_dict(state_dict, strict=False)
 
     # paramaterize after load weight
-    if args.task_idx==1:
+    if args.task_idx==0:
         model.encoder.zero_expansions()
-
-    if args.use_expansion:
+        model.encoder.set_expansions(use_expansion=False)
+    elif args.use_expansion:
         model.encoder.set_expansions(use_expansion=True)
     else:
         model.encoder.set_expansions(use_expansion=False)

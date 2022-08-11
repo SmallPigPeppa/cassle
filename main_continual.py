@@ -66,8 +66,8 @@ if __name__ == "__main__":
             args["--resume_from_checkpoint"] = ckpt_path
 
     # main task loop
-    for task_idx in [0, 1, -2, 2, 3,  4]:
-        print(f"\n#### Starting Task {task_idx} ####")
+    for task_idx in [0, -1, 1, -2, 2, -3, 3, -4, 4]:
+        # print(f"\n#### Starting Task {task_idx} ####")
 
         task_args = copy.deepcopy(args)
         if task_idx < 0:

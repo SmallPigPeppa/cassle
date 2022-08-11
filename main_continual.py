@@ -66,7 +66,7 @@ if __name__ == "__main__":
             args["--resume_from_checkpoint"] = ckpt_path
 
     # main task loop
-    for task_idx in [0, -1, 1, -2, 2, -3, 3, -4, 4]:
+    for task_idx in [0, 1, 2, 3, 4]:
         # print(f"\n#### Starting Task {task_idx} ####")
 
         task_args = copy.deepcopy(args)
@@ -88,7 +88,7 @@ if __name__ == "__main__":
                 task_args.update(distill_args)
 
             task_args["--task_idx"] = str(task_idx)
-            task_args["--max_epochs"] = '300'
+            task_args["--max_epochs"] = '200'
             task_args = dict_to_list(task_args)
 
             run_bash_command(task_args)

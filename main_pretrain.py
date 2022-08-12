@@ -163,12 +163,17 @@ def main():
     elif args.pretrained_model:
         print(f"Loading previous task checkpoint {args.pretrained_model}...")
         state_dict = torch.load(args.pretrained_model, map_location="cpu")["state_dict"]
+        if args.task_idx == 1:
+            from utils import get_modified_state_dict
+            state_dict = get_modified_state_dict(state_dict)
         model.load_state_dict(state_dict, strict=False)
 
     # paramaterize after load weight
-    if args.task_idx==0:
+    if args.task_idx == 0:
         model.encoder.zero_expansions()
         model.encoder.set_expansions(use_expansion=False)
+    elif args.task_idx == 0:
+        model.encoder.zero_expansions()
     elif args.use_expansion:
         model.encoder.set_expansions(use_expansion=True)
     else:
@@ -176,9 +181,6 @@ def main():
 
     if args.re_paramaterize:
         model.encoder.re_params()
-
-
-
 
     callbacks = []
 

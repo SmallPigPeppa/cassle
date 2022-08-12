@@ -37,8 +37,15 @@ if __name__=='__main__':
     key1=[key for key,_ in state1.items()]
     key2=[key for key,_ in state2.items()]
     key3=[]
+    key4=[]
     for k in key2:
         if k not in key1:
             print(k)
             key3.append(k)
     print(len(key3))
+
+    for k in key1:
+        if k not in key2:
+            print(k)
+            key4.append(k)
+    print(len(key4))

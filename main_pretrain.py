@@ -52,7 +52,7 @@ def main():
     tasks = None
     if args.split_strategy == "class":
         assert args.num_classes % args.num_tasks == 0
-        tasks = torch.randperm(args.num_classes).chunk(args.num_tasks)
+        tasks = torch.tensor(list(range(args.num_classes))).chunk(args.num_tasks)
 
     # pretrain and online eval dataloaders
     if not args.dali:

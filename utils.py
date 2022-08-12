@@ -53,9 +53,9 @@ if __name__=='__main__':
         if 'conv' in k:
             print(k)
 
-    state_new=get_modified_state_dict(state2)
+    state_new=get_modified_state_dict(state1)
     key_new=[key for key,_ in state_new.items()]
     for k in key_new:
-        if k not in key1:
+        if k not in key2:
             print(k)
 

@@ -5,23 +5,23 @@ def get_modified_state_dict(state_dict):
     # modified_resnet=resnet18()
     # modified_resnet_keys=[i for i,_ in modified_resnet.named_parameters()]
     for key, value in state_dict.items():
-        if key not in modified_resnet_keys and 'conv' in key and 'encoder' in key and 'layer' in key:
-
-            a = key.split('.')
-            key = f'{a[0]}.{a[1]}.{a[2]}.{a[3]}.conv2d_3x3.{a[4]}'
-        modified_state_dict[key] = value
+        if 'conv' in key:
+            key_new=key.replace("encoder", "backbone")
+        else:
+            key_new=key
+        modified_state_dict[key_new] = value
     return modified_state_dict
 
-    state = torch.load(ckpt_path)["state_dict"]
-    for k in list(state.keys()):
-        if "encoder" in k:
-            state[k.replace("encoder", "backbone")] = state[k]
-            warnings.warn(
-                "You are using an older checkpoint. Use a new one as some issues might arrise."
-            )
-        if "backbone" in k:
-            state[k.replace("backbone.", "")] = state[k]
-        del state[k]
+    # state = torch.load(ckpt_path)["state_dict"]
+    # for k in list(state.keys()):
+    #     if "encoder" in k:
+    #         state[k.replace("encoder", "backbone")] = state[k]
+    #         warnings.warn(
+    #             "You are using an older checkpoint. Use a new one as some issues might arrise."
+    #         )
+    #     if "backbone" in k:
+    #         state[k.replace("backbone.", "")] = state[k]
+    #     del state[k]
 
 
 if __name__=='__main__':
@@ -52,3 +52,10 @@ if __name__=='__main__':
     for k in key1:
         if 'conv' in k:
             print(k)
+
+    state_new=get_modified_state_dict(state2)
+    key_new=[key for key,_ in state_new.items()]
+    for k in key_new:
+        if k not in key1:
+            print(k)
+

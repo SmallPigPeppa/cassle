@@ -89,6 +89,7 @@ if __name__ == "__main__":
 
             task_args["--task_idx"] = str(task_idx)
             task_args["--max_epochs"] = '100'
+            task_args['--re_paramaterize'] = '   '
             task_args = dict_to_list(task_args)
 
             run_bash_command(task_args)

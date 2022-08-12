@@ -6,7 +6,7 @@ def get_modified_state_dict(state_dict):
     # modified_resnet_keys=[i for i,_ in modified_resnet.named_parameters()]
     for key, value in state_dict.items():
         if 'conv' in key:
-            key_new=key.replace("encoder", "backbone")
+            key_new=key.replace("weight", "conv2d_3x3.weight")
         else:
             key_new=key
         modified_state_dict[key_new] = value

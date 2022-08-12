@@ -84,10 +84,10 @@ if __name__ == "__main__":
 
         # add use_expansion and re_reparameterize
 
-        if task_idx in [1,3,4]:
+        if task_idx in [1,3,5,7,9]:
             task_args['--use_expansion'] = '   '
         # use re_paramaterize after task1
-        if task_idx in [2,3,4]:
+        if task_idx in [2,4,6,8]:
             task_args['--re_paramaterize'] = '   '
 
         # if task_idx == 1 :

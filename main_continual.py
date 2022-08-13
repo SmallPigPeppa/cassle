@@ -66,86 +66,6 @@ if __name__ == "__main__":
             args["--resume_from_checkpoint"] = ckpt_path
 
     # main task loop
-    for task_idx in [0,[-1,1],[-2,2],[-3,3],[-4,4]]:
-        if type(task_idx) is int:
-            print(f"\n#### Starting Task {task_idx} ####")
-            task_args = copy.deepcopy(args)
-
-            # add pretrained model arg
-            if task_idx != 0 and task_idx != start_task_idx:
-                task_args.pop("--resume_from_checkpoint", None)
-                task_args.pop("--pretrained_model", None)
-                assert os.path.exists(last_checkpoint_file)
-                ckpt_path = open(last_checkpoint_file).readlines()[0].rstrip()
-                task_args["--pretrained_model"] = ckpt_path
-
-            if task_idx != 0 and distill_args:
-                task_args.update(distill_args)
-            task_args["--task_idx"] = str(task_idx)
-            task_args = dict_to_list(task_args)
-            run_bash_command(task_args)
-
-        elif type(task_idx) is list:
-            for task_idx_i in task_idx:
-                old_model_path=''
-                if task_idx_i <0:
-                    task_idx_i=-1*task_idx_i
-                    print(f"\n#### Starting Task {task_idx_i} use expansion,no distill ####")
-                    task_args = copy.deepcopy(args)
-                    # add pretrained model arg
-                    if task_idx_i != 0 and task_idx_i != start_task_idx:
-                        task_args.pop("--resume_from_checkpoint", None)
-                        task_args.pop("--pretrained_model", None)
-                        assert os.path.exists(last_checkpoint_file)
-                        ckpt_path = open(last_checkpoint_file).readlines()[0].rstrip()
-                        task_args["--pretrained_model"] = ckpt_path
-
-                    # if task_idx_i != 0 and distill_args:
-                    #     task_args.update(distill_args)
-                    task_args["--task_idx"] = str(task_idx_i)
-                    task_args['--use_expansion'] = '   '
-                    task_args['--re_paramaterize'] = '   '
-                    task_args = dict_to_list(task_args)
-                    run_bash_command(task_args)
-                else:
-                    pass
-        else:
-            raise -1
-
-    for task_idx in range(start_task_idx, num_tasks):
-        print(f"\n#### Starting Task {task_idx} ####")
-
-        task_args = copy.deepcopy(args)
-
-        # add pretrained model arg
-        if task_idx != 0 and task_idx != start_task_idx:
-            task_args.pop("--resume_from_checkpoint", None)
-            task_args.pop("--pretrained_model", None)
-            assert os.path.exists(last_checkpoint_file)
-            ckpt_path = open(last_checkpoint_file).readlines()[0].rstrip()
-            task_args["--pretrained_model"] = ckpt_path
-
-        if task_idx != 0 and distill_args:
-            task_args.update(distill_args)
-
-        # add use_expansion and re_reparameterize
-
-        if task_idx in [1,3,4]:
-            task_args['--use_expansion'] = '   '
-        # use re_paramaterize after task1
-        if task_idx in [2,3,4]:
-            task_args['--re_paramaterize'] = '   '
-
-        # if task_idx == 1 :
-        #     task_args['--use_expansion'] = '   '
-        # # use re_paramaterize after task1
-        # if task_idx ==2:
-        #     task_args['--re_paramaterize'] = '   '
-
-        task_args["--task_idx"] = str(task_idx)
-        task_args = dict_to_list(task_args)
-
-        run_bash_command(task_args)
 
     use_expansion_tasks = [1, 2, 3, 4]
     for task_idx in range(start_task_idx, num_tasks):
@@ -154,29 +74,23 @@ if __name__ == "__main__":
             print(f"\n#### Starting Task {task_idx} ####")
             task_args = copy.deepcopy(args)
 
-            # 如果不是第一次用expasion，则使用txt中记录的路径
             if task_idx != 0 and task_idx != start_task_idx:
                 task_args.pop("--resume_from_checkpoint", None)
                 task_args.pop("--pretrained_model", None)
                 assert os.path.exists(last_checkpoint_file)
                 ckpt_path = open(last_checkpoint_file).readlines()[0].rstrip()
                 task_args["--pretrained_model"] = ckpt_path
-            # 否则，说明是第一次使用expansion，使用默认的pretrained path
-            else:
-                pass
 
             # 学新知识时，不加distill
             for k in distill_args.keys():
                 args.pop(k, None)
-            # if task_idx != 0 and distill_args:
-            #     task_args.update(distill_args)
 
             task_args["--task_idx"] = str(task_idx)
 
             # 在学习新任务时，使用expansion
             task_args["--use_expansion"] = '    '
             task_args["--re_param"] = '    '
-            ckpt_path_before = task_args["--pretrained_model"]
+            old_model_path = task_args["--pretrained_model"]
 
             task_args = dict_to_list(task_args)
 
@@ -202,7 +116,7 @@ if __name__ == "__main__":
 
         # 如果在use expansion 设定的任务中，则手动设定fixed model path
         if task_idx in use_expansion_tasks:
-            task_args["--fixed_model_path"] = ckpt_path_before
+            task_args["--old_model_path"] = old_model_path
         # 只要不是第0个任务，就需要重参数化
         if task_idx not in [0]:
             task_args["--re_param"] = '    '

@@ -4,8 +4,8 @@ python3 main_continual.py \
     --data_dir $DATA_DIR \
     --split_strategy class \
     --task_idx 0 \
-    --max_epochs 500 \
-    --num_tasks 5 \
+    --max_epochs 250 \
+    --num_tasks 10 \
     --gpus 0 \
     --precision 16 \
     --optimizer sgd \

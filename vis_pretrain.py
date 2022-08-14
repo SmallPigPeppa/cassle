@@ -167,7 +167,8 @@ def main():
 
     # visualize feats on task1
     # from tsne_torch import TorchTSNE as TSNE
-    for imgs,labels in task_loader:
+    for batch in task_loader:
+        [imgs,labels]=batch
         print(imgs.shape)
         print(labels.shape)
         break

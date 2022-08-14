@@ -167,9 +167,11 @@ def main():
 
     # visualize feats on task1
     # from tsne_torch import TorchTSNE as TSNE
-    for batch in task_loader:
-        print(batch)
+    for imgs,labels in task_loader:
+        print(imgs.shape)
+        print(labels.shape)
         break
+
     # X = ...  # shape (n_samples, d)
     # X_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(
     #     X)  # returns shape (n_samples, 2)

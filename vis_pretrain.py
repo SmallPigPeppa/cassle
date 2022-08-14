@@ -172,9 +172,12 @@ def main():
     labels_all=[]
     from tqdm import tqdm
     import numpy as np
-    for batch in tqdm(task_loader):
-        imgs=batch[1][0]
-        labels=batch[2]
+    # for batch in tqdm(task_loader):
+    for batch in tqdm(val_loader):
+        # imgs=batch[1][0]
+        # labels=batch[2]
+        imgs=batch[0]
+        labels=batch[1]
         # print(len(batch))
         # print(imgs.shape)
         # print(labels.shape)

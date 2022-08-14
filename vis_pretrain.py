@@ -193,7 +193,7 @@ def main():
 
     feats_all2=[]
     labels_all2=[]
-    for i in range(20,30):
+    for i in range(20,25):
         index_ci = np.where(labels_all == i)[0]
         feats_ci = feats_all[index_ci]
         feats_all2.append(feats_ci)
@@ -206,7 +206,7 @@ def main():
     #     feats_all2)
     feats_emb = TSNE(n_components=2, learning_rate='auto',init = 'random', perplexity = 3).fit_transform(feats_all2)
 
-    for i in tqdm(range(20,30)):
+    for i in tqdm(range(20,25)):
         index_ci = np.where(labels_all2 == i)[0]
         feats_emb_ci = feats_emb[index_ci]
         # feats_ci_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(

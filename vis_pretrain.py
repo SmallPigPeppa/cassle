@@ -168,9 +168,12 @@ def main():
     # visualize feats on task1
     # from tsne_torch import TorchTSNE as TSNE
     for batch in task_loader:
-        [imgs,labels]=batch
+        imgs=batch[0]
+        labels=batch[1]
+        print(len(batch))
         print(imgs.shape)
         print(labels.shape)
+        # z_i=models.
         break
 
     # X = ...  # shape (n_samples, d)

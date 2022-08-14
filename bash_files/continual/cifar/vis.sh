@@ -33,6 +33,5 @@ python3 vis_pretrain.py \
     --temperature 0.2 \
     --proj_hidden_dim 2048 \
     --output_dim 256 \
-    --distiller contrastive \
     --disable_knn_eval \
     --pretrained_model $PRETRAINED_PATH

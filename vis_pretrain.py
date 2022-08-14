@@ -183,8 +183,8 @@ def main():
         break
     feats_all = np.vstack(feats_all)
     labels_all = np.hstack(labels_all)
-    print(feats_all.size)
-    print(labels_all.size)
+    print(feats_all.shape)
+    print(labels_all.shape)
 
 
     # X = ...  # shape (n_samples, d)

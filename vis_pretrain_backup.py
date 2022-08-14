@@ -173,8 +173,8 @@ def main():
     from tqdm import tqdm
     import numpy as np
     for batch in tqdm(val_loader):
-        imgs=batch[1][0]
-        labels=batch[2]
+        imgs=batch[0]
+        labels=batch[1]
         # print(len(batch))
         # print(imgs.shape)
         # print(labels.shape)
@@ -188,27 +188,26 @@ def main():
     print(feats_all.shape)
     print(labels_all.shape)
 
-    feats_emb = TSNE(n_components=2, learning_rate='auto',init = 'random', perplexity = 3).fit_transform(feats_all)
-    # # plot on each class
+    # plot on each class
     import matplotlib.pyplot as plt
-    #
-    # feats_all2=[]
-    # labels_all2=[]
-    # for i in range(20,25):
-    #     index_ci = np.where(labels_all == i)[0]
-    #     feats_ci = feats_all[index_ci]
-    #     feats_all2.append(feats_ci)
-    #     labels_all2.append([i]*len(feats_ci))
-    # feats_all2 = np.vstack(feats_all2)
-    # labels_all2 = np.hstack(labels_all2)
-    #
-    # print(feats_all2.shape,labels_all2.shape)
-    # # feats_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(
-    # #     feats_all2)
-    # feats_emb = TSNE(n_components=2, learning_rate='auto',init = 'random', perplexity = 3).fit_transform(feats_all2)
+
+    feats_all2=[]
+    labels_all2=[]
+    for i in range(20,25):
+        index_ci = np.where(labels_all == i)[0]
+        feats_ci = feats_all[index_ci]
+        feats_all2.append(feats_ci)
+        labels_all2.append([i]*len(feats_ci))
+    feats_all2 = np.vstack(feats_all2)
+    labels_all2 = np.hstack(labels_all2)
+
+    print(feats_all2.shape,labels_all2.shape)
+    # feats_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(
+    #     feats_all2)
+    feats_emb = TSNE(n_components=2, learning_rate='auto',init = 'random', perplexity = 3).fit_transform(feats_all2)
 
     for i in tqdm(range(20,25)):
-        index_ci = np.where(labels_all == i)[0]
+        index_ci = np.where(labels_all2 == i)[0]
         feats_emb_ci = feats_emb[index_ci]
         # feats_ci_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(
         #     feats_ci)  # returns shape (n_samples, 2)

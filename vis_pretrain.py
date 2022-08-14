@@ -181,7 +181,7 @@ def main():
         z_i=out_i["z"]
         feats_all.append(z_i.cpu().detach().numpy())
         labels_all.append(labels.cpu().detach().numpy())
-        break
+        # break
     feats_all = np.vstack(feats_all)
     labels_all = np.hstack(labels_all)
     print(feats_all.shape)

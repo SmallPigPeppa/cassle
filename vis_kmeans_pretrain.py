@@ -210,7 +210,8 @@ def main():
     from sklearn.cluster import KMeans
 
     kmeans = KMeans(n_clusters=5, random_state=0).fit(preprocessing.normalize(feats_all_kmeans))
-    print([i for i in kmeans.labels_])
+    print(str([i for i in kmeans.labels_]))
+
 
     # #
     # # print(feats_all2.shape,labels_all2.shape)

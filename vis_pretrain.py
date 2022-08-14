@@ -167,7 +167,7 @@ def main():
 
     # visualize feats on task1
     # from tsne_torch import TorchTSNE as TSNE
-    for batch in train_loader:
+    for batch in task_loader:
         print(batch)
         break
     # X = ...  # shape (n_samples, d)

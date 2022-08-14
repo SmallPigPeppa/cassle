@@ -120,6 +120,7 @@ if __name__ == "__main__":
         # 只要不是第0个任务，就需要重参数化
         if task_idx not in [0]:
             task_args["--re_param"] = '    '
+        task_args["--use_expansion"] = '    '
 
         task_args = dict_to_list(task_args)
 

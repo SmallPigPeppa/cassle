@@ -166,7 +166,8 @@ def main():
         model.load_state_dict(state_dict, strict=False)
 
     # visualize feats on task1
-    from tsne_torch import TorchTSNE as TSNE
+    # from tsne_torch import TorchTSNE as TSNE
+    from sklearn.manifold import TSNE
     feats_all=[]
     labels_all=[]
     from tqdm import tqdm
@@ -201,8 +202,9 @@ def main():
     labels_all2 = np.hstack(labels_all2)
 
     print(feats_all2.shape,labels_all2.shape)
-    feats_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(
-        feats_all2)
+    # feats_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(
+    #     feats_all2)
+    feats_emb = TSNE(n_components=2, learning_rate='auto',init = 'random', perplexity = 3).fit_transform(feats_all2)
 
     for i in tqdm(range(20,30)):
         index_ci = np.where(labels_all2 == i)[0]

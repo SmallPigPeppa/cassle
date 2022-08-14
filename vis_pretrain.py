@@ -187,14 +187,16 @@ def main():
     print(feats_all.shape)
     print(labels_all.shape)
 
+    feats_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(
+        feats_all)
     # plot on each class
     import matplotlib.pyplot as plt
     for i in tqdm(range(20,40)):
         index_ci = np.where(labels_all == i)[0]
-        feats_ci = feats_all[index_ci]
-        feats_ci_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(
-            feats_ci)  # returns shape (n_samples, 2)
-        plt.scatter(feats_ci_emb[:, 0], feats_ci_emb[:, 1], label=f'class-{i}')
+        feats_emb_ci = feats_emb[index_ci]
+        # feats_ci_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(
+        #     feats_ci)  # returns shape (n_samples, 2)
+        plt.scatter(feats_emb_ci[:, 0], feats_emb_ci[:, 1], label=f'class-{i}')
 
     plt.legend()
     # plt.show()

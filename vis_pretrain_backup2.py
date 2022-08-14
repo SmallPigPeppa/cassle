@@ -179,7 +179,7 @@ def main():
         # print(imgs.shape)
         # print(labels.shape)
         out_i=model(imgs)
-        z_i=out_i["feats"]
+        z_i=out_i["z"]
         feats_all.append(z_i.cpu().detach().numpy())
         labels_all.append(labels.cpu().detach().numpy())
         # break

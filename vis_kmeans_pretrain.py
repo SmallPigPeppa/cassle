@@ -211,6 +211,7 @@ def main():
 
     kmeans = KMeans(n_clusters=5, random_state=0).fit(preprocessing.normalize(feats_all_kmeans))
     print(str([i for i in kmeans.labels_]))
+    print(len(kmeans.labels_))
 
 
     # #

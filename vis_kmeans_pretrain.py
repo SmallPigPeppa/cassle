@@ -212,6 +212,12 @@ def main():
     kmeans = KMeans(n_clusters=5, random_state=0).fit(preprocessing.normalize(feats_all_kmeans))
     print(str([i for i in kmeans.labels_]))
     print(len(kmeans.labels_))
+    dict={'3':20,'4':21,'0':22,'1':23,'2':24}
+    right=0
+    for i,x in enumerate(kmeans.labels_):
+        if labels_all_kmeans[i]==dict[str(x)]:
+            right+=1
+    print('acc:',right/len(kmeans.labels_))
 
 
     # #

@@ -46,9 +46,9 @@ print(f"Experiment directory: {full_experiment_dir}")
 command.extend(["--checkpoint_dir", full_experiment_dir])
 command = " ".join(command)
 # debug
-print('#######################debug###########################')
-print(command)
-print('#######################debug###########################')
+# print('#######################debug###########################')
+# print(command)
+# print('#######################debug###########################')
 
 # run command
 if args.mode == "normal":

@@ -10,7 +10,6 @@ from pytorch_lightning.loggers import WandbLogger
 from cassle.args.setup import parse_args_pretrain
 from cassle.methods import METHODS
 from cassle.distillers import DISTILLERS
-import numpy as np
 
 try:
     from cassle.methods.dali import PretrainABC
@@ -167,10 +166,12 @@ def main():
         model.load_state_dict(state_dict, strict=False)
 
     # visualize feats on task1
-    # from tsne_torch import TorchTSNE as TSNE
+    from tsne_torch import TorchTSNE as TSNE
     feats_all=[]
     labels_all=[]
-    for batch in task_loader:
+    from tqdm import tqdm
+    import numpy as np
+    for batch in tqdm(task_loader):
         imgs=batch[1][0]
         labels=batch[2]
         # print(len(batch))
@@ -185,6 +186,19 @@ def main():
     labels_all = np.hstack(labels_all)
     print(feats_all.shape)
     print(labels_all.shape)
+
+    # plot on each class
+    import matplotlib.pyplot as plt
+    for i in tqdm(range(20,40)):
+        index_ci = np.where(labels_all == i)[0]
+        feats_ci = feats_all[index_ci]
+        feats_ci_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(
+            feats_ci)  # returns shape (n_samples, 2)
+        plt.scatter(feats_ci_emb[:, 0], feats_ci_emb[:, 1], label=f'class-{i}')
+
+    plt.legend()
+    # plt.show()
+    plt.savefig('/home/admin/result.pdf')
 
 
     # X = ...  # shape (n_samples, d)

@@ -169,7 +169,7 @@ def main():
     # from tsne_torch import TorchTSNE as TSNE
     for batch in task_loader:
         print(batch)
-        imgs=batch[1]
+        imgs=batch[1][0]
         labels=batch[2]
         print(len(batch))
         print(imgs.shape)

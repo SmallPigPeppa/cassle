@@ -231,7 +231,7 @@ def main():
     valid_rate = 0
     threshold = 0.05
     # while valid_rate < 0.8:
-    valid_mask = np.where(max_logits >= threshold)
+    valid_mask = np.where(max_logits >= threshold)[0]
     print("threshold:", threshold)
     print("valid_mask:", str(valid_mask))
     print("len(max_logits):",len(max_logits))

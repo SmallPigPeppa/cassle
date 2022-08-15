@@ -12,7 +12,7 @@ class PrototypeClassifier(nn.Module):
             self.prototypes = nn.Parameter(torch.randn(self.num_calsses, self.dim_features))
 
     def forward(self, x):
-        x = x.reshape(-1, 1, self.dim_feature)
+        x = x.reshape(-1, 1, self.dim_features)
         d = torch.pow(x - self.prototypes, 2)
         d = torch.sum(d, dim=2)
         return d

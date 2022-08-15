@@ -168,41 +168,41 @@ def main():
     # visualize feats on task1
     # from tsne_torch import TorchTSNE as TSNE
     from sklearn.manifold import TSNE
-    feats_all=[]
-    labels_all=[]
+    feats_all = []
+    labels_all = []
     from tqdm import tqdm
     import numpy as np
     for batch in tqdm(task_loader):
-    # for batch in tqdm(val_loader):
-        imgs=batch[1][0]
-        labels=batch[2]
+        # for batch in tqdm(val_loader):
+        imgs = batch[1][0]
+        labels = batch[2]
         # imgs=batch[0]
         # labels=batch[1]
         # print(len(batch))
         # print(imgs.shape)
         # print(labels.shape)
-        out_i=model(imgs)
-        z_i=out_i["feats"]
+        out_i = model(imgs)
+        z_i = out_i["feats"]
         feats_all.append(z_i.cpu().detach().numpy())
         labels_all.append(labels.cpu().detach().numpy())
         # break
     feats_all = np.vstack(feats_all)
     labels_all = np.hstack(labels_all)
 
-    print("feats_all.shape:",feats_all.shape)
-    print("labels_all.shape:",labels_all.shape)
+    print("feats_all.shape:", feats_all.shape)
+    print("labels_all.shape:", labels_all.shape)
 
-    feats_emb = TSNE(n_components=2, learning_rate='auto',init = 'random', perplexity = 3).fit_transform(feats_all)
+    feats_emb = TSNE(n_components=2, learning_rate='auto', init='random', perplexity=3).fit_transform(feats_all)
     # # plot on each class
     import matplotlib.pyplot as plt
     #
-    feats_all_kmeans=[]
-    labels_all_kmeans=[]
-    for i in range(20,25):
+    feats_all_kmeans = []
+    labels_all_kmeans = []
+    for i in range(20, 25):
         index_ci = np.where(labels_all == i)[0]
         feats_ci = feats_all[index_ci]
         feats_all_kmeans.append(feats_ci)
-        labels_all_kmeans.append([i]*len(feats_ci))
+        labels_all_kmeans.append([i] * len(feats_ci))
     feats_all_kmeans = np.vstack(feats_all_kmeans)
     labels_all_kmeans = np.hstack(labels_all_kmeans)
 
@@ -211,27 +211,25 @@ def main():
 
     kmeans = KMeans(n_clusters=5, random_state=0).fit(preprocessing.normalize(feats_all_kmeans))
     # print(str([i for i in kmeans.labels_]))
-    print("len(kmeans.labels_):",len(kmeans.labels_))
-    dict={'3':20,'4':21,'0':22,'1':23,'2':24}
-    right=0
-    for i,x in enumerate(kmeans.labels_):
-        if labels_all_kmeans[i]==dict[str(x)]:
-            right+=1
-    print('acc:',right/len(kmeans.labels_))
+    print("len(kmeans.labels_):", len(kmeans.labels_))
+    dict = {'3': 20, '4': 21, '0': 22, '1': 23, '2': 24}
+    right = 0
+    for i, x in enumerate(kmeans.labels_):
+        if labels_all_kmeans[i] == dict[str(x)]:
+            right += 1
+    print('acc:', right / len(kmeans.labels_))
 
     from cpn import PrototypeClassifier
-    print("kmeans.cluster_centers_.shape:",kmeans.cluster_centers_.shape)
-    m_cpn=PrototypeClassifier(dim_features=512,num_classes=5,centers=preprocessing.normalize(kmeans.cluster_centers_))
-    logits_all_kmeans=m_cpn.logits(torch.tensor(preprocessing.normalize(feats_all_kmeans)))
+    print("kmeans.cluster_centers_.shape:", kmeans.cluster_centers_.shape)
+    m_cpn = PrototypeClassifier(dim_features=512, num_classes=5,
+                                centers=preprocessing.normalize(kmeans.cluster_centers_))
+    logits_all_kmeans = m_cpn.logits(torch.tensor(preprocessing.normalize(feats_all_kmeans)))
     # logits_all_kmeans=logits_all_kmeans.cpu().detach().numpy()
     print(str(logits_all_kmeans.cpu().detach().numpy()))
-    max_logits=torch.max(logits_all_kmeans, 1)
-    max_logits=max_logits.cpu().detach().numpy()
-    valid_mask=np.where(max_logits >=80)
-    print("valid_mask:",str(valid_mask))
-
-
-
+    max_logits, _ = torch.max(logits_all_kmeans, 1)
+    max_logits = max_logits.cpu().detach().numpy()
+    valid_mask = np.where(max_logits >= 80)
+    print("valid_mask:", str(valid_mask))
 
     # #
     # # print(feats_all2.shape,labels_all2.shape)
@@ -254,5 +252,7 @@ def main():
     # # X = ...  # shape (n_samples, d)
     # # X_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(
     # #     X)  # returns shape (n_samples, 2)
+
+
 if __name__ == "__main__":
     main()

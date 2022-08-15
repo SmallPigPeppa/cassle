@@ -228,8 +228,9 @@ def main():
     print(str(logits_all_kmeans.cpu().detach().numpy()))
     max_logits, _ = torch.max(logits_all_kmeans, 1)
     max_logits = max_logits.cpu().detach().numpy()
-    valid_mask = np.where(max_logits >= 80)
+    valid_mask = np.where(max_logits >= 0.8)
     print("valid_mask:", str(valid_mask))
+    print("valid_rate:",len(valid_mask)/len(max_logits))
 
     # #
     # # print(feats_all2.shape,labels_all2.shape)

@@ -229,7 +229,7 @@ def main():
     max_logits, _ = torch.max(logits_all_kmeans, 1)
     max_logits = max_logits.cpu().detach().numpy()
     valid_rate = 0
-    threshold = 1.0
+    threshold = 0.05
     # while valid_rate < 0.8:
     valid_mask = np.where(max_logits >= threshold)
     print("threshold:", threshold)

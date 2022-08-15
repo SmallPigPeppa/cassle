@@ -219,6 +219,13 @@ def main():
             right+=1
     print('acc:',right/len(kmeans.labels_))
 
+    from cpn import PrototypeClassifier
+    print("kmeans.cluster_centers_.shape:",kmeans.cluster_centers_.shape)
+    # m_cpn=PrototypeClassifier(dim_features=512,num_classes=5,centers=preprocessing.normalize(kmeans.cluster_centers_))
+    # logits=m_cpn.logits(preprocessing.normalize(feats_all_kmeans))
+
+
+
 
     # #
     # # print(feats_all2.shape,labels_all2.shape)

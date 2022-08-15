@@ -19,5 +19,5 @@ class PrototypeClassifier(nn.Module):
 
     def logits(self,x):
         d=self.forward(x)
-        logits=F.softmax(-1.*d,dim=1)
+        logits=F.softmax(-10.*d,dim=1)
         return logits

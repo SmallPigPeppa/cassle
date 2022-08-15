@@ -223,8 +223,11 @@ def main():
     print("kmeans.cluster_centers_.shape:",kmeans.cluster_centers_.shape)
     m_cpn=PrototypeClassifier(dim_features=512,num_classes=5,centers=preprocessing.normalize(kmeans.cluster_centers_))
     logits_all_kmeans=m_cpn.logits(torch.tensor(preprocessing.normalize(feats_all_kmeans)))
-    logits_all_kmeans=logits_all_kmeans.cpu().detach().numpy()
-    print(str(logits_all_kmeans))
+    # logits_all_kmeans=logits_all_kmeans.cpu().detach().numpy()
+    print(str(logits_all_kmeans.cpu().detach().numpy()))
+    max_logits=torch.max(logits_all_kmeans, 1).cpu().detach().numpy()
+    valid_mask=np.where(max_logits >=80)
+    print("valid_mask:",str(valid_mask))
 
 
 

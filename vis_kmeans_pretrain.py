@@ -189,8 +189,8 @@ def main():
     feats_all = np.vstack(feats_all)
     labels_all = np.hstack(labels_all)
 
-    print(feats_all.shape)
-    print(labels_all.shape)
+    print("feats_all.shape:",feats_all.shape)
+    print("labels_all.shape:",labels_all.shape)
 
     feats_emb = TSNE(n_components=2, learning_rate='auto',init = 'random', perplexity = 3).fit_transform(feats_all)
     # # plot on each class

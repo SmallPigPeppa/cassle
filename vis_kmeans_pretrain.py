@@ -167,7 +167,7 @@ def main():
 
     # visualize feats on task1
     # from tsne_torch import TorchTSNE as TSNE
-    from sklearn.manifold import TSNE
+
     feats_all = []
     labels_all = []
     from tqdm import tqdm
@@ -192,9 +192,9 @@ def main():
     print("feats_all.shape:", feats_all.shape)
     print("labels_all.shape:", labels_all.shape)
 
-    feats_emb = TSNE(n_components=2, learning_rate='auto', init='random', perplexity=3).fit_transform(feats_all)
+    # feats_emb = TSNE(n_components=2, learning_rate='auto', init='random', perplexity=3).fit_transform(feats_all)
     # # plot on each class
-    import matplotlib.pyplot as plt
+    # import matplotlib.pyplot as plt
     #
     feats_all_kmeans = []
     labels_all_kmeans = []
@@ -228,34 +228,44 @@ def main():
     print(str(logits_all_kmeans.cpu().detach().numpy()))
     max_logits, _ = torch.max(logits_all_kmeans, 1)
     max_logits = max_logits.cpu().detach().numpy()
-    valid_rate = 0
-    threshold = 1.0
-    while valid_rate < 0.8:
-        valid_mask = np.where(max_logits >= threshold)[0]
-        print("threshold:", threshold)
-        print("valid_mask:", str(valid_mask))
-        print("len(max_logits):",len(max_logits))
-        print("valid_rate:", len(valid_mask) / len(max_logits))
-        print("##################################")
-        threshold = threshold - 0.05
-        valid_rate = len(valid_mask) / len(logits_all_kmeans)
+
+
+
+    # valid_rate = 0
+    # threshold = 1.0
+    # while valid_rate < 0.8:
+    #     valid_mask = np.where(max_logits >= threshold)[0]
+    #     print("threshold:", threshold)
+    #     print("valid_mask:", str(valid_mask))
+    #     print("len(max_logits):",len(max_logits))
+    #     print("valid_rate:", len(valid_mask) / len(max_logits))
+    #     print("##################################")
+    #     threshold = threshold - 0.05
+    #     valid_rate = len(valid_mask) / len(logits_all_kmeans)
+
+    valid_mask = np.where(max_logits >= 0.5)[0]
+
+    feats_all_kmeans = feats_all_kmeans[valid_mask]
+    labels_all_kmeans = labels_all_kmeans[valid_mask]
 
     # #
     # # print(feats_all2.shape,labels_all2.shape)
-    # # # feats_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(
-    # # #     feats_all2)
-    # # feats_emb = TSNE(n_components=2, learning_rate='auto',init = 'random', perplexity = 3).fit_transform(feats_all2)
-    #
-    # for i in tqdm(range(20,25)):
-    #     index_ci = np.where(labels_all == i)[0]
-    #     feats_emb_ci = feats_emb[index_ci]
-    #     # feats_ci_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(
-    #     #     feats_ci)  # returns shape (n_samples, 2)
-    #     plt.scatter(feats_emb_ci[:, 0], feats_emb_ci[:, 1], label=f'class-{i}')
-    #
-    # plt.legend()
-    # # plt.show()
-    # plt.savefig('/home/admin/result.pdf')
+    # feats_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(
+    #     feats_all2)
+    from sklearn.manifold import TSNE
+    import matplotlib.pyplot as plt
+    feats_emb = TSNE(n_components=2, learning_rate='auto',init = 'random', perplexity = 3).fit_transform(feats_all_kmeans)
+
+    for i in tqdm(range(20,25)):
+        index_ci = np.where(labels_all_kmeans == i)[0]
+        feats_emb_ci = feats_emb[index_ci]
+        # feats_ci_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(
+        #     feats_ci)  # returns shape (n_samples, 2)
+        plt.scatter(feats_emb_ci[:, 0], feats_emb_ci[:, 1], label=f'class-{i}')
+
+    plt.legend()
+    # plt.show()
+    plt.savefig('/home/admin/result.pdf')
     #
     #
     # # X = ...  # shape (n_samples, d)

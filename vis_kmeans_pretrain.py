@@ -230,14 +230,14 @@ def main():
     max_logits = max_logits.cpu().detach().numpy()
     valid_rate = 0
     threshold = 1.0
-    # while valid_rate < 0.6:
-    valid_mask = np.where(max_logits >= -1)
-    print("threshold:", threshold)
-    print("valid_mask:", str(valid_mask))
-    print("valid_rate:", len(valid_mask) / len(max_logits))
-    print("##################################")
-    threshold = threshold - 0.05
-    valid_rate = len(valid_mask) / len(max_logits)
+    while valid_rate < 0.8:
+        valid_mask = np.where(max_logits >= threshold)
+        print("threshold:", threshold)
+        print("valid_mask:", str(valid_mask))
+        print("valid_rate:", len(valid_mask) / len(max_logits))
+        print("##################################")
+        threshold = threshold - 0.05
+        valid_rate = len(valid_mask) / len(logits_all_kmeans)
 
     # #
     # # print(feats_all2.shape,labels_all2.shape)

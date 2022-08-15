@@ -210,8 +210,8 @@ def main():
     from sklearn.cluster import KMeans
 
     kmeans = KMeans(n_clusters=5, random_state=0).fit(preprocessing.normalize(feats_all_kmeans))
-    print(str([i for i in kmeans.labels_]))
-    print(len(kmeans.labels_))
+    # print(str([i for i in kmeans.labels_]))
+    print("len(kmeans.labels_):",len(kmeans.labels_))
     dict={'3':20,'4':21,'0':22,'1':23,'2':24}
     right=0
     for i,x in enumerate(kmeans.labels_):
@@ -221,8 +221,10 @@ def main():
 
     from cpn import PrototypeClassifier
     print("kmeans.cluster_centers_.shape:",kmeans.cluster_centers_.shape)
-    # m_cpn=PrototypeClassifier(dim_features=512,num_classes=5,centers=preprocessing.normalize(kmeans.cluster_centers_))
-    # logits=m_cpn.logits(preprocessing.normalize(feats_all_kmeans))
+    m_cpn=PrototypeClassifier(dim_features=512,num_classes=5,centers=preprocessing.normalize(kmeans.cluster_centers_))
+    logits_all_kmeans=m_cpn.logits(preprocessing.normalize(feats_all_kmeans))
+    logits_all_kmeans=logits_all_kmeans.cpu().detach().numpy()
+    print(str(logits_all_kmeans))
 
 
 

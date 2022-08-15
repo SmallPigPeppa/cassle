@@ -225,7 +225,8 @@ def main():
     logits_all_kmeans=m_cpn.logits(torch.tensor(preprocessing.normalize(feats_all_kmeans)))
     # logits_all_kmeans=logits_all_kmeans.cpu().detach().numpy()
     print(str(logits_all_kmeans.cpu().detach().numpy()))
-    max_logits=torch.max(logits_all_kmeans, 1).cpu().detach().numpy()
+    max_logits=torch.max(logits_all_kmeans, 1)
+    max_logits=max_logits.cpu().detach().numpy()
     valid_mask=np.where(max_logits >=80)
     print("valid_mask:",str(valid_mask))
 

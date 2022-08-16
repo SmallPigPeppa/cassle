@@ -263,7 +263,7 @@ def main():
     import matplotlib.pyplot as plt
     feats_emb = TSNE(n_components=2, learning_rate='auto', init='random', perplexity=3).fit_transform(feats_task)
 
-    for i in tqdm(range(20, 25)):
+    for i in tqdm(range(20, 40)):
         index_ci = np.where(labels_task == i)[0]
         feats_emb_ci = feats_emb[index_ci]
         # feats_ci_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(

@@ -199,6 +199,7 @@ def main():
     #
     feats_all_kmeans = []
     labels_all_kmeans = []
+    dim_features=256
     for i in range(50, 55):
         index_ci = np.where(labels_all == i)[0]
         feats_ci = feats_all[index_ci]
@@ -222,7 +223,7 @@ def main():
 
     from cpn import PrototypeClassifier
     print("kmeans.cluster_centers_.shape:", kmeans.cluster_centers_.shape)
-    m_cpn = PrototypeClassifier(dim_features=512, num_classes=5,
+    m_cpn = PrototypeClassifier(dim_features=dim_features, num_classes=5,
                                 centers=preprocessing.normalize(kmeans.cluster_centers_))
     logits_all_kmeans = m_cpn.logits(torch.tensor(preprocessing.normalize(feats_all_kmeans)))
     # logits_all_kmeans=logits_all_kmeans.cpu().detach().numpy()

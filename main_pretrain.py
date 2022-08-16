@@ -51,8 +51,11 @@ def main():
     # split classes into tasks
     tasks = None
     if args.split_strategy == "class":
-        assert args.num_classes % args.num_tasks == 0
-        tasks = torch.tensor(list(range(args.num_classes))).chunk(args.num_tasks)
+        # assert args.num_classes % args.num_tasks == 0
+        # tasks = torch.tensor(list(range(args.num_classes))).chunk(args.num_tasks)
+        tasks_initial = torch.tensor(list(range(int(args.num_classes/2)))).chunk(1)
+        tasks_incremental=torch.tensor(list(range(int(args.num_classes/2),args.num_classes))).chunk(args.num_tasks-1)
+        tasks=tasks_initial+tasks_incremental
 
     # pretrain and online eval dataloaders
     if not args.dali:

@@ -231,7 +231,7 @@ def main():
     print("kmeans.cluster_centers_.shape:", kmeans.cluster_centers_.shape)
     m_cpn = PrototypeClassifier(dim_features=dim_features, num_classes=5,
                                 centers=kmeans.cluster_centers_)
-    logits_all_kmeans = m_cpn.logits(torch.tensor(preprocessing.normalize(feats_all_kmeans)))
+    logits_all_kmeans = m_cpn.logits(torch.tensor(feats_all_kmeans))
     # logits_all_kmeans=logits_all_kmeans.cpu().detach().numpy()
     print(str(logits_all_kmeans.cpu().detach().numpy()))
     max_logits, _ = torch.max(logits_all_kmeans, 1)

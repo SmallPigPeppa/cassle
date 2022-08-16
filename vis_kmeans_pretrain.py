@@ -175,6 +175,7 @@ def main():
     for batch in tqdm(task_loader):
         # for batch in tqdm(val_loader):
         imgs = batch[1][0]
+        imgs2=batch[1][1]
         labels = batch[2]
         # imgs=batch[0]
         # labels=batch[1]
@@ -182,8 +183,13 @@ def main():
         # print(imgs.shape)
         # print(labels.shape)
         out_i = model(imgs)
-        # z_i = out_i["feats"]
-        z_i = out_i["z"]
+        z_i = out_i["feats"]
+        # z_i = out_i["z"]
+        feats_all.append(z_i.cpu().detach().numpy())
+        labels_all.append(labels.cpu().detach().numpy())
+        out_i = model(imgs2)
+        z_i = out_i["feats"]
+        # z_i = out_i["z"]
         feats_all.append(z_i.cpu().detach().numpy())
         labels_all.append(labels.cpu().detach().numpy())
         # break
@@ -199,7 +205,7 @@ def main():
     #
     feats_all_kmeans = []
     labels_all_kmeans = []
-    dim_features=256
+    dim_features=512
     for i in range(50, 55):
         index_ci = np.where(labels_all == i)[0]
         feats_ci = feats_all[index_ci]

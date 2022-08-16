@@ -216,14 +216,23 @@ def main():
     )
 
     model.current_task_idx = args.task_idx
-
+    # 在fit前， knn过滤samples，给不可靠的样本做上标记为-1，可靠样本标记为knn的类别
     if args.dali:
-        trainer.fit(model, val_dataloaders=val_loader)
+        pass
     else:
-        # print('*************************************debug********************************')
-        # print(next(iter(train_dataset)))
-        # print('*************************************debug********************************')
-        trainer.fit(model, train_loaders, val_loader)
+        # train_loaders = {f"task{args.task_idx}": task_loader}
+        print(next(train_loaders))
+
+
+
+
+    # if args.dali:
+    #     trainer.fit(model, val_dataloaders=val_loader)
+    # else:
+    #     # print('*************************************debug********************************')
+    #     # print(next(iter(train_dataset)))
+    #     # print('*************************************debug********************************')
+    #     trainer.fit(model, train_loaders, val_loader)
 
 
 if __name__ == "__main__":

@@ -251,8 +251,8 @@ def main():
     kmeans_labels = [dict[str(i)] for i in kmeans_labels]
     idx_true = [idx for idx, element in enumerate(zip(kmeans_labels, labels_all_kmeans)) if element[0] == element[1]]
     print("final acc after kmeans fliter:",len(idx_true)/len(kmeans_labels))
-    feats_all_kmeans = feats_all_kmeans[idx_true]
-    labels_all_kmeans = labels_all_kmeans[idx_true]
+    # feats_all_kmeans = feats_all_kmeans[idx_true]
+    # labels_all_kmeans = labels_all_kmeans[idx_true]
 
     # #
     # # print(feats_all2.shape,labels_all2.shape)

@@ -198,8 +198,8 @@ def main():
     #
     feats_task = []
     labels_task = []
-    task_classes=20
-    for i in range(20, 40):
+    task_classes=5
+    for i in range(50, 55):
         index_ci = np.where(labels_all == i)[0]
         feats_ci = feats_all[index_ci]
         feats_task.append(feats_ci)
@@ -263,7 +263,7 @@ def main():
     import matplotlib.pyplot as plt
     feats_emb = TSNE(n_components=2, learning_rate='auto', init='random', perplexity=3).fit_transform(feats_task)
 
-    for i in tqdm(range(20, 40)):
+    for i in tqdm(range(50, 55)):
         index_ci = np.where(labels_task == i)[0]
         feats_emb_ci = feats_emb[index_ci]
         # feats_ci_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(

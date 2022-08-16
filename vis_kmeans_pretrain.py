@@ -212,7 +212,7 @@ def main():
     kmeans = KMeans(n_clusters=5, random_state=0).fit(preprocessing.normalize(feats_all_kmeans))
     print(str([i for i in kmeans.labels_]))
     print("len(kmeans.labels_):", len(kmeans.labels_))
-    dict = {'3': 50, '4': 51, '0': 52, '1': 53, '2':54}
+    dict = {'1': 50, '3': 51, '2': 52, '4': 53, '0':54}
     right = 0
     for i, x in enumerate(kmeans.labels_):
         if labels_all_kmeans[i] == dict[str(x)]:

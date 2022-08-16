@@ -83,6 +83,9 @@ if __name__ == "__main__":
             task_args.update(distill_args)
 
         task_args["--task_idx"] = str(task_idx)
+        # if task_idx >0:
+        #     task_args["--max_epochs"]='250'
+
         task_args = dict_to_list(task_args)
 
         run_bash_command(task_args)

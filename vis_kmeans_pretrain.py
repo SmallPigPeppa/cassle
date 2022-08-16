@@ -247,6 +247,11 @@ def main():
 
     feats_all_kmeans = feats_all_kmeans[valid_mask]
     labels_all_kmeans = labels_all_kmeans[valid_mask]
+    kmeans_labels=kmeans.labels_[valid_mask]
+    kmeans_labels=[dict[str(i)] for i in kmeans_labels]
+    idx_true  = [idx for idx ,i, j in enumerate(zip(kmeans_labels, labels_all_kmeans)) if i == j]
+    feats_all_kmeans = feats_all_kmeans[idx_true]
+    labels_all_kmeans = labels_all_kmeans[idx_true]
 
     # #
     # # print(feats_all2.shape,labels_all2.shape)

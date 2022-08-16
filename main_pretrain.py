@@ -222,10 +222,10 @@ def main():
         pass
     else:
         # train_loaders = {f"task{args.task_idx}": task_loader}
-        batch = next(iter(train_loaders["task0"]))
+        batch = next(iter(train_loaders[f"task{args.task_idx}"]))
         print(batch[0])
         from kmeans_utils import kmeans_filter
-        kmeans_dict, kmeans_centers = kmeans_filter(task_loader=train_loaders["task0"], pretrained_model=model,
+        kmeans_dict, kmeans_centers = kmeans_filter(task_loader=train_loaders[f"task{args.task_idx}"], pretrained_model=model,
                                                     num_classes=len(tasks[args.task_idx]), dim_features=512,
                                                     min_logits=0.5)
         model.kmeans_dict = kmeans_dict

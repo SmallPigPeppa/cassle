@@ -222,7 +222,8 @@ def main():
         pass
     else:
         # train_loaders = {f"task{args.task_idx}": task_loader}
-        print(next(iter(train_loaders["task0"][0])))
+        batch=next(iter(train_loaders["task0"]))
+        print(batch[0])
         return 0
         # 正常输出为 idx,[image1,image2],label
         # 希望输出转换为 idx,[image1,image2],label,KNN-label

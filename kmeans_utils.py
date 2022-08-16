@@ -49,6 +49,8 @@ def kmeans_filter(task_loader, pretrained_model, num_classes, dim_features=512, 
     print("all samples:", len(kmeans_dict))
     print("valid samples:", len(kmeans_dict)-len(invalid_idx))
     print("valid rate:", (len(kmeans_dict)-len(invalid_idx))/len(kmeans_dict))
+    centers=preprocessing.normalize(kmeans.cluster_centers_)
+
     return kmeans_dict, preprocessing.normalize(kmeans.cluster_centers_)
 
 # [mydict[x] for x in mykeys]

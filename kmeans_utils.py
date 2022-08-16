@@ -40,10 +40,10 @@ def kmeans_filter(task_loader, pretrained_model, num_classes, dim_features=512, 
     kmeans_labels[invalid_idx] = -1
     # filter kmeans label differenet on image_view1 and image_view2
     kmeans_dict = dict(zip(idxs_task, kmeans_labels))
-    kmeans_dict2 = dict(zip(idxs_task[::-1], kmeans_labels[::-1]))
-    diff_keys = [k for k, _ in set(kmeans_dict.items()) - set(kmeans_dict2.items())]
-    for k in diff_keys:
-        kmeans_dict[k] = -1
+    # kmeans_dict2 = dict(zip(idxs_task[::-1], kmeans_labels[::-1]))
+    # diff_keys = [k for k, _ in set(kmeans_dict.items()) - set(kmeans_dict2.items())]
+    # for k in diff_keys:
+    #     kmeans_dict[k] = -1
 
     return kmeans_dict, preprocessing.normalize(kmeans.cluster_centers_)
 

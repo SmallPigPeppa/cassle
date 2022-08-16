@@ -229,8 +229,6 @@ def main():
     max_logits, _ = torch.max(logits_all_kmeans, 1)
     max_logits = max_logits.cpu().detach().numpy()
 
-
-
     # valid_rate = 0
     # threshold = 1.0
     # while valid_rate < 0.8:
@@ -247,9 +245,9 @@ def main():
 
     feats_all_kmeans = feats_all_kmeans[valid_mask]
     labels_all_kmeans = labels_all_kmeans[valid_mask]
-    kmeans_labels=kmeans.labels_[valid_mask]
-    kmeans_labels=[dict[str(i)] for i in kmeans_labels]
-    idx_true  = [idx for idx ,i, j in enumerate(zip(kmeans_labels, labels_all_kmeans)) if i == j]
+    kmeans_labels = kmeans.labels_[valid_mask]
+    kmeans_labels = [dict[str(i)] for i in kmeans_labels]
+    idx_true = [idx for idx, element in enumerate(zip(kmeans_labels, labels_all_kmeans)) if element[0] == element[1]]
     feats_all_kmeans = feats_all_kmeans[idx_true]
     labels_all_kmeans = labels_all_kmeans[idx_true]
 
@@ -259,9 +257,9 @@ def main():
     #     feats_all2)
     from sklearn.manifold import TSNE
     import matplotlib.pyplot as plt
-    feats_emb = TSNE(n_components=2, learning_rate='auto',init = 'random', perplexity = 3).fit_transform(feats_all_kmeans)
+    feats_emb = TSNE(n_components=2, learning_rate='auto', init='random', perplexity=3).fit_transform(feats_all_kmeans)
 
-    for i in tqdm(range(20,25)):
+    for i in tqdm(range(20, 25)):
         index_ci = np.where(labels_all_kmeans == i)[0]
         feats_emb_ci = feats_emb[index_ci]
         # feats_ci_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(

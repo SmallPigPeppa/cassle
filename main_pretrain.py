@@ -221,7 +221,7 @@ def main():
         pass
     else:
         # train_loaders = {f"task{args.task_idx}": task_loader}
-        print(next(train_loaders))
+        print(train_loaders[0])
 
 
 

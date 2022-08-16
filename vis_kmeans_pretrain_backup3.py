@@ -196,40 +196,37 @@ def main():
     # # plot on each class
     # import matplotlib.pyplot as plt
     #
-    feats_task = []
-    labels_task = []
-    task_classes=20
-    for i in range(20, 40):
+    feats_all_kmeans = []
+    labels_all_kmeans = []
+    for i in range(20, 25):
         index_ci = np.where(labels_all == i)[0]
         feats_ci = feats_all[index_ci]
-        feats_task.append(feats_ci)
-        labels_task.append([i] * len(feats_ci))
-    feats_task = np.vstack(feats_task)
-    labels_task = np.hstack(labels_task)
-
-
+        feats_all_kmeans.append(feats_ci)
+        labels_all_kmeans.append([i] * len(feats_ci))
+    feats_all_kmeans = np.vstack(feats_all_kmeans)
+    labels_all_kmeans = np.hstack(labels_all_kmeans)
 
     from sklearn import preprocessing
     from sklearn.cluster import KMeans
 
-    kmeans = KMeans(n_clusters=task_classes, random_state=0).fit(preprocessing.normalize(feats_task))
+    kmeans = KMeans(n_clusters=5, random_state=0).fit(preprocessing.normalize(feats_all_kmeans))
     # print(str([i for i in kmeans.labels_]))
     print("len(kmeans.labels_):", len(kmeans.labels_))
-    # dict = {'3': 20, '4': 21, '0': 22, '1': 23, '2': 24}
-    # right = 0
-    # for i, x in enumerate(kmeans.labels_):
-    #     if labels_task1[i] == dict[str(x)]:
-    #         right += 1
-    # print('acc:', right / len(kmeans.labels_))
+    dict = {'3': 20, '4': 21, '0': 22, '1': 23, '2': 24}
+    right = 0
+    for i, x in enumerate(kmeans.labels_):
+        if labels_all_kmeans[i] == dict[str(x)]:
+            right += 1
+    print('acc:', right / len(kmeans.labels_))
 
     from cpn import PrototypeClassifier
     print("kmeans.cluster_centers_.shape:", kmeans.cluster_centers_.shape)
-    m_cpn = PrototypeClassifier(dim_features=512, num_classes=task_classes,
+    m_cpn = PrototypeClassifier(dim_features=512, num_classes=5,
                                 centers=preprocessing.normalize(kmeans.cluster_centers_))
-    logits_task = m_cpn.logits(torch.tensor(preprocessing.normalize(feats_task)))
+    logits_all_kmeans = m_cpn.logits(torch.tensor(preprocessing.normalize(feats_all_kmeans)))
     # logits_all_kmeans=logits_all_kmeans.cpu().detach().numpy()
-    print(str(logits_task.cpu().detach().numpy()))
-    max_logits, _ = torch.max(logits_task, 1)
+    print(str(logits_all_kmeans.cpu().detach().numpy()))
+    max_logits, _ = torch.max(logits_all_kmeans, 1)
     max_logits = max_logits.cpu().detach().numpy()
 
     # valid_rate = 0
@@ -246,14 +243,14 @@ def main():
 
     valid_mask = np.where(max_logits >= 0.5)[0]
 
-    feats_task = feats_task[valid_mask]
-    labels_task = labels_task[valid_mask]
-    # kmeans_labels = kmeans.labels_[valid_mask]
-    # kmeans_labels = [dict[str(i)] for i in kmeans_labels]
-    # idx_true = [idx for idx, element in enumerate(zip(kmeans_labels, labels_task)) if element[0] == element[1]]
-    # print("final acc after kmeans fliter:",len(idx_true)/len(kmeans_labels))
-    # feats_task = feats_task[idx_true]
-    # labels_task = labels_task[idx_true]
+    feats_all_kmeans = feats_all_kmeans[valid_mask]
+    labels_all_kmeans = labels_all_kmeans[valid_mask]
+    kmeans_labels = kmeans.labels_[valid_mask]
+    kmeans_labels = [dict[str(i)] for i in kmeans_labels]
+    idx_true = [idx for idx, element in enumerate(zip(kmeans_labels, labels_all_kmeans)) if element[0] == element[1]]
+    print("final acc after kmeans fliter:",len(idx_true)/len(kmeans_labels))
+    feats_all_kmeans = feats_all_kmeans[idx_true]
+    labels_all_kmeans = labels_all_kmeans[idx_true]
 
     # #
     # # print(feats_all2.shape,labels_all2.shape)
@@ -261,10 +258,10 @@ def main():
     #     feats_all2)
     from sklearn.manifold import TSNE
     import matplotlib.pyplot as plt
-    feats_emb = TSNE(n_components=2, learning_rate='auto', init='random', perplexity=3).fit_transform(feats_task)
+    feats_emb = TSNE(n_components=2, learning_rate='auto', init='random', perplexity=3).fit_transform(feats_all_kmeans)
 
     for i in tqdm(range(20, 25)):
-        index_ci = np.where(labels_task == i)[0]
+        index_ci = np.where(labels_all_kmeans == i)[0]
         feats_emb_ci = feats_emb[index_ci]
         # feats_ci_emb = TSNE(n_components=2, perplexity=30, n_iter=1000, verbose=True).fit_transform(
         #     feats_ci)  # returns shape (n_samples, 2)

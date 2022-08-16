@@ -1,4 +1,4 @@
-python3 vis_kmeans_pretrain.py \
+python3 vis_kmeans_pretrain_distance.py \
     --dataset cifar100 \
     --encoder resnet18 \
     --data_dir $DATA_DIR \

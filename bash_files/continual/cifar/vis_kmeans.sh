@@ -3,7 +3,7 @@ python3 vis_kmeans_pretrain.py \
     --encoder resnet18 \
     --data_dir $DATA_DIR \
     --split_strategy class \
-    --task_idx 2 \
+    --task_idx 1 \
     --max_epochs 500 \
     --num_tasks 5 \
     --gpus 0 \

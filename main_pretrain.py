@@ -222,47 +222,15 @@ def main():
         pass
     else:
         # train_loaders = {f"task{args.task_idx}": task_loader}
-        batch=next(iter(train_loaders["task0"]))
+        batch = next(iter(train_loaders["task0"]))
         print(batch[0])
-        return 0
-        # 正常输出为 idx,[image1,image2],label
-        # 希望输出转换为 idx,[image1,image2],label,KNN-label
-        feats_task = []
-        labels_task = []
-        from tqdm import tqdm
-        import numpy as np
-        for batch in tqdm(task_loader):
-            # for batch in tqdm(val_loader):
-            imgs = batch[1][0]
-            labels = batch[2]
-            # imgs=batch[0]
-            # labels=batch[1]
-            # print(len(batch))
-            # print(imgs.shape)
-            # print(labels.shape)
-            out_i = model(imgs)
-            z_i = out_i["feats"]
-            feats_task.append(z_i.cpu().detach().numpy())
-            labels_task.append(labels.cpu().detach().numpy())
-            # break
-        feats_task = np.vstack(feats_task)
-        labels_task = np.hstack(labels_task)
-        from sklearn import preprocessing
-        from sklearn.cluster import KMeans
-
-        kmeans = KMeans(n_clusters=len(tasks[args.task_idx]), random_state=0).fit(preprocessing.normalize(feats_task))
-        from cpn import PrototypeClassifier
-        print("kmeans.cluster_centers_.shape:", kmeans.cluster_centers_.shape)
-        m_cpn = PrototypeClassifier(dim_features=512, num_classes=len(tasks[args.task_idx]),
-                                    centers=preprocessing.normalize(kmeans.cluster_centers_))
-        logits_task = m_cpn.logits(torch.tensor(preprocessing.normalize(feats_task)))
-        # logits_all_kmeans=logits_all_kmeans.cpu().detach().numpy()
-        max_logits, _ = torch.max(logits_task, 1)
-        max_logits = max_logits.cpu().detach().numpy()
-        # valid_mask = np.where(max_logits >= 0.5)[0]
-        no_used_smples = np.where(max_logits < 0.5)[0]
-        kmeans_labels = kmeans.labels_
-        kmeans_labels[no_used_smples] = -1
+        from kmeans_utils import kmeans_filter
+        kmeans_dict, kmeans_centers = kmeans_filter(task_loader=train_loaders["task0"], pretrained_model=model,
+                                                    num_classes=len(tasks[args.task_idx]), dim_features=512,
+                                                    min_logits=0.5)
+        model.kmeans_dict = kmeans_dict
+        model.kmeans_centers = kmeans_centers
+        print(str(kmeans_dict))
         # dali_datamodule.val_dataloader = lambda: cifar_val_loader
 
     # if args.dali:

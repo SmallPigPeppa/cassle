@@ -35,4 +35,4 @@ python3 main_continual.py \
     --output_dim 256 \
     --distiller contrastive \
     --disable_knn_eval \
-    --pretrained_model $PRETRAINED_PATH
+#    --pretrained_model $PRETRAINED_PATH

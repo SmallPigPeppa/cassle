@@ -242,7 +242,7 @@ def main():
     #     valid_rate = len(valid_mask) / len(logits_all_kmeans)
 
     valid_mask = np.where(max_logits >= 0.5)[0]
-
+    print("valid_rate:", len(valid_mask) / len(max_logits))
     feats_all_kmeans = feats_all_kmeans[valid_mask]
     labels_all_kmeans = labels_all_kmeans[valid_mask]
     kmeans_labels = kmeans.labels_[valid_mask]

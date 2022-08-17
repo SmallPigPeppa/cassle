@@ -134,7 +134,7 @@ def contrastive_distill_wrapper(Method=object):
             p1 = self.frozen_projector(feats1)
             p2 = self.frozen_projector(feats2)
             _, *_, target = batch[f"task{self.current_task_idx}"]
-            z_centers = self.groupby_mean(value=torch.vstack((frozen_z1, frozen_z2)), labels=target.repeat(2))
+            z_centers = self.groupby_mean(value=frozen_z1, labels=target.repeat(2))
             pl_loss = (self.pl_loss(z_centers=z_centers,z=p1, labels=target) + self.pl_loss(z_centers=z_centers,z=p2, labels=target)) / 2
 
             self.log("pl_loss", pl_loss, on_epoch=True, sync_dist=True)

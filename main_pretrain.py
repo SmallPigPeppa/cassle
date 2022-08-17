@@ -221,9 +221,8 @@ def main():
     if args.dali:
         pass
     else:
-        # train_loaders = {f"task{args.task_idx}": task_loader}
         batch = next(iter(train_loaders[f"task{args.task_idx}"]))
-        print(batch[0])
+        # print(batch[0])
         from kmeans_utils import feats_centers
         feats_centers = feats_centers(task_loader=train_loaders[f"task{args.task_idx}"],
                                       pretrained_model=model,

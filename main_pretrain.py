@@ -1,7 +1,7 @@
 import os
 from pprint import pprint
 import types
-
+import torch.nn as nn
 import torch
 from pytorch_lightning import Trainer, seed_everything
 from pytorch_lightning.callbacks import LearningRateMonitor
@@ -231,7 +231,7 @@ def main():
         print("tasks_numpy:", tasks[args.task_idx].cpu().detach().numpy())
         print("feats_centers.shape:", feats_centers.shape)
         print("feats_centers:", feats_centers)
-        model.feats_centers = feats_centers
+        model.feats_centers = nn.Parameter(feats_centers,requires_grad=False)
 
     if args.dali:
         trainer.fit(model, val_dataloaders=val_loader)

@@ -222,7 +222,7 @@ def main():
         pass
     else:
         batch = next(iter(train_loaders[f"task{args.task_idx}"]))
-        print(batch[2])
+        print(batch[2].dtype)
         from kmeans_utils import feats_centers
         feats_centers = feats_centers(task_loader=train_loaders[f"task{args.task_idx}"],
                                       pretrained_model=model,

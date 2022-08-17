@@ -66,6 +66,77 @@ def contrastive_distill_wrapper(Method=object):
             pl_loss = torch.mean(inclass_distance)
             return pl_loss
 
+        def groupby_mean(value: torch.Tensor, labels: torch.Tensor) -> (torch.Tensor, torch.Tensor):
+            """Group-wise average for (sparse) grouped tensors
+
+            Args:
+                value (torch.Tensor): values to average (# samples, latent dimension)
+                labels (torch.LongTensor): labels for embedding parameters (# samples,)
+
+            Returns:
+                result (torch.Tensor): (# unique labels, latent dimension)
+                new_labels (torch.LongTensor): (# unique labels,)
+
+            Examples:
+                >>> samples = torch.Tensor([
+                                     [0.15, 0.15, 0.15],    #-> group / class 1
+                                     [0.2, 0.2, 0.2],    #-> group / class 3
+                                     [0.4, 0.4, 0.4],    #-> group / class 3
+                                     [0.0, 0.0, 0.0]     #-> group / class 0
+                              ])
+                >>> labels = torch.LongTensor([1, 5, 5, 0])
+                >>> result, new_labels = groupby_mean(samples, labels)
+
+                >>> result
+                tensor([[0.0000, 0.0000, 0.0000],
+                    [0.1500, 0.1500, 0.1500],
+                    [0.3000, 0.3000, 0.3000]])
+
+                >>> new_labels
+                tensor([0, 1, 5])
+            """
+            uniques = labels.unique().tolist()
+            labels = labels.tolist()
+
+            key_val = {key: val for key, val in zip(uniques, range(len(uniques)))}
+            val_key = {val: key for key, val in zip(uniques, range(len(uniques)))}
+
+            labels = torch.Tensor(list(map(key_val.get, labels)))
+
+            labels = labels.view(labels.size(0), 1).expand(-1, value.size(1))
+
+            unique_labels, labels_count = labels.unique(dim=0, return_counts=True)
+            result = torch.zeros_like(unique_labels, dtype=torch.float).scatter_add_(0, labels, value)
+            result = result / labels_count.float().unsqueeze(1)
+            new_labels = torch.Tensor(list(map(val_key.get, unique_labels[:, 0].tolist())))
+            return result, new_labels
+
+        # def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
+        #     out = super().training_step(batch, batch_idx)
+        #     # z1, z2 = out["z"]
+        #     frozen_z1, frozen_z2 = out["frozen_z"]
+        #     # frozen_feats1,frozen_feats2=out["frozen_feats"]
+        #     # frozen_z1=self.projector(frozen_feats1)
+        #     # frozen_z2=self.projector(frozen_feats2)
+        #     feats1, feats2 = out["feats"]
+        #     _, *_, target = batch[f"task{self.current_task_idx}"]
+        #     pl_loss = (self.pl_loss(feats=feats1, labels=target) + self.pl_loss(feats=feats2, labels=target)) / 2
+        #     # p1 = self.frozen_projector(feats1)
+        #     # p2 = self.frozen_projector(feats2)
+        #     # # p1 = self.distill_predictor(z1)
+        #     # # p2 = self.distill_predictor(z2)
+        #     # # p1 = z1
+        #     # # p2 = z2
+        #     #
+        #     # distill_loss = (
+        #     #                        simclr_distill_loss_func(p1, p2, frozen_z1, frozen_z2, self.distill_temperature)
+        #     #                        + simclr_distill_loss_func(frozen_z1, frozen_z2, p1, p2, self.distill_temperature)
+        #     #                ) / 2
+        #     #
+        #     # self.log("train_contrastive_distill_loss", distill_loss, on_epoch=True, sync_dist=True)
+        #     self.log("pl_loss", pl_loss, on_epoch=True, sync_dist=True)
+        #     return out["loss"] - 0.0 * pl_loss
+
         def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
             out = super().training_step(batch, batch_idx)
             # z1, z2 = out["z"]
@@ -90,7 +161,7 @@ def contrastive_distill_wrapper(Method=object):
             #
             # self.log("train_contrastive_distill_loss", distill_loss, on_epoch=True, sync_dist=True)
             self.log("pl_loss", pl_loss, on_epoch=True, sync_dist=True)
-            return out["loss"] - 0.0*pl_loss
+            return out["loss"] - 0.01*pl_loss
 
             # return out["loss"] + self.distill_lamb * distill_loss
 

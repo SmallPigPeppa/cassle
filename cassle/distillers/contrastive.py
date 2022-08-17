@@ -76,7 +76,7 @@ def contrastive_distill_wrapper(Method=object):
             pl_loss = torch.mean(inclass_distance)
             return pl_loss
 
-        def groupby_mean(self,z, labels):
+        def groupby_mean(self, z, labels):
             """Group-wise average for (sparse) grouped tensors
 
             Args:
@@ -111,14 +111,14 @@ def contrastive_distill_wrapper(Method=object):
             key_val = {key: val for key, val in zip(uniques, range(len(uniques)))}
             val_key = {val: key for key, val in zip(uniques, range(len(uniques)))}
 
-            labels = torch.LongTensor(list(map(key_val.get, labels)))
+            labels = torch.LongTensor(list(map(key_val.get, labels)), device=self.device)
 
             labels = labels.view(labels.size(0), 1).expand(-1, z.size(1))
 
             unique_labels, labels_count = labels.unique(dim=0, return_counts=True)
-            result = torch.zeros_like(unique_labels, dtype=torch.float).scatter_add_(0, labels, z)
+            result = torch.zeros_like(unique_labels, dtype=torch.float, device=self.device).scatter_add_(0, labels, z)
             result = result / labels_count.float().unsqueeze(1)
-            new_labels = torch.LongTensor(list(map(val_key.get, unique_labels[:, 0].tolist())))
+            new_labels = torch.LongTensor(list(map(val_key.get, unique_labels[:, 0].tolist())),device=self.device)
 
             _, order_index = new_labels.sort()
             return result[order_index]

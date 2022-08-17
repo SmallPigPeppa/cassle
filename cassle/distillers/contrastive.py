@@ -161,7 +161,7 @@ def contrastive_distill_wrapper(Method=object):
             #
             # self.log("train_contrastive_distill_loss", distill_loss, on_epoch=True, sync_dist=True)
             self.log("pl_loss", pl_loss, on_epoch=True, sync_dist=True)
-            return out["loss"] - 0.01*pl_loss
+            return out["loss"] - 0.1*pl_loss
 
             # return out["loss"] + self.distill_lamb * distill_loss
 

@@ -218,20 +218,20 @@ def main():
 
     model.current_task_idx = args.task_idx
     # 在fit前， knn过滤samples，给不可靠的样本做上标记为-1，可靠样本标记为knn的类别
-    if args.dali:
-        pass
-    else:
-        # batch = next(iter(train_loaders[f"task{args.task_idx}"]))
-        # print(batch[2].dtype)
-        from kmeans_utils import feats_centers
-        feats_centers = feats_centers(task_loader=train_loaders[f"task{args.task_idx}"],
-                                      pretrained_model=model,
-                                      tasks=tasks[args.task_idx].cpu().detach().numpy())
-        print("tasks:", tasks[args.task_idx])
-        print("tasks_numpy:", tasks[args.task_idx].cpu().detach().numpy())
-        print("feats_centers.shape:", feats_centers.shape)
-        print("feats_centers:", feats_centers)
-        model.feats_centers = nn.Parameter(feats_centers,requires_grad=False)
+    # if args.dali:
+    #     pass
+    # else:
+    #     # batch = next(iter(train_loaders[f"task{args.task_idx}"]))
+    #     # print(batch[2].dtype)
+    #     from kmeans_utils import feats_centers
+    #     feats_centers = feats_centers(task_loader=train_loaders[f"task{args.task_idx}"],
+    #                                   pretrained_model=model,
+    #                                   tasks=tasks[args.task_idx].cpu().detach().numpy())
+    #     print("tasks:", tasks[args.task_idx])
+    #     print("tasks_numpy:", tasks[args.task_idx].cpu().detach().numpy())
+    #     print("feats_centers.shape:", feats_centers.shape)
+    #     print("feats_centers:", feats_centers)
+    #     model.feats_centers = nn.Parameter(feats_centers,requires_grad=False)
 
     if args.dali:
         trainer.fit(model, val_dataloaders=val_loader)

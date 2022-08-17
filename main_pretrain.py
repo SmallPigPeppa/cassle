@@ -226,8 +226,9 @@ def main():
         from kmeans_utils import feats_centers
         feats_centers = feats_centers(task_loader=train_loaders[f"task{args.task_idx}"],
                                       pretrained_model=model,
-                                      tasks=tasks[args.task_idx])
+                                      tasks=tasks[args.task_idx].cpu().detach().numpy())
         print("tasks:",tasks[args.task_idx])
+        print("tasks_numpy:",tasks[args.task_idx].cpu().detach().numpy())
         print("feats_centers.shape:",feats_centers.shape)
         print("feats_centers:", feats_centers)
         model.feats_centers=feats_centers

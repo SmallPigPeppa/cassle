@@ -76,11 +76,11 @@ def contrastive_distill_wrapper(Method=object):
             pl_loss = torch.mean(inclass_distance)
             return pl_loss
 
-        def groupby_mean(value: torch.Tensor, labels: torch.LongTensor) -> torch.Tensor:
+        def groupby_mean(z: torch.Tensor, labels: torch.LongTensor) -> torch.Tensor:
             """Group-wise average for (sparse) grouped tensors
 
             Args:
-                value (torch.Tensor): values to average (# samples, latent dimension)
+                z (torch.Tensor): values to average (# samples, latent dimension)
                 labels (torch.LongTensor): labels for embedding parameters (# samples,)
 
             Returns:
@@ -113,10 +113,10 @@ def contrastive_distill_wrapper(Method=object):
 
             labels = torch.LongTensor(list(map(key_val.get, labels)))
 
-            labels = labels.view(labels.size(0), 1).expand(-1, value.size(1))
+            labels = labels.view(labels.size(0), 1).expand(-1, z.size(1))
 
             unique_labels, labels_count = labels.unique(dim=0, return_counts=True)
-            result = torch.zeros_like(unique_labels, dtype=torch.float).scatter_add_(0, labels, value)
+            result = torch.zeros_like(unique_labels, dtype=torch.float).scatter_add_(0, labels, z)
             result = result / labels_count.float().unsqueeze(1)
             new_labels = torch.LongTensor(list(map(val_key.get, unique_labels[:, 0].tolist())))
 
@@ -134,7 +134,7 @@ def contrastive_distill_wrapper(Method=object):
             p1 = self.frozen_projector(feats1)
             p2 = self.frozen_projector(feats2)
             _, *_, target = batch[f"task{self.current_task_idx}"]
-            z_centers = self.groupby_mean(value=frozen_z1, labels=target.repeat(2))
+            z_centers = self.groupby_mean(z=frozen_z1, labels=target.repeat(2))
             pl_loss = (self.pl_loss(z_centers=z_centers,z=p1, labels=target) + self.pl_loss(z_centers=z_centers,z=p2, labels=target)) / 2
 
             self.log("pl_loss", pl_loss, on_epoch=True, sync_dist=True)

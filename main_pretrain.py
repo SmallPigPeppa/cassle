@@ -227,6 +227,7 @@ def main():
         feats_centers = feats_centers(task_loader=train_loaders[f"task{args.task_idx}"],
                                       pretrained_model=model,
                                       tasks=tasks[args.task_idx])
+        print("tasks:",tasks[args.task_idx])
         print("feats_centers.shape:",feats_centers.shape)
         print("feats_centers:", feats_centers)
         model.feats_centers=feats_centers

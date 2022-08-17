@@ -80,5 +80,5 @@ def feats_centers(task_loader, pretrained_model, tasks):
         feats_ci = feats_task[index_ci]
         centers_ci=np.average(feats_ci,axis=0)
         centers_task.append(centers_ci)
-    centers_task = np.hstack(centers_task)
+    centers_task = np.vstack(centers_task)
     return torch.tensor(centers_task)

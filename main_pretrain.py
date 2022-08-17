@@ -221,8 +221,8 @@ def main():
     if args.dali:
         pass
     else:
-        batch = next(iter(train_loaders[f"task{args.task_idx}"]))
-        print(batch[2].dtype)
+        # batch = next(iter(train_loaders[f"task{args.task_idx}"]))
+        # print(batch[2].dtype)
         from kmeans_utils import feats_centers
         feats_centers = feats_centers(task_loader=train_loaders[f"task{args.task_idx}"],
                                       pretrained_model=model,
@@ -233,10 +233,10 @@ def main():
         print("feats_centers:", feats_centers)
         model.feats_centers = nn.Parameter(feats_centers,requires_grad=False)
 
-    # if args.dali:
-    #     trainer.fit(model, val_dataloaders=val_loader)
-    # else:
-    #     trainer.fit(model, train_loaders, val_loader)
+    if args.dali:
+        trainer.fit(model, val_dataloaders=val_loader)
+    else:
+        trainer.fit(model, train_loaders, val_loader)
 
 
 if __name__ == "__main__":

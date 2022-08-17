@@ -233,10 +233,10 @@ def main():
         print("feats_centers:", feats_centers)
         model.feats_centers = nn.Parameter(feats_centers,requires_grad=False)
 
-    if args.dali:
-        trainer.fit(model, val_dataloaders=val_loader)
-    else:
-        trainer.fit(model, train_loaders, val_loader)
+    # if args.dali:
+    #     trainer.fit(model, val_dataloaders=val_loader)
+    # else:
+    #     trainer.fit(model, train_loaders, val_loader)
 
 
 if __name__ == "__main__":

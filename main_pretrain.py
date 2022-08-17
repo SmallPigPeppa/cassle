@@ -221,27 +221,22 @@ def main():
     if args.dali:
         pass
     else:
-        batch = next(iter(train_loaders[f"task{args.task_idx}"]))
-        # print(batch[0])
+        # batch = next(iter(train_loaders[f"task{args.task_idx}"]))
+        # # print(batch[0])
         from kmeans_utils import feats_centers
         feats_centers = feats_centers(task_loader=train_loaders[f"task{args.task_idx}"],
                                       pretrained_model=model,
                                       tasks=tasks[args.task_idx].cpu().detach().numpy())
-        print("tasks:",tasks[args.task_idx])
-        print("tasks_numpy:",tasks[args.task_idx].cpu().detach().numpy())
-        print("feats_centers.shape:",feats_centers.shape)
+        print("tasks:", tasks[args.task_idx])
+        print("tasks_numpy:", tasks[args.task_idx].cpu().detach().numpy())
+        print("feats_centers.shape:", feats_centers.shape)
         print("feats_centers:", feats_centers)
-        model.feats_centers=feats_centers
+        model.feats_centers = feats_centers
 
-        # dali_datamodule.val_dataloader = lambda: cifar_val_loader
-
-    # if args.dali:
-    #     trainer.fit(model, val_dataloaders=val_loader)
-    # else:
-    #     # print('*************************************debug********************************')
-    #     # print(next(iter(train_dataset)))
-    #     # print('*************************************debug********************************')
-    #     trainer.fit(model, train_loaders, val_loader)
+    if args.dali:
+        trainer.fit(model, val_dataloaders=val_loader)
+    else:
+        trainer.fit(model, train_loaders, val_loader)
 
 
 if __name__ == "__main__":

@@ -12,6 +12,7 @@ def base_distill_wrapper(Method=object):
 
             self.frozen_encoder = deepcopy(self.encoder)
             self.frozen_projector = deepcopy(self.projector)
+            self.cosine = torch.nn.CosineSimilarity(dim=2, eps=1e-6)
 
         def on_train_start(self):
             super().on_train_start()

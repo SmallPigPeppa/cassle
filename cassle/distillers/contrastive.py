@@ -54,9 +54,19 @@ def contrastive_distill_wrapper(Method=object):
             ]
             return super().learnable_params + extra_learnable_params
 
-        def pl_loss(self, feats: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
-            z = self.frozen_projector(feats)
-            z_centers = self.frozen_projector(self.feats_centers)
+        # def pl_loss(self, feats: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
+        #     z = self.frozen_projector(feats)
+        #     z_centers = self.frozen_projector(self.feats_centers)
+        #     z = z.reshape(-1, 1, 256)
+        #     labels = labels - (45 + self.current_task_idx * 5)
+        #     z_centers = z_centers.reshape(1, -1, 256)
+        #     cosine_distance = self.cosine(z, z_centers.detach())
+        #     inclass_distance = torch.index_select(cosine_distance, dim=1, index=labels)
+        #     inclass_distance = torch.diagonal(inclass_distance)
+        #     pl_loss = torch.mean(inclass_distance)
+        #     return pl_loss
+
+        def pl_loss(self, z_centers: torch.Tensor, z: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
             z = z.reshape(-1, 1, 256)
             labels = labels - (45 + self.current_task_idx * 5)
             z_centers = z_centers.reshape(1, -1, 256)
@@ -66,7 +76,7 @@ def contrastive_distill_wrapper(Method=object):
             pl_loss = torch.mean(inclass_distance)
             return pl_loss
 
-        def groupby_mean(value: torch.Tensor, labels: torch.Tensor) -> (torch.Tensor, torch.Tensor):
+        def groupby_mean(value: torch.Tensor, labels: torch.LongTensor) -> (torch.Tensor, torch.LongTensor):
             """Group-wise average for (sparse) grouped tensors
 
             Args:
@@ -101,15 +111,34 @@ def contrastive_distill_wrapper(Method=object):
             key_val = {key: val for key, val in zip(uniques, range(len(uniques)))}
             val_key = {val: key for key, val in zip(uniques, range(len(uniques)))}
 
-            labels = torch.Tensor(list(map(key_val.get, labels)))
+            labels = torch.LongTensor(list(map(key_val.get, labels)))
 
             labels = labels.view(labels.size(0), 1).expand(-1, value.size(1))
 
             unique_labels, labels_count = labels.unique(dim=0, return_counts=True)
             result = torch.zeros_like(unique_labels, dtype=torch.float).scatter_add_(0, labels, value)
             result = result / labels_count.float().unsqueeze(1)
-            new_labels = torch.Tensor(list(map(val_key.get, unique_labels[:, 0].tolist())))
-            return result, new_labels
+            new_labels = torch.LongTensor(list(map(val_key.get, unique_labels[:, 0].tolist())))
+
+            _, order_index = new_labels.sort()
+            return result[order_index]
+
+        def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
+            out = super().training_step(batch, batch_idx)
+            # z1, z2 = out["z"]
+            frozen_z1, frozen_z2 = out["frozen_z"]
+            # frozen_feats1,frozen_feats2=out["frozen_feats"]
+            # frozen_z1=self.projector(frozen_feats1)
+            # frozen_z2=self.projector(frozen_feats2)
+            feats1, feats2 = out["feats"]
+            p1 = self.frozen_projector(feats1)
+            p2 = self.frozen_projector(feats2)
+            _, *_, target = batch[f"task{self.current_task_idx}"]
+            z_centers = self.groupby_mean(torch.stack([frozen_z1, frozen_z2]), torch.stack([target, target]))
+            pl_loss = (self.pl_loss(z_centers=z_centers,z=p1, labels=target) + self.pl_loss(z_centers=z_centers,z=p2, labels=target)) / 2
+
+            self.log("pl_loss", pl_loss, on_epoch=True, sync_dist=True)
+            return out["loss"] - 0.0 * pl_loss
 
         # def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
         #     out = super().training_step(batch, batch_idx)
@@ -135,34 +164,8 @@ def contrastive_distill_wrapper(Method=object):
         #     #
         #     # self.log("train_contrastive_distill_loss", distill_loss, on_epoch=True, sync_dist=True)
         #     self.log("pl_loss", pl_loss, on_epoch=True, sync_dist=True)
-        #     return out["loss"] - 0.0 * pl_loss
-
-        def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
-            out = super().training_step(batch, batch_idx)
-            # z1, z2 = out["z"]
-            frozen_z1, frozen_z2 = out["frozen_z"]
-            # frozen_feats1,frozen_feats2=out["frozen_feats"]
-            # frozen_z1=self.projector(frozen_feats1)
-            # frozen_z2=self.projector(frozen_feats2)
-            feats1, feats2 = out["feats"]
-            _, *_, target = batch[f"task{self.current_task_idx}"]
-            pl_loss = (self.pl_loss(feats=feats1, labels=target) + self.pl_loss(feats=feats2, labels=target))/2
-            # p1 = self.frozen_projector(feats1)
-            # p2 = self.frozen_projector(feats2)
-            # # p1 = self.distill_predictor(z1)
-            # # p2 = self.distill_predictor(z2)
-            # # p1 = z1
-            # # p2 = z2
-            #
-            # distill_loss = (
-            #                        simclr_distill_loss_func(p1, p2, frozen_z1, frozen_z2, self.distill_temperature)
-            #                        + simclr_distill_loss_func(frozen_z1, frozen_z2, p1, p2, self.distill_temperature)
-            #                ) / 2
-            #
-            # self.log("train_contrastive_distill_loss", distill_loss, on_epoch=True, sync_dist=True)
-            self.log("pl_loss", pl_loss, on_epoch=True, sync_dist=True)
-            return out["loss"] - 0.1*pl_loss
-
-            # return out["loss"] + self.distill_lamb * distill_loss
+        #     return out["loss"] - 0.1 * pl_loss
+        #
+        #     # return out["loss"] + self.distill_lamb * distill_loss
 
     return ContrastiveDistillWrapper

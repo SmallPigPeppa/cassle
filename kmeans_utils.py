@@ -45,13 +45,40 @@ def kmeans_filter(task_loader, pretrained_model, num_classes, dim_features=512, 
     for k in diff_keys:
         kmeans_dict[k] = -1
 
-
     print("all samples:", len(kmeans_dict))
-    print("valid samples:", len(kmeans_dict)-len(invalid_idx))
-    print("valid rate:", (len(kmeans_dict)-len(invalid_idx))/len(kmeans_dict))
-    centers=preprocessing.normalize(kmeans.cluster_centers_)
+    print("valid samples:", len(kmeans_dict) - len(invalid_idx))
+    print("valid rate:", (len(kmeans_dict) - len(invalid_idx)) / len(kmeans_dict))
+    centers = preprocessing.normalize(kmeans.cluster_centers_)
 
     return kmeans_dict, preprocessing.normalize(kmeans.cluster_centers_)
 
+
 # [mydict[x] for x in mykeys]
 #  [c[x] for x in a.cpu().detach().numpy()]
+
+def feats_centers(task_loader, pretrained_model, tasks):
+    # get all feats, idxs
+    feats_task = []
+    labels_task = []
+    centers_task = []
+    for batch in tqdm(task_loader):
+        idxs_i = batch[0]
+        imgs_i = batch[1]
+        labels_i = batch[2]
+        for x in imgs_i:
+            out = pretrained_model(x)
+            z = out["feats"]
+            feats_task.append(z.cpu().detach().numpy())
+            idxs_i = torch.reshape(idxs_i, (-1,))
+            labels_task.append(labels_i.cpu().detach().numpy())
+
+    feats_task = np.vstack(feats_task)
+    labels_task = np.hstack(labels_task)
+
+    for i in tqdm(tasks):
+        index_ci = np.where(labels_task == i)[0]
+        feats_ci = feats_task[index_ci]
+        centers_ci=np.average(feats_ci,axis=0)
+        centers_task.append(centers_ci)
+    centers_task = np.hstack(centers_task)
+    return torch.tensor(centers_task)

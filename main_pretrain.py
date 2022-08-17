@@ -224,13 +224,13 @@ def main():
         # train_loaders = {f"task{args.task_idx}": task_loader}
         batch = next(iter(train_loaders[f"task{args.task_idx}"]))
         print(batch[0])
-        from kmeans_utils import kmeans_filter
-        kmeans_dict, kmeans_centers = kmeans_filter(task_loader=train_loaders[f"task{args.task_idx}"], pretrained_model=model,
-                                                    num_classes=len(tasks[args.task_idx]), dim_features=512,
-                                                    min_logits=0.5)
-        model.kmeans_dict = kmeans_dict
-        model.kmeans_centers = kmeans_centers
-        print(str(kmeans_dict))
+        from kmeans_utils import feats_centers
+        feats_centers = feats_centers(task_loader=train_loaders[f"task{args.task_idx}"],
+                                      pretrained_model=model,
+                                      tasks=tasks[args.task_idx])
+        print("feats_centers.shape:",feats_centers.shape)
+        model.feats_centers=feats_centers
+
         # dali_datamodule.val_dataloader = lambda: cifar_val_loader
 
     # if args.dali:

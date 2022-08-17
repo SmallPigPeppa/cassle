@@ -228,6 +228,7 @@ def main():
                                       pretrained_model=model,
                                       tasks=tasks[args.task_idx])
         print("feats_centers.shape:",feats_centers.shape)
+        print("feats_centers:", feats_centers)
         model.feats_centers=feats_centers
 
         # dali_datamodule.val_dataloader = lambda: cifar_val_loader

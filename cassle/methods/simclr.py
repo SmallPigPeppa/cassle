@@ -159,23 +159,15 @@ class SimCLR(BaseModel):
             else torch.tensor(0.0, device=self.device)
         )
 
-        pl_loss=torch.mean(self.pl_loss(X=z1,labels=target)+self.pl_loss(X=z2,labels=target))
+
         metrics = {
             "train_nce_loss": nce_loss,
             "train_n_positives": n_positives,
-            "pl_loss": pl_loss
+
         }
         self.log_dict(metrics, on_epoch=True, sync_dist=True)
 
-        out.update({"loss": out["loss"] + nce_loss - pl_loss, "z": [z1, z2]})
+        out.update({"loss": out["loss"] + nce_loss , "z": [z1, z2]})
         return out
 
-    def pl_loss(self, X: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
-        X = X.reshape(-1, 1, 256)
-        labels = labels - (45 + self.current_task_idx * 5)
-        prototypes = self.prototypes.reshape(1, -1, 256)
-        cosine_distance = self.cosine(X, prototypes.detach())
-        inclass_distance = torch.index_select(cosine_distance, dim=1, index=labels)
-        inclass_distance = torch.diagonal(inclass_distance)
-        pl_loss = torch.mean(inclass_distance)
-        return pl_loss
+

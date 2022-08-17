@@ -10,11 +10,11 @@ from cassle.losses.simclr import simclr_distill_loss_func
 def contrastive_distill_wrapper(Method=object):
     class ContrastiveDistillWrapper(base_distill_wrapper(Method)):
         def __init__(
-            self,
-            distill_lamb: float,
-            distill_proj_hidden_dim: int,
-            distill_temperature: float,
-            **kwargs
+                self,
+                distill_lamb: float,
+                distill_proj_hidden_dim: int,
+                distill_temperature: float,
+                **kwargs
         ):
             super().__init__(**kwargs)
 
@@ -31,7 +31,7 @@ def contrastive_distill_wrapper(Method=object):
 
         @staticmethod
         def add_model_specific_args(
-            parent_parser: argparse.ArgumentParser,
+                parent_parser: argparse.ArgumentParser,
         ) -> argparse.ArgumentParser:
             parser = parent_parser.add_argument_group("contrastive_distiller")
 
@@ -54,6 +54,18 @@ def contrastive_distill_wrapper(Method=object):
             ]
             return super().learnable_params + extra_learnable_params
 
+        def pl_loss(self, feats: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
+            z = self.frozen_projector(feats)
+            z_centers = self.frozen_projector(self.feats_centers)
+            z = z.reshape(-1, 1, 256)
+            labels = labels - (45 + self.current_task_idx * 5)
+            z_centers = z_centers.reshape(1, -1, 256)
+            cosine_distance = self.cosine(z, z_centers.detach())
+            inclass_distance = torch.index_select(cosine_distance, dim=1, index=labels)
+            inclass_distance = torch.diagonal(inclass_distance)
+            pl_loss = torch.mean(inclass_distance)
+            return pl_loss
+
         def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
             out = super().training_step(batch, batch_idx)
             # z1, z2 = out["z"]
@@ -61,21 +73,25 @@ def contrastive_distill_wrapper(Method=object):
             # frozen_feats1,frozen_feats2=out["frozen_feats"]
             # frozen_z1=self.projector(frozen_feats1)
             # frozen_z2=self.projector(frozen_feats2)
-            feats1,feats2=out["feats"]
-            p1=self.frozen_projector(feats1)
-            p2=self.frozen_projector(feats2)
-            # p1 = self.distill_predictor(z1)
-            # p2 = self.distill_predictor(z2)
-            # p1 = z1
-            # p2 = z2
+            feats1, feats2 = out["feats"]
+            _, *_, target = batch[f"task{self.current_task_idx}"]
+            pl_loss = (self.pl_loss(feats=feats1, labels=target) + self.pl_loss(feats=feats2, labels=target))/2
+            # p1 = self.frozen_projector(feats1)
+            # p2 = self.frozen_projector(feats2)
+            # # p1 = self.distill_predictor(z1)
+            # # p2 = self.distill_predictor(z2)
+            # # p1 = z1
+            # # p2 = z2
+            #
+            # distill_loss = (
+            #                        simclr_distill_loss_func(p1, p2, frozen_z1, frozen_z2, self.distill_temperature)
+            #                        + simclr_distill_loss_func(frozen_z1, frozen_z2, p1, p2, self.distill_temperature)
+            #                ) / 2
+            #
+            # self.log("train_contrastive_distill_loss", distill_loss, on_epoch=True, sync_dist=True)
+            self.log("pl_loss", pl_loss, on_epoch=True, sync_dist=True)
+            return out["loss"] - pl_loss
 
-            distill_loss = (
-                simclr_distill_loss_func(p1, p2, frozen_z1, frozen_z2, self.distill_temperature)
-                + simclr_distill_loss_func(frozen_z1, frozen_z2, p1, p2, self.distill_temperature)
-            ) / 2
-
-            self.log("train_contrastive_distill_loss", distill_loss, on_epoch=True, sync_dist=True)
-
-            return out["loss"] + self.distill_lamb * distill_loss
+            # return out["loss"] + self.distill_lamb * distill_loss
 
     return ContrastiveDistillWrapper

@@ -117,7 +117,7 @@ def contrastive_distill_wrapper(Method=object):
 
             unique_labels, labels_count = labels.unique(dim=0, return_counts=True)
             result = torch.zeros_like(unique_labels, dtype=z.dtype, device=self.device).scatter_add_(0, labels.to(self.device), z)
-            result = result / labels_count.float().unsqueeze(1)
+            result = result / (labels_count.float().unsqueeze(1).to(self.device))
             new_labels = torch.LongTensor(list(map(val_key.get, unique_labels[:, 0].tolist())))
 
             _, order_index = new_labels.sort()

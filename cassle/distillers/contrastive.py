@@ -76,7 +76,7 @@ def contrastive_distill_wrapper(Method=object):
             pl_loss = torch.mean(inclass_distance)
             return pl_loss
 
-        def groupby_mean(value: torch.Tensor, labels: torch.LongTensor) -> (torch.Tensor, torch.LongTensor):
+        def groupby_mean(value: torch.Tensor, labels: torch.LongTensor) -> torch.Tensor:
             """Group-wise average for (sparse) grouped tensors
 
             Args:

@@ -166,7 +166,7 @@ def contrastive_distill_wrapper(Method=object):
             pl_loss=(self.mseloss(feats1,frozen_feats1)+self.mseloss(feats2,frozen_feats1))/2.
 
             self.log("pl_loss", pl_loss, on_epoch=True, sync_dist=True)
-            return out["loss"] + 0.05 * pl_loss
+            return out["loss"] + 0.5 * pl_loss
 
         # def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
         #     out = super().training_step(batch, batch_idx)

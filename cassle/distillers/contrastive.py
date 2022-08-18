@@ -5,6 +5,7 @@ import torch
 from torch import nn
 from cassle.distillers.base import base_distill_wrapper
 from cassle.losses.simclr import simclr_distill_loss_func
+import torch.nn.functional as F
 
 
 def contrastive_distill_wrapper(Method=object):
@@ -116,7 +117,8 @@ def contrastive_distill_wrapper(Method=object):
             labels = labels.view(labels.size(0), 1).expand(-1, z.size(1))
 
             unique_labels, labels_count = labels.unique(dim=0, return_counts=True)
-            result = torch.zeros_like(unique_labels, dtype=z.dtype, device=self.device).scatter_add_(0, labels.to(self.device), z)
+            result = torch.zeros_like(unique_labels, dtype=z.dtype, device=self.device).scatter_add_(0, labels.to(
+                self.device), z)
             result = result / (labels_count.float().unsqueeze(1).to(self.device))
             new_labels = torch.LongTensor(list(map(val_key.get, unique_labels[:, 0].tolist())))
 
@@ -127,6 +129,8 @@ def contrastive_distill_wrapper(Method=object):
             out = super().training_step(batch, batch_idx)
             # z1, z2 = out["z"]
             frozen_z1, frozen_z2 = out["frozen_z"]
+            frozen_z1 = F.normalize(frozen_z1)
+            frozen_z2 = F.normalize(frozen_z2)
             # frozen_feats1,frozen_feats2=out["frozen_feats"]
             # frozen_z1=self.projector(frozen_feats1)
             # frozen_z2=self.projector(frozen_feats2)
@@ -139,7 +143,7 @@ def contrastive_distill_wrapper(Method=object):
                                                                                              labels=target)) / 2
 
             self.log("pl_loss", pl_loss, on_epoch=True, sync_dist=True)
-            return out["loss"] - 0.5 * pl_loss
+            return out["loss"] - 0.01 * pl_loss
 
         # def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
         #     out = super().training_step(batch, batch_idx)

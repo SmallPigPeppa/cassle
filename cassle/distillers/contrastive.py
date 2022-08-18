@@ -29,6 +29,7 @@ def contrastive_distill_wrapper(Method=object):
                 nn.ReLU(),
                 nn.Linear(distill_proj_hidden_dim, output_dim),
             )
+            self.mseloss = nn.MSELoss()
 
         @staticmethod
         def add_model_specific_args(
@@ -125,25 +126,47 @@ def contrastive_distill_wrapper(Method=object):
             _, order_index = new_labels.sort()
             return result[order_index]
 
+        # def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
+        #     out = super().training_step(batch, batch_idx)
+        #     # z1, z2 = out["z"]
+        #     frozen_z1, frozen_z2 = out["frozen_z"]
+        #     frozen_z1 = F.normalize(frozen_z1)
+        #     frozen_z2 = F.normalize(frozen_z2)
+        #     # frozen_feats1,frozen_feats2=out["frozen_feats"]
+        #     # frozen_z1=self.projector(frozen_feats1)
+        #     # frozen_z2=self.projector(frozen_feats2)
+        #     feats1, feats2 = out["feats"]
+        #     p1 = self.frozen_projector(feats1)
+        #     p2 = self.frozen_projector(feats2)
+        #     _, *_, target = batch[f"task{self.current_task_idx}"]
+        #     z_centers = self.groupby_mean(z=torch.vstack((frozen_z1, frozen_z2)), labels=target.repeat(2))
+        #     pl_loss = (self.pl_loss(z_centers=z_centers, z=p1, labels=target) + self.pl_loss(z_centers=z_centers, z=p2,
+        #                                                                                      labels=target)) / 2
+        #
+        #     self.log("pl_loss", pl_loss, on_epoch=True, sync_dist=True)
+        #     return out["loss"] - 0.01 * pl_loss
+        #
         def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
             out = super().training_step(batch, batch_idx)
             # z1, z2 = out["z"]
             frozen_z1, frozen_z2 = out["frozen_z"]
-            frozen_z1 = F.normalize(frozen_z1)
-            frozen_z2 = F.normalize(frozen_z2)
-            # frozen_feats1,frozen_feats2=out["frozen_feats"]
+            # frozen_z1 = F.normalize(frozen_z1)
+            # frozen_z2 = F.normalize(frozen_z2)
+            frozen_feats1,frozen_feats2=out["frozen_feats"]
             # frozen_z1=self.projector(frozen_feats1)
             # frozen_z2=self.projector(frozen_feats2)
             feats1, feats2 = out["feats"]
             p1 = self.frozen_projector(feats1)
             p2 = self.frozen_projector(feats2)
-            _, *_, target = batch[f"task{self.current_task_idx}"]
-            z_centers = self.groupby_mean(z=torch.vstack((frozen_z1, frozen_z2)), labels=target.repeat(2))
-            pl_loss = (self.pl_loss(z_centers=z_centers, z=p1, labels=target) + self.pl_loss(z_centers=z_centers, z=p2,
-                                                                                             labels=target)) / 2
+            # _, *_, target = batch[f"task{self.current_task_idx}"]
+            # z_centers = self.groupby_mean(z=torch.vstack((frozen_z1, frozen_z2)), labels=target.repeat(2))
+            # pl_loss = (self.pl_loss(z_centers=z_centers, z=p1, labels=target) + self.pl_loss(z_centers=z_centers, z=p2,
+            #                                                                                  labels=target)) / 2
+
+            pl_loss=(self.mseloss(feats1,frozen_feats1)+self.mseloss(feats2,frozen_feats1))/2.
 
             self.log("pl_loss", pl_loss, on_epoch=True, sync_dist=True)
-            return out["loss"] - 0.01 * pl_loss
+            return out["loss"] + 0.01 * pl_loss
 
         # def training_step(self, batch: Sequence[Any], batch_idx: int) -> torch.Tensor:
         #     out = super().training_step(batch, batch_idx)

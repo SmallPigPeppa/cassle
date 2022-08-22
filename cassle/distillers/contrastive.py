@@ -21,7 +21,7 @@ def contrastive_distill_wrapper(Method=object):
             self.distill_lamb = distill_lamb
             self.distill_temperature = distill_temperature
             output_dim = kwargs["output_dim"]
-
+            self.mseloss = nn.MSELoss()
             self.distill_predictor = nn.Sequential(
                 nn.Linear(output_dim, distill_proj_hidden_dim),
                 nn.BatchNorm1d(distill_proj_hidden_dim),
